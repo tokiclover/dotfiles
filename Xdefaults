@@ -69,6 +69,7 @@ URxvt*color15: 		#ffffff
 !!-*-}}
 !!-*-{{ XTerm settings
 !-*- General options
+XTerm*termName: 	xterm-256color
 XTerm*faceName: 	Terminus:pixelsize=8
 !XTerm*font: 		-*-Terminus-*-*-8-*-*-*-*-*-*-*
 XTerm*allow_bold: 	True

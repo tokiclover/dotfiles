@@ -1,0 +1,17 @@
+#!/bin/sh
+FFH=$HOME/.mozilla/firefox
+die() { echo "* $@"; exit 1; }
+CDIR=$(pwd)
+PF=$(basename $FFH/*.default) 
+[ -z $PF ] && die "profile is empty."
+if [ -z "$(mount -t tmpfs|grep -F $FFH/$PF)" ]; then
+   sudo mount ffp-$(id -u) $FFH/$PF -t tmpfs -o user,exec,uid=$(id -u),gid=$(id -g),size=96m || \
+   die "failed to mount ff-p-$(id -u) tmpfs"; fi
+cd "$FFH"
+if [ -f "$PF/.unpacked" ]; then
+   tar --exclude $PF/.unpacked -czpf $PF.tmp.tgz $PF || die "failed to pack the profie."
+   mv $PF.tgz $PF.old.tgz || die "failed to override .old profile."
+   mv $PF.tmp.tgz $PF.tgz || die "failed to move the profile."
+else tar xzf $PF.tgz && touch $PF/.unpacked || die "failed to unpack the profile."; fi
+cd $CDIR
+unset CDIR PF FFH

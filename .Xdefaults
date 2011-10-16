@@ -71,7 +71,7 @@ URxvt*color15: 		#ffffff
 !-*- General options
 XTerm*termName: 	xterm-256color
 XTerm*faceName: 	Terminus:pixelsize=8
-!XTerm*font: 		-*-Terminus-*-*-8-*-*-*-*-*-*-*
+!XTerm*font: 		-*-Terminus-r-*-*-8-*-*-*-*-*-*-*
 XTerm*allow_bold: 	True
 XTerm*scrollBar: 	False
 XTerm*scrollTtyOutput: 	False
@@ -116,6 +116,7 @@ Xft*antialias:		True
 Xft*hinting: 		Full
 !!-*-}}
 !!-*-{{ XPDF
+Xpdf.toolTipEnable: 	False
 Xpdf*foreground: 	black
 Xpdf*background: 	white
 Xpdf*urlCommand: 	/usr/local/bin/firefox %s

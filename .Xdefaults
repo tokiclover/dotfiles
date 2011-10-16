@@ -69,8 +69,8 @@ URxvt*color15: 		#ffffff
 !!-*-}}
 !!-*-{{ XTerm settings
 !-*- General options
-XTerm*faceName: 	terminus:pixelsize=8
-!xterm*font: 		-*-Liberation Mono-*-*-8-*-*-*-*-*-*-*
+XTerm*faceName: 	Terminus:pixelsize=8
+!XTerm*font: 		-*-Terminus-*-*-8-*-*-*-*-*-*-*
 XTerm*allow_bold: 	True
 XTerm*scrollBar: 	False
 XTerm*scrollTtyOutput: 	False

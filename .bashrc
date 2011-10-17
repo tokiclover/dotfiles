@@ -44,7 +44,7 @@ bash_prompt() {
 	## Check PWD length
 	local PROMPT="┌──(\u::\h:$(tty|cut -b6-|tr '/' ':')::\t)───()───"
 	if [[ $COLUMNS -lt $((${#PROMPT}+${#PWD}+8)) ]]; then
-		local LENGTH=$((${#COLUMNS}-${#PROMPT}+${#PWD}+8))
+		local LENGTH=$((${#COLUMNS}-${#PROMPT}-11))
 		local NPWD=...${PWD:((${#COLUMNS}-$LENGTH)):$LENGTH}
 	else NPWD=$PWD; fi
 	[[ -n "${NPWD%%HOME*}" ]] && NPWD=${NPWD/$HOME/\~}

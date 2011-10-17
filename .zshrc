@@ -25,7 +25,6 @@ unset ROOTPATH
 
 for sh in /etc/profile.d/*.sh; do [ -r "$sh" ] && . "$sh"; done
 
-[[ -f $HOME/.aliasrc ]] && . $HOME/.aliasrc
 if [[ -f $HOME/.dir_colors ]]; then eval $(dircolors -b $HOME/.dir_colors)
 elif [[ -f /etc/DIR_COLORS ]]; then eval $(dircolors -b /etc/DIR_COLORS)
 else eval $(dircolors); fi

@@ -18,85 +18,60 @@ fi
 
 [ -f $HOME/.aliasrc ] && . $HOME/.aliasrc
 
-force_color_prompt=yes
-
-if [ -n "$force_color_prompt" ]; then
-    if [ -x /usr/bin/tput ] && tput setaf 1 >&/dev/null; then
-	# We have color support; assume it's compliant with Ecma-48
-	# (ISO/IEC-6429). (Lack of such support is extremely rare, and such
-	# a case would tend to support setf rather than setaf.)
-	color_prompt=yes
-    else color_prompt=; fi
-fi
-unset color_prompt force_color_prompt
-
-#case "$TERM" in
-#	xterm*|*rxvt*)
-#    		PS1="$HC$FCYN┌─$FCYN─$HC$FBLE─$FBLK─$FBLE(\u$FMAG@$FBLE\h:$FMAG$(\
-#			tty|cut -b6-|tr '/' ':'))$FMAG──$FBLE(\w)$FMAG──$HC$FCYN─$HC$FBLE─\
-#		$FBLK─\n$FCYN└─$HC$FBLK─$FBLE\$$RS "
-#   		PS2="$FRED> $FMAG"
-#		;;
-#	linux*)
-#		PS1="$HC$FCYN┌─$FCYN─$HC$FGRN─$FGRN(\u@\h:$(tty|cut -b6-|tr '/' ':'\
-#		))$HC$FBLE─$FBLE──$HCFBLE─$FBLE─(\t)$HC$FBLE─$FBLE──$HC$FBLE─$FBLE─(\w)─$HC$FBLK─\n$HC$FCYN└$FBLE─\$$RS "
-#		;;
-#	*)
-#	 	PS1="\u@\h:\t:$(tty|cut -b6-):\w\$ "
-#		;;
-#esac
 bash_prompt() {
-    case $TERM in
-     xterm*|rxvt*)
-         local TITLEBAR='\[\033]0;\u:${NEW_PWD}\007\]'
-          ;;
-     *)
-         local TITLEBAR=""
-          ;;
+	## ANSI color codes
+	RS="\e[0m" # reset
+	HC="\e[1m" # hicolor
+	UL="\e[4m" # underline
+	BL="\e[5m" # blink
+	INV="\e[7m" # inverse background and foreground
+	FBLK="\e[30m" # foreground black
+	FRED="\e[31m" # foreground red
+	FGRN="\e[32m" # foreground green
+	FYEL="\e[33m" # foreground yellow
+	FBLE="\e[34m" # foreground blue
+	FMAG="\e[35m" # foreground magenta
+	FCYN="\e[36m" # foreground cyan
+	FWHT="\e[37m" # foreground white
+	BBLK="\e[40m" # background black
+	BRED="\e[41m" # background red
+	BGRN="\e[42m" # background green
+	BYEL="\e[43m" # background yellow
+	BBLE="\e[44m" # background blue
+	BMAG="\e[45m" # background magenta
+	BCYN="\e[46m" # background cyan
+	BWHT="\e[47m" # background white
+	
+	## Check PWD length
+	PROMPT="┌──(\u::\h:$(tty|cut -b6-|tr '/' ':')::\t)───()───"
+	if [[ $COLUMNS -lt $((${#PROMPT}+${#PWD}+8)) ]]; then
+		LENGTH=$((${#COLUMNS}-${#PROMPT}+${#PWD}+8))
+		NPWD=...${PWD:((${#COLUMNS}-$LENGTH)):$LENGTH}
+	else NPWD=$PWD; fi
+
+	## And the prompt
+	case "$TERM" in
+	xterm*|rxvt*)
+    		PS1="$FCYN┌$HC$FBLE─$FBLE─($FMAG\u$FBLE::$FMAG\h:$FMAG$(tty|cut -b6-|tr '/' ':'\
+			)$FBLE::$FMAG\t$FBLE)─$HC$FBLE─$FBLE─($FMAG$NPWD$FBLE)─$HC$FBLE─$FBLK─\
+			\n$FCYN└$HC$FBLE─$FBLE─\$$RS "
+   		PS2="$FRED> $FMAG"
+         	TITLEBAR='\e]0;\u:${NPWD}\007'
+		;;
+	linux*)
+   		PS1="$HC$FCYN┌$FCYN─$HC$FBLE─(\u$FMAG@$FBLE\h:$FMAG$(\
+			tty|cut -b6-|tr '/' ':'))$FMAG────$FBLE(\w)$HC$FCYN─$HC$FBLE─$FBLK─\
+			\n$FCYN└$FCYN─$HC$FBLE─\$$RS "
+   		PS2="$FRED> $FMAG"
+		;;
+	*)
+	 	PS1="\u@\h:\t:$(tty|cut -b6-):\w\$ "
+		;;
     esac
-    local NONE="\[\033[0m\]"    # unsets color to term's fg color
-    
-    # regular colors
-    local K="\[\033[0;30m\]"    # black
-    local R="\[\033[0;31m\]"    # red
-    local G="\[\033[0;32m\]"    # green
-    local Y="\[\033[0;33m\]"    # yellow
-    local B="\[\033[0;34m\]"    # blue
-    local M="\[\033[0;35m\]"    # magenta
-    local C="\[\033[0;36m\]"    # cyan
-    local W="\[\033[0;37m\]"    # white
-    
-    # emphasized (bolded) colors
-    local EMK="\[\033[1;30m\]"
-    local EMR="\[\033[1;31m\]"
-    local EMG="\[\033[1;32m\]"
-    local EMY="\[\033[1;33m\]"
-    local EMB="\[\033[1;34m\]"
-    local EMM="\[\033[1;35m\]"
-    local EMC="\[\033[1;36m\]"
-    local EMW="\[\033[1;37m\]"
-    
-    # background colors
-    local BGK="\[\033[40m\]"
-    local BGR="\[\033[41m\]"
-    local BGG="\[\033[42m\]"
-    local BGY="\[\033[43m\]"
-    local BGB="\[\033[44m\]"
-    local BGM="\[\033[45m\]"
-    local BGC="\[\033[46m\]"
-    local BGW="\[\033[47m\]"
-    
-    local UC=$W                 # user's color
-    [ $UID -eq "0" ] && UC=$R   # root's color
-    
-    PS1="$TITLEBAR ${EMK}[${UC}\u${EMK}@${UC}\h ${EMB}\${NEW_PWD}${EMK}]${UC}\\$ ${NONE}"
-    # without colors: PS1="[\u@\h \${NEW_PWD}]\\$ "
-    # extra backslash in front of \$ to make bash colorize the prompt
 }
 
-PROMPT_COMMAND=bash_prompt_command
+PROMPT_COMMAND=bash_prompt
 bash_prompt
-unset bash_prompt
 
 # Enable programmable completion features (you don't need to enable
 # this, if it's already enabled in /etc/bash.bashrc and /etc/profile

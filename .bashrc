@@ -20,33 +20,33 @@ fi
 
 bash_prompt() {
 	## ANSI color codes
-	RS="\e[0m" # reset
-	HC="\e[1m" # hicolor
-	UL="\e[4m" # underline
-	BL="\e[5m" # blink
-	INV="\e[7m" # inverse background and foreground
-	FBLK="\e[30m" # foreground black
-	FRED="\e[31m" # foreground red
-	FGRN="\e[32m" # foreground green
-	FYEL="\e[33m" # foreground yellow
-	FBLE="\e[34m" # foreground blue
-	FMAG="\e[35m" # foreground magenta
-	FCYN="\e[36m" # foreground cyan
-	FWHT="\e[37m" # foreground white
-	BBLK="\e[40m" # background black
-	BRED="\e[41m" # background red
-	BGRN="\e[42m" # background green
-	BYEL="\e[43m" # background yellow
-	BBLE="\e[44m" # background blue
-	BMAG="\e[45m" # background magenta
-	BCYN="\e[46m" # background cyan
-	BWHT="\e[47m" # background white
+	local RS="\e[0m" # reset
+	local HC="\e[1m" # hicolor
+	local UL="\e[4m" # underline
+	local BL="\e[5m" # blink
+	local INV="\e[7m" # inverse background and foreground
+	local FBLK="\e[30m" # foreground black
+	local FRED="\e[31m" # foreground red
+	local FGRN="\e[32m" # foreground green
+	local FYEL="\e[33m" # foreground yellow
+	local FBLE="\e[34m" # foreground blue
+	local FMAG="\e[35m" # foreground magenta
+	local FCYN="\e[36m" # foreground cyan
+	local FWHT="\e[37m" # foreground white
+	local BBLK="\e[40m" # background black
+	local BRED="\e[41m" # background red
+	local BGRN="\e[42m" # background green
+	local BYEL="\e[43m" # background yellow
+	local BBLE="\e[44m" # background blue
+	local BMAG="\e[45m" # background magenta
+	local BCYN="\e[46m" # background cyan
+	local BWHT="\e[47m" # background white
 	
 	## Check PWD length
-	PROMPT="┌──(\u::\h:$(tty|cut -b6-|tr '/' ':')::\t)───()───"
+	local PROMPT="┌──(\u::\h:$(tty|cut -b6-|tr '/' ':')::\t)───()───"
 	if [[ $COLUMNS -lt $((${#PROMPT}+${#PWD}+8)) ]]; then
-		LENGTH=$((${#COLUMNS}-${#PROMPT}+${#PWD}+8))
-		NPWD=...${PWD:((${#COLUMNS}-$LENGTH)):$LENGTH}
+		local LENGTH=$((${#COLUMNS}-${#PROMPT}+${#PWD}+8))
+		local NPWD=...${PWD:((${#COLUMNS}-$LENGTH)):$LENGTH}
 	else NPWD=$PWD; fi
 	[[ "$NPWD" == "$HOME" ]] && NPWD=\\w
 

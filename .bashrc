@@ -59,9 +59,9 @@ bash_prompt() {
          	TITLEBAR='\e]0;\u:${NPWD}\007'
 		;;
 	linux*)
-   		PS1="$HC$FCYN┌$FCYN─$HC$FBLE─(\u$FMAG@$FBLE\h:$FMAG$(\
-			tty|cut -b6-|tr '/' ':'))$FMAG────$FBLE(\w)$HC$FCYN─$HC$FBLE─$FBLK─\
-			\n$FCYN└$FCYN─$HC$FBLE─\$$RS "
+    		PS1="$FCYN┌$HC$FBLE─$FBLE─($FMAG\u$FBLE::$FMAG\h:$FMAG$(tty|cut -b6-|tr '/' ':'\
+			)$FBLE::$FMAG\t$FBLE)─$HC$FBLE─$FBLE─($FMAG$NPWD$FBLE)─$HC$FBLE─$FBLK─\
+			\n$FCYN└$HC$FBLE─$FBLE─\$$RS "
    		PS2="$FRED> $FMAG"
 		;;
 	*)

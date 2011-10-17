@@ -48,6 +48,7 @@ bash_prompt() {
 		LENGTH=$((${#COLUMNS}-${#PROMPT}+${#PWD}+8))
 		NPWD=...${PWD:((${#COLUMNS}-$LENGTH)):$LENGTH}
 	else NPWD=$PWD; fi
+	[[ "$NPWD" == "$HOME" ]] && NPWD=\\w
 
 	## And the prompt
 	case "$TERM" in

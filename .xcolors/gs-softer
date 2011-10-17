@@ -1,0 +1,33 @@
+*background:        #171717
+*foreground:        #7e8082
+*cursorColor:       #868887
+*colorBD:           #b4927d
+!*colorUL:          #57956b
+
+!*tintColor:        #000000
+*shading:           88
+
+!-*- Black
+*color0:            #434343
+*color8:            #5d5f5e
+!-*- Red
+*color1:            #a16a71
+*color9:            #c7838f
+!-*- Green
+*color2:            #7aa16a
+*color10:           #93c783
+!-*- Yellow
+*color3:            #a1926a
+*color11:           #c7b983
+!-*- Blue
+*color4:            #6a80a1
+*color12:           #839fc7
+!-*- Magenta
+*color5:            #916aa1
+*color13:           #c483c7
+!-*- Cyan
+*color6:            #6aa0a1
+*color14:           #83c7bc
+!-*- White
+*color7:            #a8a8a8
+*color15:           #cacac8

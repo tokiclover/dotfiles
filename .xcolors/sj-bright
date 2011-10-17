@@ -1,0 +1,36 @@
+!-*- Trasperancy -*-
+*transparent: 	False
+*inheritPixmap: 	False
+*shading: 		30
+*tintColor: 		#404040
+*depth: 		32
+!-*- Fading -*-
+*fading: 		0
+*fadeColor: 		#202020
+!-*- Fore/background color -*-
+*background: 		#151515
+*foreground: 		#999
+!-*- Black -*-
+*color0: 		#101010
+*color8: 		#505050
+!-*- Red -*-
+*color1: 		#a2363a
+*color9: 		#ff5b62
+!-*- Green -*-
+*color2: 		#3ca034
+*color10: 		#3ed421
+!-*- Yellow -*-
+*color3: 		#b3930f
+*color11: 		#f1c719
+!-*- Blue -*-
+*color4: 		#286f8a
+*color12: 		#4382c4
+!-*- Magenta -*-
+*color5: 		#746d76
+*color13: 		#b287ba
+!-*- Cyan -*-
+*color6: 		#42ab9e
+*color14: 		#9bc6c0
+!-*- White -*-
+*color7: 		#e0e0e0
+*color15: 		#ffffff

@@ -1,3 +1,4 @@
+# $Id: $HOME/.xinitrc,v 1.1 2011/10/17 -tclover Exp $
 xmodmap $HOME/.Xmodmap
 xset s off
 xset fp+ /usr/share/fonts/TTF-FD/

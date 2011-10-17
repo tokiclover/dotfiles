@@ -42,10 +42,10 @@ bash_prompt() {
 	local BWHT="\e[47m" # background white
 	
 	## Check PWD length
-	local PROMPT="┌──(\u::\h:$(tty|cut -b6-|tr '/' ':')::\t)───()───"
-	if [[ $COLUMNS -lt $((${#PROMPT}+${#PWD}+8)) ]]; then
-		local LENGTH=$((${#COLUMNS}-${#PROMPT}-11))
-		local NPWD=...${PWD:((${#COLUMNS}-$LENGTH)):$LENGTH}
+	local PROMPT="---($USER::$(uname -n):$(tty|cut -b6-|tr '/' ':')::)---()---"
+	if [[ $COLUMNS -lt $((${#PROMPT}+${#PWD}+13)) ]]; then
+		local LENGTH=$((${COLUMNS}-${#PROMPT}-16))
+		local NPWD=...${PWD::-$LENGTH}
 	else NPWD=$PWD; fi
 	[[ -n "${NPWD%%HOME*}" ]] && NPWD=${NPWD/$HOME/\~}
 
@@ -53,10 +53,9 @@ bash_prompt() {
 	case "$TERM" in
 	xterm*|rxvt*)
     		PS1="$FCYN┌$HC$FBLE─$FBLE─($FMAG\u$FBLE::$FMAG\h:$FMAG$(tty|cut -b6-|tr '/' ':'\
-			)$FBLE::$FMAG\t$FBLE)─$HC$FBLE─$FBLE─($FMAG$NPWD$FBLE)─$HC$FBLE─$FBLK─\
-			\n$FCYN└$HC$FBLE─$FBLE─\$$RS "
+			)$FBLE::$FMAG\t$FBLE)─$HC$FBLE─$FBLE─($FMAG$NPWD$FBLE)─$HC$FBLE─$FBLK─\n$FCYN└$HC$FBLE─$FBLE─\$$RS "
    		PS2="$FRED> $FMAG"
-         	TITLEBAR='\e]0;\u:${NPWD}\007'
+         	TITLEBAR="\u::${NPWD}"
 		;;
 	linux*)
     		PS1="$FCYN┌$HC$FBLE─$FBLE─($FMAG\u$FBLE::$FMAG\h:$FMAG$(tty|cut -b6-|tr '/' ':'\

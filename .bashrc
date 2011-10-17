@@ -66,7 +66,7 @@ bash_prompt() {
    		PS2="$FRED> $FMAG"
 		;;
 	*)
-	 	PS1="\u::\h:$(tty|cut -b6-)::\t::\W\$ "
+		PS1="[\u::\h:$(tty|cut -b6-)::\W]─\$ "
 		;;
     esac
 }

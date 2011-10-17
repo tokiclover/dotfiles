@@ -1,8 +1,4 @@
 # $Id: $HOME/.zshrc,v 1.1 2011/09/11 -tclover Exp $
-#
-# That this file is used by any Bourne-shell derivative to setup the
-# environment for login shells.
-#
 
 # Load environment settings from profile.env, which is created by
 # env-update from the files in /etc/env.d

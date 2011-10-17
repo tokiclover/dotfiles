@@ -1,5 +1,5 @@
-# /etc/skel/.bashrc
-#
+# $Id: $HOME/.bashrc,v 1.1 2011/10/17 -tclover Exp $
+
 # This file is sourced by all *interactive* bash shells on startup,
 # including some apparently interactive shells such as scp and rcp
 # that can't tolerate any output.  So make sure this doesn't display
@@ -11,12 +11,11 @@
 # outputting anything in those cases.
 if [[ $- != *i* ]] ; then
 	# Shell is non-interactive.  Be done now!
-	return
-fi
+	return; fi
 
 # FUN stuff
 
-[ -f $HOME/.aliasrc ] && . $HOME/.aliasrc
+[[ -f $HOME/.aliasrc ]] && . $HOME/.aliasrc
 
 bash_prompt() {
 	## ANSI color codes
@@ -77,5 +76,5 @@ bash_prompt
 # Enable programmable completion features (you don't need to enable
 # this, if it's already enabled in /etc/bash.bashrc and /etc/profile
 # sources /etc/bash.bashrc).
-if [ -f /etc/bash_completion ] && ! shopt -oq posix; then
+if [[ -f /etc/bash_completion ]] && ! shopt -oq posix; then
 	. /etc/bash_completion; fi

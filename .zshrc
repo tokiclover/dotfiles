@@ -13,9 +13,7 @@ umask 022
 
 if [[ "$EUID" = "0" ]] || [[ "$USER" = "root" ]]; then
 	PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:${ROOTPATH}"
-else	PATH="/usr/local/bin:/usr/bin:/bin:${PATH}"
-	[[ -e $HOME/scr/addt.sh ]] && function adt() { . $HOME/scr/adt; }
-	[[ -e $HOME/scr/ffp-pack ]] && function ffp() { . $HOME/scr/ffp-pack; }; fi
+else	PATH="/usr/local/bin:/usr/bin:/bin:${PATH}"; fi
 export PATH
 unset ROOTPATH
 
@@ -52,6 +50,7 @@ for plugin ($plugins) fpath=($ZSH/plugins/$plugin $fpath)
 
 # add a function path
 fpath=($ZSH/functions $ZSH/completions $fpath)
+for func in $fpath[1]/*(:t); do source $fpath[1]/$func; done
 
 # Load all of the plugins that were defined in ~/.zshrc
 for plugin ($plugins); do

@@ -11,17 +11,17 @@ export PAGER=${PAGER:-/usr/bin/less}
 # 077 would be more secure, but 022 is generally quite realistic
 umask 022
 
-if [[ "$EUID" = "0" ]] || [[ "$USER" = "root" ]]; then
-	PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:${ROOTPATH}"
-else	PATH="/usr/local/bin:/usr/bin:/bin:${PATH}"; fi
+if [[ "$EUID" = "0" ]] || [[ "$USER" = "root" ]] {
+  PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:${ROOTPATH}"
+} else { PATH="/usr/local/bin:/usr/bin:/bin:${PATH}" }
 export PATH
 unset ROOTPATH
 
 for sh in /etc/profile.d/*.sh; do [ -r "$sh" ] && . "$sh"; done
 
-if [[ -f $HOME/.dir_colors ]]; then eval $(dircolors -b $HOME/.dir_colors)
-elif [[ -f /etc/DIR_COLORS ]]; then eval $(dircolors -b /etc/DIR_COLORS)
-else eval $(dircolors); fi
+if [[ -f $HOME/.dir_colors ]] { eval $(dircolors -b $HOME/.dir_colors) 
+} elif [[ -f /etc/DIR_COLORS ]] { eval $(dircolors -b /etc/DIR_COLORS) 
+} else { eval $(dircolors) }
 
 export ZSH=$HOME/.oh-my-zsh
 # Load all of the config files in ~/oh-my-zsh that end in .zsh
@@ -50,7 +50,7 @@ for plugin ($plugins) fpath=($ZSH/plugins/$plugin $fpath)
 
 # add a function path
 fpath=($ZSH/functions $ZSH/completions $fpath)
-for func in $fpath[1]/*(:t); do source $fpath[1]/$func; done
+for func ($fpath[1]/*) source $func
 
 # Load all of the plugins that were defined in ~/.zshrc
 for plugin ($plugins); do

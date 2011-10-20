@@ -47,7 +47,7 @@ bash_prompt() {
 		local LENGTH=$((${COLUMNS}-${#PROMPT}-16))
 		local NPWD=...${PWD:(($COLUMNS-$LENTH)):$LENGTH}
 	else NPWD=$PWD; fi
-	[[ -n "${NPWD%%HOME*}" ]] && NPWD=${NPWD/HOME/\~}
+	[[ -n "${NPWD%%HOME*}" ]] && NPWD=${NPWD/$HOME/\~}
 
 	## And the prompt
 	case "$TERM" in

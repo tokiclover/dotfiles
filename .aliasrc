@@ -26,7 +26,6 @@ alias hy='history'
 alias mo='more'
 alias le='less'
 alias gr='grep'
-alias hg='history|grep'
 alias hl='history|less'
 alias ct="tar -cvpf"
 alias xt="tar -xvpf"

@@ -1,12 +1,3 @@
-!-*- Trasperancy -*-
-*transparent: 	False
-*inheritPixmap: 	False
-*shading: 		30
-*tintColor: 		#404040
-*depth: 		32
-!-*- Fading -*-
-*fading: 		0
-*fadeColor: 		#202020
 !-*- Fore/background color -*-
 *background: 		#151515
 *foreground: 		#999

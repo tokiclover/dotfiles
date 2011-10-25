@@ -12,6 +12,7 @@ if [ -f "$PF/.unpacked" ]; then
    tar --exclude $PF/.unpacked -czpf $PF.tmp.tgz $PF || die "failed to pack the profie."
    mv $PF.tgz $PF.old.tgz || die "failed to override .old profile."
    mv $PF.tmp.tgz $PF.tgz || die "failed to move the profile."
-else tar xzf $PF.tgz && touch $PF/.unpacked || die "failed to unpack the profile."; fi
+else { tar xzf $PF.tgz || tar xzpf $PF.old.tgz
+   } && touch $PF/.unpacked || echo "failed to unpack the profile."; fi
 cd $CDIR
 unset CDIR PF FFH

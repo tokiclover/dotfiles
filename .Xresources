@@ -1,0 +1,166 @@
+! $Id: $HOME/.Xresources,v 1.1 2011/10/28 -tclover Exp $
+
+!-*-{ Global font
+*font:                -*-terminus-*-*-*-*-*-*-*-*-*-*-*-*
+!!-*- Global Fore/background color -*-!!
+*background:          #101010
+!-*-}
+
+!-*-{ URXVT
+!-*- General settings -*-
+URxvt*termName:       rxvt-unicode-256color
+URxvt*font:           xft:terminus:size=8:antialias=false
+URxvt*allow_bold:     True
+!-*- Perl extensions -*-
+URxvt.perl-ext-common:default,clipboard,matcher,keyboard-select
+URxvt.keysym.M-u:     perl:url-select:select_next
+URxvt.urlLauncher:    /usr/bin/firefox
+URxvt.underlineURLs:  True
+URxvt.matcher.button: 1 
+URxvt.keysym.M-Escape:perl:keyboard-select:activate
+URxvt.keysym.M-c:     perl:clipboard:copy
+URxvt.keysym.M-v:     perl:clipboard:paste
+URxvt.keysym.M-C-v:   perl:clipboard:paste_escaped
+!URxvt.copyCommand:   xsel -ib
+!URxvt.pasteCommand:  xsel -ob
+!-*- Scrollbar style - rxvt::plain:next:xterm -*-
+URxvt*scrollstyle:    urxvt
+URxvt*scrollBar:      False
+URxvt*matcher.button: 1
+URxvt*geometry:       128x36
+URxvt.saveLines:      1000
+!-*- Trasperancy -*-
+URxvt*transparent: 	  False
+URxvt*inheritPixmap:  False
+URxvt*shading:        30
+URxvt*tintColor:      #404040
+URxvt*depth:          32
+!-*- Fading -*-
+URxvt*fading:         0
+URxvt*fadeColor:      #202020
+!-*- Fore/background -*-
+URxvt*background:     #151515
+URxvt*foreground:     #999
+!-*-}
+
+!-*-{ XTerm settings
+!-*- General options
+XTerm*termName:       xterm-256color
+XTerm*faceName:       Terminus:pixelsize=8
+!XTerm*font:          -*-Terminus-r-*-*-8-*-*-*-*-*-*-*
+XTerm*allow_bold:     True
+XTerm*scrollBar:      False
+XTerm*scrollTtyOutput:False
+XTerm*scrollKey:      True
+XTerm*saveLines:      1024
+XTerm*loginShell:     True
+XTerm*internalBorder: 2
+XTerm*geometry:       128x36
+XTerm*metaSendsEscape:True
+XTerm*charClass:      33:48,35-38:48,39:43,42-47:48,58-59:48,61:48,63-64:48,126:48
+!-*- Fore/background -*-
+XTerm*background:     #151515
+XTerm*foreground:     #999
+!-*-}
+
+!-*-{ Xcolors
+!-*- Black -*-
+*color0:              #101010
+*color8:              #505050
+!-*- Red -*-
+*color1:              #a2363a
+*color9:              #ff5b62
+!-*- Green -*-
+*color2:              #3ca034
+*color10:             #3ed421
+!-*- Yellow -*-
+*color3:              #b3930f
+*color11:             #f1c719
+!-*- Blue -*-
+*color4:              #286f8a
+*color12:             #4382c4
+!-*- Magenta -*-
+*color5:              #746d76
+*color13:             #b287ba
+!-*- Cyan -*-
+*color6:              #42ab9e
+*color14:             #9bc6c0
+!-*- White -*-
+*color7:              #e0e0e0
+*color15:             #ffffff
+!-*-}
+
+!-*-{ Xft settings
+Xft*dpi:              96
+Xft*antialias:        True
+Xft*hinting:          Full
+!-*-}
+
+!-*-{ Xpdf
+Xpdf.toolTipEnable:   False
+Xpdf*foreground:      grey
+Xpdf*background:      black
+Xpdf*urlCommand:      /usr/local/bin/firefox %s
+Xpdf*antialias:       yes
+Xpdf*enableFreetype:  yes
+!Xpdf.geometry:       128x36
+!Xpdf.reverseVideo:   yes
+!Xpdf.paperColor:     #505050
+!Xpdf.matteColor:     #202020
+!Xpdf.initialZoom:    100
+Xpdf*fontList:        Terminus
+!-*-}
+
+!-*-{ Xcursor
+!Xcursor.theme:       Vanilla-DMZ-AA
+!Xcursor.size:        22
+!-*-}
+
+!-*-{ Xcalc
+xcalc*geometry:                        200x275
+xcalc.ti.bevel.background:             #151515
+xcalc.ti.bevel.screen.background:      #101010
+xcalc.ti.bevel.screen.DEG.background:  #000000
+xcalc.ti.bevel.screen.DEG.foreground:  LightSeaGreen
+xcalc.ti.bevel.screen.GRAD.background: #000000
+xcalc.ti.bevel.screen.GRAD.foreground: LightSeaGreen
+xcalc.ti.bevel.screen.RAD.background:  #000000
+xcalc.ti.bevel.screen.RAD.foreground:  LightSeaGreen
+xcalc.ti.bevel.screen.INV.background:  #000000
+xcalc.ti.bevel.screen.INV.foreground:  Red
+xcalc.ti.bevel.screen.LCD.background:  #000000
+xcalc.ti.bevel.screen.LCD.foreground:  LightSeaGreen
+xcalc.ti.bevel.screen.LCD.shadowWidth: 0
+xcalc.ti.bevel.screen.M.background:    #000000
+xcalc.ti.bevel.screen.M.foreground:    LightSeaGreen
+xcalc.ti.bevel.screen.P.background:    #000000
+xcalc.ti.bevel.screen.P.foreground:    Yellow
+xcalc.ti.Command.foreground:  #e0e0e0
+xcalc.ti.Command.background:  #746d76
+xcalc.ti.button5.background:  #3ca034
+xcalc.ti.button19.background: #b287ba
+xcalc.ti.button18.background: #b287ba
+xcalc.ti.button20.background: #b287ba
+!uncomment to change label on division button
+!xcalc.ti.button20.label:      /
+xcalc.ti.button25.background: #b287ba
+xcalc.ti.button30.background: #b287ba
+xcalc.ti.button35.background: #b287ba
+xcalc.ti.button40.background: #b287ba
+xcalc.ti.button22.background: #286f8a
+xcalc.ti.button23.background: #286f8a
+xcalc.ti.button24.background: #286f8a
+xcalc.ti.button27.background: #286f8a
+xcalc.ti.button28.background: #286f8a
+xcalc.ti.button29.background: #286f8a
+xcalc.ti.button32.background: #286f8a
+xcalc.ti.button33.background: #286f8a
+xcalc.ti.button34.background: #286f8a
+xcalc.ti.button37.background: #286f8a
+xcalc.ti.button38.background: #286f8a
+xcalc.ti.button39.background: #286f8a
+xcalc*Cursor:                 hand2
+xcalc*ShapeStyle:             rectangle
+!-*-}
+
+! vim:fenc=utf-8:ci:pi:sts=0:sw=4:ts=4:

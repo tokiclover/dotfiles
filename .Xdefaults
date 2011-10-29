@@ -1,123 +1,108 @@
-!!-*- $Id: $HOME/.Xdefaults,v 1.1 2011/10/17 -tclover Exp $
+! $Id: $HOME/.Xdefaults,v 1.1 2011/10/28 -tclover Exp $
 
-!!-*-{{ Global font
-*font:                  -*-terminus-*-*-*-*-*-*-*-*-*-*-*-*
+!-*-{ Global font
+*font:                -*-terminus-*-*-*-*-*-*-*-*-*-*-*-*
 !!-*- Global Fore/background color -*-!!
-*background: 		#101010
-!!-*-}}
-!!-*-{{ URXVT
+*background:          #101010
+!-*-}
+
+!-*-{ URXVT
 !-*- General settings -*-
-URxvt*termName: 	rxvt-unicode-256color
-URxvt*font: 		xft:terminus:size=8:antialias=false
-URxvt*allow_bold: 	True
+URxvt*termName:       rxvt-unicode-256color
+URxvt*font:           xft:terminus:size=8:antialias=false
+URxvt*allow_bold:     True
 !-*- Perl extensions -*-
-URxvt.perl-ext-common:  default,clipboard,matcher,keyboard-select
-URxvt.keysym.M-u:	perl:url-select:select_next
-URxvt.urlLauncher:      /usr/bin/firefox
-URxvt.underlineURLs:	True
-URxvt.matcher.button:   1 
-URxvt.keysym.M-Escape: 	perl:keyboard-select:activate
-URxvt.keysym.M-c:   	perl:clipboard:copy
-URxvt.keysym.M-v:   	perl:clipboard:paste
-URxvt.keysym.M-C-v: 	perl:clipboard:paste_escaped
-!URxvt.copyCommand: 	xsel -ib
-!URxvt.pasteCommand: 	xsel -ob
-!-*- Scrollbar style - rxvt (default), plain (most compact), next, or XTerm -*-
-URxvt*scrollstyle: 	urxvt
-URxvt*scrollBar: 	False
-URxvt*matcher.button:	1
-URxvt*geometry: 	128x36
-URxvt.saveLines:	1000
+URxvt.perl-ext-common:default,clipboard,matcher,keyboard-select
+URxvt.keysym.M-u:     perl:url-select:select_next
+URxvt.urlLauncher:    /usr/bin/firefox
+URxvt.underlineURLs:  True
+URxvt.matcher.button: 1 
+URxvt.keysym.M-Escape:perl:keyboard-select:activate
+URxvt.keysym.M-c:     perl:clipboard:copy
+URxvt.keysym.M-v:     perl:clipboard:paste
+URxvt.keysym.M-C-v:   perl:clipboard:paste_escaped
+!URxvt.copyCommand:   xsel -ib
+!URxvt.pasteCommand:  xsel -ob
+!-*- Scrollbar style - rxvt::plain:next:xterm -*-
+URxvt*scrollstyle:    urxvt
+URxvt*scrollBar:      False
+URxvt*matcher.button: 1
+URxvt*geometry:       128x36
+URxvt.saveLines:      1000
 !-*- Trasperancy -*-
-URxvt*transparent: 	False
-URxvt*inheritPixmap: 	False
-URxvt*shading: 		30
-URxvt*tintColor: 	#404040
-URxvt*depth: 		32
+URxvt*transparent: 	  False
+URxvt*inheritPixmap:  False
+URxvt*shading:        30
+URxvt*tintColor:      #404040
+URxvt*depth:          32
 !-*- Fading -*-
-URxvt*fading: 		0
-URxvt*fadeColor: 	#202020
-!-*- Fore/background color -*-
-URxvt*background: 	#151515
-URxvt*foreground: 	#999
-!-*- Black -*-
-URxvt*color0: 		#101010
-URxvt*color8: 		#505050
-!-*- Red -*-
-URxvt*color1: 		#a2363a
-URxvt*color9: 		#ff5b62
-!-*- Green -*-
-URxvt*color2: 		#3ca034
-URxvt*color10: 		#3ed421
-!-*- Yellow -*-
-URxvt*color3: 		#b3930f
-URxvt*color11: 		#f1c719
-!-*- Blue -*-
-URxvt*color4: 		#286f8a
-URxvt*color12: 		#4382c4
-!-*- Magenta -*-
-URxvt*color5: 		#746d76
-URxvt*color13: 		#b287ba
-!-*- Cyan -*-
-URxvt*color6: 		#42ab9e
-URxvt*color14: 		#9bc6c0
-!-*- White -*-
-URxvt*color7: 		#e0e0e0
-URxvt*color15: 		#ffffff
-!!-*-}}
-!!-*-{{ XTerm settings
+URxvt*fading:         0
+URxvt*fadeColor:      #202020
+!-*- Fore/background -*-
+URxvt*background:     #151515
+URxvt*foreground:     #999
+!-*-}
+
+!-*-{ XTerm settings
 !-*- General options
-XTerm*termName: 	xterm-256color
-XTerm*faceName: 	Terminus:pixelsize=8
-!XTerm*font: 		-*-Terminus-r-*-*-8-*-*-*-*-*-*-*
-XTerm*allow_bold: 	True
-XTerm*scrollBar: 	False
-XTerm*scrollTtyOutput: 	False
-XTerm*scrollKey: 	True
-XTerm*saveLines: 	1024
-XTerm*loginShell: 	True
-XTerm*internalBorder: 	2
-XTerm*geometry: 	128x36
-XTerm*metaSendsEscape: 	True
-XTerm*charClass: 	33:48,35-38:48,39:43,42-47:48,58-59:48,61:48,63-64:48,126:48
-!-*- Fore/background color -*-
-XTerm*background: 	#151515
-XTerm*foreground: 	#999
+XTerm*termName:       xterm-256color
+XTerm*faceName:       Terminus:pixelsize=8
+!XTerm*font:          -*-Terminus-r-*-*-8-*-*-*-*-*-*-*
+XTerm*allow_bold:     True
+XTerm*scrollBar:      False
+XTerm*scrollTtyOutput:False
+XTerm*scrollKey:      True
+XTerm*saveLines:      1024
+XTerm*loginShell:     True
+XTerm*internalBorder: 2
+XTerm*geometry:       128x36
+XTerm*metaSendsEscape:True
+XTerm*charClass:      33:48,35-38:48,39:43,42-47:48,58-59:48,61:48,63-64:48,126:48
+!-*- Fore/background -*-
+XTerm*background:     #151515
+XTerm*foreground:     #999
+!-*-}
+
+!-*-{ Xcolors
 !-*- Black -*-
-XTerm*color0: 		#101010
-XTerm*color8: 		#505050
+*color0:              #101010
+*color8:              #505050
 !-*- Red -*-
-XTerm*color1: 		#a2363a
-XTerm*color9: 		#ff5b62
+*color1:              #a2363a
+*color9:              #ff5b62
 !-*- Green -*-
-XTerm*color2: 		#3ca034
-XTerm*color10: 		#3ed421
+*color2:              #3ca034
+*color10:             #3ed421
 !-*- Yellow -*-
-XTerm*color3: 		#b3930f
-XTerm*color11: 		#f1c719
+*color3:              #b3930f
+*color11:             #f1c719
 !-*- Blue -*-
-XTerm*color4: 		#286f8a
-XTerm*color12: 		#4382c4
+*color4:              #286f8a
+*color12:             #4382c4
 !-*- Magenta -*-
-XTerm*color5: 		#746d76
-XTerm*color13: 		#b287ba
+*color5:              #746d76
+*color13:             #b287ba
 !-*- Cyan -*-
-XTerm*color6: 		#42ab9e
-XTerm*color14: 		#9bc6c0
+*color6:              #42ab9e
+*color14:             #9bc6c0
 !-*- White -*-
-XTerm*color7: 		#e0e0e0
-XTerm*color15: 		#ffffff
-!!-*-}}
-!!-*-{{ XFT settings
-Xft*dpi: 		96
-Xft*antialias:		True
-Xft*hinting: 		Full
-!!-*-}}
-!!-*-{{ XPDF
-Xpdf.toolTipEnable: 	False
-Xpdf*foreground: 	black
-Xpdf*background: 	white
-Xpdf*urlCommand: 	/usr/local/bin/firefox %s
-Xpdf*antialias: 	yes
-Xpdf*enableFreetype: 	yes
-!!-*-}}
+*color7:              #e0e0e0
+*color15:             #ffffff
+!-*-}
+
+!-*-{ Xft settings
+Xft*dpi:              96
+Xft*antialias:        True
+Xft*hinting:          Full
+!-*-}
+
+!-*-{ Xpdf
+Xpdf.toolTipEnable:   False
+Xpdf*foreground:      white
+Xpdf*background:      black
+Xpdf*urlCommand:      /usr/local/bin/firefox %s
+Xpdf*antialias:       yes
+Xpdf*enableFreetype:  yes
+!-*-}
+
+! vim:fenc=utf-8:ci:pi:sts=0:sw=4:ts=4:

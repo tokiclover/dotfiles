@@ -52,3 +52,5 @@ alias eqm='equery m'
 #alias CB='bscan --mode=color --shades=32 --page=Letter --comp=lzw'
 #alias CL='bscan --mode=color --shades=32 --page=Legal --comp=lzw'
 #alias bt='bscan --mode=color --shades=truecolor --page=Letter --comp=lzw' 
+
+# vim:fenc=utf-8:ci:pi:sts=0:sw=4:ts=4:

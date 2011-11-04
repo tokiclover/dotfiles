@@ -1,4 +1,5 @@
 # $Id: $HOME/.asoundrc,v 1.1 2011/10/20 -tclover Exp $
+#
 ## BS2B
 pcm.bs2b {
 	type ladspa
@@ -93,3 +94,5 @@ pcm.!default { type plug; slave.pcm dmixer; }
 pcm.!jackplug { type plug; slave.pcm jack; }
 # output through bs2b
 pcm.!headsets { type plug; slave.pcm bs2b; }
+
+# vim:fenc=utf-8:ci:pi:sts=0:sw=4:ts=4:

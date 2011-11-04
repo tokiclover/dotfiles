@@ -1,4 +1,4 @@
-# $Id: $HOME/.bashrc,v 1.1 2011/10/17 -tclover Exp $
+# $Id: $HOME/.bashrc,v 1.1 2011/11/01 -tclover Exp $
 
 # This file is sourced by all *interactive* bash shells on startup,
 # including some apparently interactive shells such as scp and rcp
@@ -77,3 +77,5 @@ bash_prompt
 # sources /etc/bash.bashrc).
 if [[ -f /etc/bash_completion ]] && ! shopt -oq posix; then
 	. /etc/bash_completion; fi
+
+# vim:fenc=utf-8:ci:pi:sts=0:sw=4:ts=4:

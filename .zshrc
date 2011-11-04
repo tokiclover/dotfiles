@@ -1,4 +1,4 @@
-# $Id: $HOME/.zshrc,v 1.1 2011/09/11 -tclover Exp $
+# $Id: $HOME/.zshrc,v 1.1 2011/11/01 -tclover Exp $
 
 # Load environment settings from profile.env, which is created by
 # env-update from the files in /etc/env.d
@@ -53,11 +53,10 @@ fpath=($ZSH/functions $ZSH/completions $fpath)
 for func ($fpath[1]/*) source $func
 
 # Load all of the plugins that were defined in ~/.zshrc
-for plugin ($plugins); do
-  if [ -f $ZSH/custom/plugins/$plugin/$plugin.plugin.zsh ]; then
+for plugin ($plugins)
+  if [[ -f $ZSH/custom/plugins/$plugin/$plugin.plugin.zsh ]] {
     source $ZSH/custom/plugins/$plugin/$plugin.plugin.zsh
-  elif [ -f $ZSH/plugins/$plugin/$plugin.plugin.zsh ]; then
-    source $ZSH/plugins/$plugin/$plugin.plugin.zsh
-  fi
-done
+  } elif [[ -f $ZSH/plugins/$plugin/$plugin.plugin.zsh ]] {
+    source $ZSH/plugins/$plugin/$plugin.plugin.zsh }
 
+# vim:fenc=utf-8:ci:pi:sts=0:sw=4:ts=4:

@@ -1,4 +1,4 @@
-# $Id: $HOME/.zshrc,v 1.1 2011/11/01 -tclover Exp $
+# $Id: $HOME/.zshrc,v 1.1 2011/11/04 -tclover Exp $
 
 # Load environment settings from profile.env, which is created by
 # env-update from the files in /etc/env.d
@@ -11,13 +11,13 @@ export PAGER=${PAGER:-/usr/bin/less}
 # 077 would be more secure, but 022 is generally quite realistic
 umask 022
 
-if [[ "$EUID" = "0" ]] || [[ "$USER" = "root" ]] {
-  PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:${ROOTPATH}"
-} else { PATH="/usr/local/bin:/usr/bin:/bin:${PATH}" }
+if [[ $EUID = 0 ]] || [[ $USER = root ]] {
+  PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:${ROOTPATH}
+} else { PATH=/usr/local/bin:/usr/bin:/bin:${PATH} }
 export PATH
 unset ROOTPATH
 
-for sh in /etc/profile.d/*.sh; do [ -r "$sh" ] && . "$sh"; done
+for sh (/etc/profile.d/**/*.sh) [[ -r $sh ]] && source $sh
 
 if [[ -f $HOME/.dir_colors ]] { eval $(dircolors -b $HOME/.dir_colors) 
 } elif [[ -f /etc/DIR_COLORS ]] { eval $(dircolors -b /etc/DIR_COLORS) 

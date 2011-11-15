@@ -1,9 +1,15 @@
-# $Id: $HOME/.xinitrc,v 1.1 2011/11/02 -tclover Exp $
+# $Id: $HOME/.xinitrc,v 1.1 2011/11/15 -tclover Exp $
 
+eval "$(gnome-keyring-daemon)"
+export GNOME_KEYRING_PID
+export GNOME_KEYRING_SOCKET
+export SSH_AUTH_SOCK
+export GPG_AGENT_INFO
+dbus-launch nm-applet --sm-disable &
 /usr/libexec/polkit-gnome-authentication-agent-1 &
-unclutter -idle 8 -noevents &
 
-[[ -e $HOME/.Xmodmap ]] && /usr/bin/xmodmap $HOME/.Xmodmap
+unclutter -idle 8 -noevents &
+[[ -e $HOME/.Xmodmap ]] && xmodmap $HOME/.Xmodmap
 xset s off
 xset fp+ /usr/share/fonts/TTF-FD/
 xset fp+ /usr/share/fonts/artwiz-latin1
@@ -12,9 +18,9 @@ xset fp+ /usr/share/fonts/terminus
 xset fp rehash
 #xrdb -merge $HOME/.Xdefaults
 #xrdb -merge $HOME/.xcolors/sj-bright
+xrdb -merge $HOME/.Xresources
 
 /usr/bin/urxvtd -q -o -f &
-#/usr/bin/nm-applet &>/dev/null &
 
 #exec ck-launch-session dbus-launch --sh-syntax --exit-with-session openbox-session
 #exec ck-launch-session dbus-launch --sh-syntax --exit-with-session enlightenment_start

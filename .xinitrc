@@ -18,7 +18,7 @@ xset fp+ /usr/share/fonts/terminus
 xset fp rehash
 #xrdb -merge $HOME/.Xdefaults
 #xrdb -merge $HOME/.xcolors/sj-bright
-xrdb -merge $HOME/.Xresources
+xrdb -load $HOME/.Xresources
 
 /usr/bin/urxvtd -q -o -f &
 

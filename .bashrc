@@ -1,46 +1,31 @@
 # $Id: $HOME/.bashrc,v 1.1 2011/11/01 -tclover Exp $
-
-# This file is sourced by all *interactive* bash shells on startup,
-# including some apparently interactive shells such as scp and rcp
-# that can't tolerate any output.  So make sure this doesn't display
-# anything or bad things will happen !
-
-
-# Test for an interactive shell.  There is no need to set anything
-# past this point for scp and rcp, and it's important to refrain from
-# outputting anything in those cases.
-if [[ $- != *i* ]]; then
-	# Shell is non-interactive.  Be done now!
-	return; fi
-
-# FUN stuff
-
+#
+[[ $- != *i* ]] && return
 [[ -f $HOME/.aliasrc ]] && . $HOME/.aliasrc
 
 bash_prompt() {
 	## ANSI color codes
-	local RS="\e[0m" # reset
-	local HC="\e[1m" # hicolor
-	local UL="\e[4m" # underline
-	local BL="\e[5m" # blink
-	local INV="\e[7m" # inverse background and foreground
-	local FBLK="\e[30m" # foreground black
-	local FRED="\e[31m" # foreground red
-	local FGRN="\e[32m" # foreground green
-	local FYEL="\e[33m" # foreground yellow
-	local FBLE="\e[34m" # foreground blue
-	local FMAG="\e[35m" # foreground magenta
-	local FCYN="\e[36m" # foreground cyan
-	local FWHT="\e[37m" # foreground white
-	local BBLK="\e[40m" # background black
-	local BRED="\e[41m" # background red
-	local BGRN="\e[42m" # background green
-	local BYEL="\e[43m" # background yellow
-	local BBLE="\e[44m" # background blue
-	local BMAG="\e[45m" # background magenta
-	local BCYN="\e[46m" # background cyan
-	local BWHT="\e[47m" # background white
-	
+	RS="\e[0m" # reset
+	HC="\e[1m" # hicolor
+	UL="\e[4m" # underline
+	BL="\e[5m" # blink
+	INV="\e[7m" # inverse background and foreground
+	FBLK="\e[30m" # foreground black
+	FRED="\e[31m" # foreground red
+	FGRN="\e[32m" # foreground green
+	FYEL="\e[33m" # foreground yellow
+	FBLE="\e[34m" # foreground blue
+	FMAG="\e[35m" # foreground magenta
+	FCYN="\e[36m" # foreground cyan
+	FWHT="\e[37m" # foreground white
+	BBLK="\e[40m" # background black
+	BRED="\e[41m" # background red
+	BGRN="\e[42m" # background green
+	BYEL="\e[43m" # background yellow
+	BBLE="\e[44m" # background blue
+	BMAG="\e[45m" # background magenta
+	BCYN="\e[46m" # background cyan
+	BWHT="\e[47m" # background white
 	## Check PWD length
 	local PROMPT="---($USER::$(uname -n):$(tty|cut -b6-|tr '/' ':')::)---()---"
 	if [[ $COLUMNS -lt $((${#PROMPT}+${#PWD}+13)) ]]; then
@@ -48,7 +33,6 @@ bash_prompt() {
 		local NPWD=...${PWD:(($COLUMNS-$LENTH)):$LENGTH}
 	else NPWD=$PWD; fi
 	[[ -n "${NPWD%%HOME*}" ]] && NPWD=${NPWD/$HOME/\~}
-
 	## And the prompt
 	case "$TERM" in
 	xterm*|rxvt*)
@@ -63,19 +47,14 @@ bash_prompt() {
 			\n$FCYN└$HC$FBLE─$FBLE─\$$RS "
    		PS2="$FRED> $FMAG"
 		;;
-	*)
-		PS1="$FBLE($FMAG\u$FBLE::$FMAG\h:$(tty|cut -b6-)$FBLE::$FMAG\W$FBLE)─\$$RS "
-		;;
+	*) PS1="$FBLE($FMAG\u$FBLE::$FMAG\h:$(tty|cut -b6-)$FBLE::$FMAG\W$FBLE)─\$$RS ";;
     esac
 }
 
 PROMPT_COMMAND=bash_prompt
 bash_prompt
 
-# Enable programmable completion features (you don't need to enable
-# this, if it's already enabled in /etc/bash.bashrc and /etc/profile
-# sources /etc/bash.bashrc).
 if [[ -f /etc/bash_completion ]] && ! shopt -oq posix; then
-	. /etc/bash_completion; fi
-
+	source /etc/bash_completion; fi
+#
 # vim:fenc=utf-8:ci:pi:sts=0:sw=4:ts=4:

@@ -1,5 +1,6 @@
 # $Id: $HOME/.xinitrc,v 1.1 2011/11/15 -tclover Exp $
 
+# start gnome-keyring and nm-applet
 eval "$(gnome-keyring-daemon)"
 export GNOME_KEYRING_PID
 export GNOME_KEYRING_SOCKET
@@ -8,6 +9,7 @@ export GPG_AGENT_INFO
 dbus-launch nm-applet --sm-disable &
 /usr/libexec/polkit-gnome-authentication-agent-1 &
 
+# initialize X server settings
 unclutter -idle 8 -noevents &
 [[ -e $HOME/.Xmodmap ]] && xmodmap $HOME/.Xmodmap
 xset s off
@@ -20,8 +22,8 @@ xset fp rehash
 #xrdb -merge $HOME/.xcolors/sj-bright
 xrdb -load $HOME/.Xresources
 
+# start a [D]E and urxvtc
 /usr/bin/urxvtd -q -o -f &
-
 #exec ck-launch-session dbus-launch --sh-syntax --exit-with-session openbox-session
 #exec ck-launch-session dbus-launch --sh-syntax --exit-with-session enlightenment_start
 exec ck-launch-session dbus-launch --sh-syntax --exit-with-session enlightenment_start.sh

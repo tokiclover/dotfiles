@@ -1,31 +1,32 @@
-# $Id: $HOME/.bashrc,v 1.1 2011/11/01 -tclover Exp $
+# $Id: $HOME/.bashrc,v 1.1 2011/11/16 -tclover Exp $
 #
 [[ $- != *i* ]] && return
 [[ -f $HOME/.aliasrc ]] && . $HOME/.aliasrc
 
+## ANSI color codes
+RS="\e[0m" # reset
+HC="\e[1m" # hicolor
+UL="\e[4m" # underline
+BL="\e[5m" # blink
+INV="\e[7m" # inverse background and foreground
+FBLK="\e[30m" # foreground black
+FRED="\e[31m" # foreground red
+FGRN="\e[32m" # foreground green
+FYEL="\e[33m" # foreground yellow
+FBLE="\e[34m" # foreground blue
+FMAG="\e[35m" # foreground magenta
+FCYN="\e[36m" # foreground cyan
+FWHT="\e[37m" # foreground white
+BBLK="\e[40m" # background black
+BRED="\e[41m" # background red
+BGRN="\e[42m" # background green
+BYEL="\e[43m" # background yellow
+BBLE="\e[44m" # background blue
+BMAG="\e[45m" # background magenta
+BCYN="\e[46m" # background cyan
+BWHT="\e[47m" # background white
+
 bash_prompt() {
-	## ANSI color codes
-	RS="\e[0m" # reset
-	HC="\e[1m" # hicolor
-	UL="\e[4m" # underline
-	BL="\e[5m" # blink
-	INV="\e[7m" # inverse background and foreground
-	FBLK="\e[30m" # foreground black
-	FRED="\e[31m" # foreground red
-	FGRN="\e[32m" # foreground green
-	FYEL="\e[33m" # foreground yellow
-	FBLE="\e[34m" # foreground blue
-	FMAG="\e[35m" # foreground magenta
-	FCYN="\e[36m" # foreground cyan
-	FWHT="\e[37m" # foreground white
-	BBLK="\e[40m" # background black
-	BRED="\e[41m" # background red
-	BGRN="\e[42m" # background green
-	BYEL="\e[43m" # background yellow
-	BBLE="\e[44m" # background blue
-	BMAG="\e[45m" # background magenta
-	BCYN="\e[46m" # background cyan
-	BWHT="\e[47m" # background white
 	## Check PWD length
 	local PROMPT="---($USER::$(uname -n):$(tty|cut -b6-|tr '/' ':')::)---()---"
 	if [[ $COLUMNS -lt $((${#PROMPT}+${#PWD}+13)) ]]; then

@@ -1,4 +1,4 @@
-# $ID: $HOME/.zprofile,v 1.1 2011/11/16 -tclover Exp $
+# $Id: $HOME/.zprofile,v 1.1 2011/11/16 -tclover Exp $
 #
 if [[ -e /etc/profile.env ]] { source /etc/profile.env }
 export EDITOR=${EDITOR:-/bin/nano}
@@ -7,8 +7,8 @@ export PAGER=${PAGER:-/usr/bin/less}
 umask 022
 # set path
 if [[ $EUID = 0 || $USER = root ]] {
-	PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:${ROOTPATH}"
-} else { PATH="/usr/local/bin:/usr/bin:/bin:${PATH}" }
+	PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:${ROOTPATH}
+} else { PATH=/usr/local/bin:/usr/bin:/bin:${PATH} }
 export PATH
 unset ROOTPATH
 

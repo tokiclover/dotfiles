@@ -1,7 +1,7 @@
 # $Id: $HOME/.bashrc,v 1.1 2011/11/16 -tclover Exp $
 #
 [[ $- != *i* ]] && return
-[[ -f $HOME/.aliasrc ]] && . $HOME/.aliasrc
+[[ -f $HOME/.aliasrc ]] && source $HOME/.aliasrc
 
 ## ANSI color codes
 RS="\e[0m" # reset

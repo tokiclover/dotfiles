@@ -6,7 +6,7 @@ ctl.hda { type hw; card 0; device 1; }
 pcm.cmi { type hw; card 1; device 1; }
 ctl.cmi { type hw; card 1; device 1; }
 ## BS2B
-ctl.headsets { type ladspa; }
+ctl.bs2b { type ladspa; }
 pcm.bs2b {
 	type ladspa
 	# hardware mixer
@@ -24,7 +24,7 @@ pcm.bs2b {
 pcm.headsets { type plug; slave.pcm bs2b; }
 ## JACK output
 ctl.jack { type jack; }
-pcm.jackplug {
+pcm.jack {
 	type jack
 	playback_ports 
 	{
@@ -37,9 +37,9 @@ pcm.jackplug {
 		1 system:capture_2
 	}
 }
-pcm.jack { type plug; slave.pcm jackplug; }
+pcm.jackplug { type plug; slave.pcm jack; }
 ## DMIX
-ctl.mixed { type dmix; }
+ctl.dmixer { type dmix; }
 pcm.dmixer {
 	type dmix
 	ipc_key 7667 
@@ -50,7 +50,7 @@ pcm.dmixer {
 pcm.mixed { type plug; slave.pcm dmixer; }
 ## MBEQ
 ctl.eq { type ladspa; }
-pcm.plugeq {
+pcm.eq {
 	type ladspa
 	# hardware mixer
 	#slave.pcm plughw:0,0
@@ -69,17 +69,17 @@ pcm.plugeq {
 	}
 	]
 }
-pcm.eq { type ladspa; slave.pcm plugeq; }
+pcm.plugeq { type ladspa; slave.pcm eq; }
 ## EQUALIZER
 ctl.equal { type equal; }
-pcm.plugequal { 
+pcm.equal { 
 	type equal
 	# hardware mixer
 	#slave.pcm "plughw:0,1"
 	# software mixer
 	slave.pcm plug:dmix
 }
-pcm.!equal { type plug; slave.pcm plugequal; }
+pcm.plugequal { type plug; slave.pcm equal; }
 ## ALSA EMULATION
 pcm.alsa {
 	type oss

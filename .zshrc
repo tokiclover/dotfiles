@@ -40,4 +40,4 @@ for plugin ($plugins)
   } elif [[ -f $ZSH/plugins/$plugin/$plugin.plugin.zsh ]] {
     source $ZSH/plugins/$plugin/$plugin.plugin.zsh }
 
-# vim:fenc=utf-8:ci:pi:sts=0:sw=4:ts=4:
+# vim:fenc=utf-8:ci:pi:sts=0:sw=2:ts=2:

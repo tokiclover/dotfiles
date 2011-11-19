@@ -1,12 +1,11 @@
 # $Id: $HOME/.asoundrc,v 1.1 2011/11/17 -tclover Exp $
 #
 ## HW
-pcm.hda { type hw; card 0; device 1; }
-ctl.hda { type hw; card 0; device 1; }
-pcm.cmi { type hw; card 1; device 1; }
-ctl.cmi { type hw; card 1; device 1; }
+pcm.hda { type hw; card Intel; device 1; }
+ctl.hda { type hw; card Intel; }
+pcm.cmi { type hw; card CMI8788; device 1; }
+ctl.cmi { type hw; card CMI8788; }
 ## BS2B
-ctl.bs2b { type ladspa; }
 pcm.bs2b {
 	type ladspa
 	# hardware mixer
@@ -23,23 +22,21 @@ pcm.bs2b {
 }
 pcm.headsets { type plug; slave.pcm bs2b; }
 ## JACK output
-ctl.jack { type jack; }
 pcm.jack {
 	type jack
 	playback_ports 
 	{
-		0 system:playback_1
-		1 system:playback_2
+		0 alsa_pcm:playback_1
+		1 alsa_pcm:playback_2
 	}
 	capture_ports 
 	{
-		0 system:capture_1
-		1 system:capture_2
+		0 alsa_pcm:capture_1
+		1 alsa_pcm:capture_2
 	}
 }
 pcm.jackplug { type plug; slave.pcm jack; }
 ## DMIX
-ctl.dmixer { type dmix; }
 pcm.dmixer {
 	type dmix
 	ipc_key 7667 
@@ -49,7 +46,6 @@ pcm.dmixer {
 }
 pcm.mixed { type plug; slave.pcm dmixer; }
 ## MBEQ
-ctl.eq { type ladspa; }
 pcm.eq {
 	type ladspa
 	# hardware mixer
@@ -90,9 +86,9 @@ mixer.alsa {
 	device /dev/oss/oss_cmi878x0/mix1
 }
 ## OSS EMULATION (through the EQ)
-pcm.dsp0 { type plug; slave.pcm eq; }
+ctl.oss { type oss; }
+pcm.oss { type plug; slave.pcm eq; }
 ## DEFAULT
-# output through hardware directly
 ctl.!default { type hw; slave.ctl hda; }
 pcm.!default { type hw; slave.pcm hda; }
 #

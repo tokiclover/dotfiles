@@ -7,10 +7,11 @@ shopt -s cdable_vars
 set -o vi
 if [[ $UID = 0 ]] || [[ $USER = root ]]; then
 	PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:${ROOTPATH}"
-else PATH="/usr/local/bin:/usr/bin:/bin:${PATH}"
+else 
+	PATH="/usr/local/bin:/usr/bin:/bin:${PATH}"
 	function adt() { source $HOME/.scripts/addt.sh; }
 	function ffp() { source $HOME/.scripts/ffp-pack; }; fi
 export PATH
 unset ROOTPATH
 #
-# vim:fenc=utf-8:ci:pi:sts=0:sw=4:ts=4:
+# vim:fenc=utf-8:ci:pi:sts=0:sw=2:ts=2:

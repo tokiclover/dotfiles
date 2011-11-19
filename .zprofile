@@ -15,4 +15,4 @@ unset ROOTPATH
 for sh (/etc/profile.d/*.sh) [[ -r $sh ]] && source $sh
 unset sh
 #
-# vim:fenc=utf-8:ci:pi:sts=0:sw=4:ts=4:
+# vim:fenc=utf-8:ci:pi:sts=0:sw=2:ts=2:

@@ -58,4 +58,4 @@ bash_prompt
 if [[ -f /etc/bash_completion ]] && ! shopt -oq posix; then
 	source /etc/bash_completion; fi
 #
-# vim:fenc=utf-8:ci:pi:sts=0:sw=4:ts=4:
+# vim:fenc=utf-8:ci:pi:sts=0:sw=2:ts=2:

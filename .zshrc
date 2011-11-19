@@ -35,9 +35,9 @@ for func ($fpath[1]/*) source $func
 
 # Load all of the plugins that were defined in ~/.zshrc
 for plugin ($plugins)
-  if [[ -f $ZSH/custom/plugins/$plugin/$plugin.plugin.zsh ]] {
-    source $ZSH/custom/plugins/$plugin/$plugin.plugin.zsh
-  } elif [[ -f $ZSH/plugins/$plugin/$plugin.plugin.zsh ]] {
-    source $ZSH/plugins/$plugin/$plugin.plugin.zsh }
+	if [[ -f $ZSH/custom/plugins/$plugin/$plugin.plugin.zsh ]] {
+		source $ZSH/custom/plugins/$plugin/$plugin.plugin.zsh
+	} elif [[ -f $ZSH/plugins/$plugin/$plugin.plugin.zsh ]] {
+		source $ZSH/plugins/$plugin/$plugin.plugin.zsh }
 
 # vim:fenc=utf-8:ci:pi:sts=0:sw=2:ts=2:

@@ -3,6 +3,7 @@
 if [[ -f $HOME/.dir_colors ]] { eval $(dircolors -b $HOME/.dir_colors) 
 } elif [[ -f /etc/DIR_COLORS ]] { eval $(dircolors -b /etc/DIR_COLORS) 
 } else { eval $(dircolors) }
+export ZLS_COLORS=$LS_COLORS
 
 export ZSH=$HOME/.oh-my-zsh
 # Load all of the config files in ~/.oh-my-zsh that end in .zsh

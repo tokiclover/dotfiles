@@ -1,0 +1,163 @@
+" $Id: $HOME/.pentadactylrc, 2011/12/10 -tclover Exp $
+" vim:fenc=utf-8:ft=vim:
+
+set runtimepath=$HOME/.pentadactyl
+set editor="urxvtc -x vim -f"
+set titlestring="Aurora"
+"set guioptions="rb"
+"set visualbell=true
+set nextpattern='\bnext\b',^>$,'^(>>|»)$','^(>|»)','(>|»)$','\bmore\b'
+
+noremap H 10h
+noremap L 10l
+noremap J 10j
+noremap K 10k
+noremap <C-o> O
+noremap O :tabopen 
+map <C-S-o> :winopen 
+map <C-d> :tabdetach
+noremap . gT
+noremap p gt
+noremap < :tabmove! -1<Enter>
+noremap > :tabmove! +1<Enter>
+"noremap ] :twitter 
+"noremap } :share 
+map j 10<C-e>
+map k 10<C-y>
+" when ldrized
+map <S-j> 10<C-e>
+map <S-k> 10<C-y>
+
+javascript if (typeof hBookmark != 'undefined') liberator.loadScript('chrome://hatenabookmark/content/vimperator/plugin/hatenabookmark.js', {__proto__: this})
+
+style -name commandline-ime chrome://* #dactyl-commandline-command input { ime-mode: inactive; }
+
+" hide some contextmenu
+style -name contextmenu chrome://* <<EOM
+#context-openlink,
+#context-bookmarklink,
+#hBookmark-menu-addlink,
+#hBookmark-menu-showlink,
+#hBookmark-menu-showcomment,
+/* #context-savelink, */
+#context-sendlink,
+#context-sep-viewbgimage,
+#context-sendimage,
+#context-setDesktopBackground,
+#context-blockimage,
+#context-bookmarkpage,
+#hBookmark-menu-addentry,
+#hBookmark-menu-showentry,
+#context-savepage,
+#context-sendpage { 
+  visibility: collapse;
+}
+EOM
+
+" colorschme
+
+highlight Hint font-family: cure; font-size: 10px; font-weight: normal; color: lightyellow; background-color: black; border-color: ButtonShadow; border-width: 0px; border-style: solid; padding: 0px 2px 0px 2px; 
+
+highlight HintElem background-color: pink; color: black;
+highlight HintActive background-color: hotpink; color: whighlightte;
+
+highlight StatusLine color: CornflowerBlue; background: #151515; font-weight: normal !important; font-size: 10pt; font-family: cure !important;
+highlight StatusLineBroken color:  black; background: #ff5b62; font-weight: normal !important; font-size: 10pt; font-family: cure !important; 
+highlight StatusLineExtended color:  black; background: #151515; font-weight: normal !important; font-size: 10pt; font-family: cure !important;
+highlight StatusLineSecure color:  black; background: #4382c4; font-weight: normal !important; font-size: 10pt; font-family: cure !important;
+
+highlight Normal color: #f1c719; background: #101010; font-size: 10pt; font-family: cure !important;
+highlight CmdLine color: #b3930f; background: #101010; font-size: 10pt;  font-family: cure !important;
+highlight InfoMsg color: #3ca034; background: #101010; font-size: 10pt; font-family: cure !important;
+highlight ModeMsg color: #3ed421; background: #101010; font-size: 10pt; font-family: cure !important;
+highlight MoreMsg color: #3ed421; background: #101010; font-size: 10pt; font-family: cure !important;
+highlight LineNr color: #286f8a; background: #101010; font-size: 10pt; font-family: cure !important;
+highlight Question color: #4382c4; background:#101010; font-size: 10pt; font-family: cure !important;
+highlight WarningMsg color: #a2363a; background:#101010; font-size: 10pt; font-family: cure !important;
+highlight ErrorMsg color: #ff5b62; background: #101010; font-size: 10pt; font-family: cure !important;
+highlight NonText background: #101010;
+highlight Null color: #4382c4;
+highlight Tag color: #4382c4;
+
+highlight CompTitle color:  magenta; background: #151515; font-weight: bold;
+highlight CompItem[selected] color: DeepPink;  background: Black;
+highlight CompDesc color: Pink;
+
+highlight Title color: whighlightte;
+highlight Indicator color: DodgerBlue;
+highlight String color: Orchighlightd;
+highlight Number color: Orchighlightd;
+highlight Object color: Khaki;
+highlight Function color: SkyBlue;
+highlight URL color: LightGreen;
+
+highlight TabIconNumber color: whighlightte; font-weight: bold; font-size:8pt;
+highlight TabIcon padding: 0
+highlight TabText font-size: 8pt;
+
+style -name tab chrome://* <<EOM
+.tabbrowser-tab {
+height: 20px !important;
+padding: 0 !important;
+border: none !important;
+background-image:none !important;
+font-weight: normal !important;
+font-family: 'cure' !important; 
+}
+.tabbrowser-tab[selected=false] { background: #101010 !important; }
+.tabbrowser-tab[selected=true] > .tab-text { color: #b287ba !important; }
+.tabbrowser-tab[selected=true] { background: #151515 !important; }
+.tabbrowser-strip { background: #101010 !important; }
+
+#content tab:not([selected]) { background-color: #101010 !important; }
+
+EOM
+
+style -name 'tab buttons' chrome://* <<EOM
+.tabs-newtab-button,
+#new-tab-button,
+#alltabs-button,
+#tabview-button,
+#tabs-closebutton,
+.tab-close-button { visibility: collapse; }
+EOM
+
+style -name tabsplitter chrome://* <<EOM
+.treestyletab-splitter { visibility: collapse !important; }
+EOM
+
+style -name bookmarkbar chrome://* <<EOM
+
+.toolbarbutton-icon { height: 18px !important; }
+
+#PersonalToolbar {
+  height: 20px !important;
+  padding-top: 2px !important;
+  padding-bottom: 2px !important; 
+  padding-right: 0px !important;
+  padding-left: 0px !important;
+}
+
+/*
+#PlacesToolbarItems toolbarbutton > image {
+max-height: 20px !important;
+max-width: 20px !important;
+height: 20px !important;
+width: 20px !important;
+padding-top: 2px !important;
+  padding-bottom: 2px !important; 
+  padding-right: 0px !important;
+  padding-left: 0px !important;
+} 
+
+#personal-bookmarks { height: 20px !important; }
+
+#PlacesToolbarItems toolbarbutton > label { visibility: collapse !important; }
+*/
+#bookmarks-menu-button { visibility: collapse !important; } 
+EOM
+
+style -name scrollbar scrollbar { visibility: collapse !important; }
+style -name blank about:blank body { background-color: #101010 !important; }
+
+style -name tumblr_photoshrink http://www.tumblr.com/dashboard li.photo div.post_content img { max-height: 600px !important; width: auto !important; }

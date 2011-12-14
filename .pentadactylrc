@@ -16,8 +16,11 @@ noremap <C-o> O
 noremap O :tabopen 
 map <C-S-o> :winopen 
 map <C-d> :tabdetach
+map <M-c> :xsel -ib
+map <M-v> :xsel -ob
 noremap . gT
 noremap p gt
+noremap nB :tbt Navigation Toolbar<CR>
 noremap < :tabmove! -1<Enter>
 noremap > :tabmove! +1<Enter>
 "noremap ] :twitter 

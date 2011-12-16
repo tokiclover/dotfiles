@@ -5,6 +5,7 @@ shopt -s cdspell
 shopt -s extglob
 shopt -s cdable_vars
 set -o vi
+export FHP=$(ls -d $HOME/.mozilla/firefox/h*.default)
 if [[ $UID = 0 ]] || [[ $USER = root ]]; then
 	PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:${ROOTPATH}"
 else 

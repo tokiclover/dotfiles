@@ -1,5 +1,5 @@
 #!/bin/sh
-# $Id: $HOME/.script/fhpack,v 1.1 2011/12/16 -tclover Exp $
+# $Id: $HOME/.scripts/fhpack,v 1.1 2011/12/16 -tclover Exp $
 # a script to put firefox profile to tmpfs, the following line should be put in 
 # ~/.*shrc or ~/.*profile: `export FHP=$(ls -d $HOME/.mozilla/firefox/h*.default)'
 # and something like... in a crontab job: */30 * * * * $USER $HOME/.scripts/fhpack

@@ -8,10 +8,6 @@ set titlestring="Aurora"
 "set visualbell=true
 set nextpattern='\bnext\b',^>$,'^(>>|»)$','^(>|»)','(>|»)$','\bmore\b'
 
-noremap H 10h
-noremap L 10l
-noremap J 10j
-noremap K 10k
 noremap <C-o> O
 noremap O :tabopen 
 map <C-S-o> :winopen 

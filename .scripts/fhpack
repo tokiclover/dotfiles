@@ -11,7 +11,7 @@ if [[ -z $(mount -t tmpfs | grep -F $FHP) ]]; then
 		die "failed to mount fhp-$UID tmpfs"; fi
 cd "${FHP%/*}"
 if [[ -f "$FHP"/.unpacked ]]; then
-	tar --exclude $FHP/.unpacked -czpf ${FHP##*/}.tmp.tgz ${FHP##/}/ || \
+	tar --exclude $FHP/.unpacked -czpf ${FHP##*/}.tmp.tgz ${FHP##*/}/ || \
 		die "failed to pack the profie."
 	mv ${FHP##*/}.tgz ${FHP##*/}.old.tgz || die "failed to override .old profile."
 	mv ${FHP##*/}.tmp.tgz ${FHP##*/}.tgz || die "failed to move the profile."

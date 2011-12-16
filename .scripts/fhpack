@@ -8,19 +8,15 @@ CDIR="$PWD"
 [[ -z $FHP ]] && die "FHP profile env string is empty."
 if [[ -z $(mount -t tmpfs | grep -F $FHP) ]]; then
 	sudo mount fhp-$UID "$FHP" -t tmpfs -o nodev,noexec,uid=$UID,gid=$GID,size=96m || \
-		die "failed to mount fhp-$UID tmpfs"
-fi
+		die "failed to mount fhp-$UID tmpfs"; fi
 cd "${FHP%/*}"
 if [[ -f "$FHP"/.unpacked ]]; then
 	tar --exclude $FHP/.unpacked -czpf ${FHP##*/}.tmp.tgz ${FHP##/}/ || \
 		die "failed to pack the profie."
 	mv ${FHP##*/}.tgz ${FHP##*/}.old.tgz || die "failed to override .old profile."
 	mv ${FHP##*/}.tmp.tgz ${FHP##*/}.tgz || die "failed to move the profile."
-else 
-	{ tar xpf ${FHP##*/}.tgz &>/dev/null || tar xpf ${FHP##*/}.old.tgz &>/dev/null 
-	} && touch "$FHP"/.unpacked || echo "failed to unpack the tarball."
-fi
+else tar xpf ${FHP##*/}.tgz &>/dev/null || tar xpf ${FHP##*/}.old.tgz &>/dev/null 
+	[[ $? ]] && touch "$FHP"/.unpacked || echo "failed to unpack the tarball."; fi
 cd "$CDIR"
 unset CDIR
-#
 # vim:fenc=utf-8:ft=sh:ci:pi:sts=0:sw=2:ts=2:

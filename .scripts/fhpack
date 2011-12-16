@@ -4,7 +4,6 @@
 # ~/.*shrc or ~/.*profile: `export FHP=$(ls -d $HOME/.mozilla/firefox/h*.default)'
 # and something like... in a crontab job: */30 * * * * $USER $HOME/.scripts/fhpack
 die() {  echo "* $@"; exit 1; }
-CDIR="$PWD"
 [[ -z $FHP ]] && die "FHP profile env string is empty."
 if [[ -z $(mount -t tmpfs | grep -F $FHP) ]]; then
 	sudo mount fhp-$UID "$FHP" -t tmpfs -o nodev,noexec,uid=$UID,gid=$GID,size=96m || \
@@ -17,6 +16,5 @@ if [[ -f "$FHP"/.unpacked ]]; then
 	mv ${FHP##*/}.tmp.tgz ${FHP##*/}.tgz || die "failed to move the profile."
 else tar xpf ${FHP##*/}.tgz &>/dev/null || tar xpf ${FHP##*/}.old.tgz &>/dev/null 
 	[[ $? ]] && touch "$FHP"/.unpacked || echo "failed to unpack the tarball."; fi
-cd "$CDIR"
-unset CDIR
+pushd -q
 # vim:fenc=utf-8:ft=sh:ci:pi:sts=0:sw=2:ts=2:

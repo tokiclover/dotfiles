@@ -61,9 +61,9 @@ highlight HintElem background-color: pink; color: black;
 highlight HintActive background-color: hotpink; color: whighlightte;
 
 highlight StatusLine color: CornflowerBlue; background: #151515; font-weight: normal !important; font-size: 10pt; font-family: cure !important;
-highlight StatusLineBroken color:  black; background: #ff5b62; font-weight: normal !important; font-size: 10pt; font-family: cure !important; 
-highlight StatusLineExtended color:  black; background: #151515; font-weight: normal !important; font-size: 10pt; font-family: cure !important;
-highlight StatusLineSecure color:  black; background: #4382c4; font-weight: normal !important; font-size: 10pt; font-family: cure !important;
+highlight StatusLineBroken color: black; background: #ff5b62; font-weight: normal !important; font-size: 10pt; font-family: cure !important; 
+highlight StatusLineExtended color: black; background: #151515; font-weight: normal !important; font-size: 10pt; font-family: cure !important;
+highlight StatusLineSecure color: black; background: #4382c4; font-weight: normal !important; font-size: 10pt; font-family: cure !important;
 
 highlight Normal color: #f1c719; background: #101010; font-size: 10pt; font-family: cure !important;
 highlight CmdLine color: #b3930f; background: #101010; font-size: 10pt;  font-family: cure !important;
@@ -152,11 +152,7 @@ padding-top: 2px !important;
 #personal-bookmarks { height: 20px !important; }
 
 #PlacesToolbarItems toolbarbutton > label { visibility: collapse !important; }
-*/
-#bookmarks-menu-button { visibility: collapse !important; } 
 EOM
 
 style -name scrollbar scrollbar { visibility: collapse !important; }
 style -name blank about:blank body { background-color: #101010 !important; }
-
-style -name tumblr_photoshrink http://www.tumblr.com/dashboard li.photo div.post_content img { max-height: 600px !important; width: auto !important; }

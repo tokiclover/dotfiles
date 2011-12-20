@@ -2,6 +2,7 @@
 #
 [[ $- != *i* ]] && return
 [[ -f $HOME/.aliasrc ]] && source $HOME/.aliasrc
+export FHP=$(ls -d $HOME/.mozilla/firefox/*.default)
 
 ## ANSI color codes
 RS="\e[0m" # reset

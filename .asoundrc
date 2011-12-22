@@ -77,10 +77,11 @@ pcm.dmixer {
 	capture.pcm "hw:0"
 }
 ## MBEQ
+pcm.plugeq { type ladspa; slave.pcm "plug:eq" }
 pcm.eq {
 	type ladspa
 	# hardware mixer
-	slave.pcm plughw:0,0
+	#slave.pcm plughw:0,0
 	# software mixer 
 	slave.pcm plug:dmix
 	path /usr/lib/ladspa
@@ -96,7 +97,6 @@ pcm.eq {
 	}
 	]
 }
-pcm.plugeq { type ladspa; slave.pcm "plug:eq" }
 ## EQUALIZER
 ctl.equal { type equal }
 pcm.equal { 

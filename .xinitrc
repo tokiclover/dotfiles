@@ -7,6 +7,7 @@ export GNOME_KEYRING_SOCKET
 export SSH_AUTH_SOCK
 export GPG_AGENT_INFO
 dbus-launch nm-applet --sm-disable &
+dbus-launch gcm-session &
 /usr/libexec/polkit-gnome-authentication-agent-1 &
 # initialize X server settings
 unclutter -idle 8 -noevents &

@@ -1,26 +1,42 @@
-# $Id: $HOME/.asoundrc,v 1.1 2011/11/17 -tclover Exp $
+# $Id: $HOME/.asoundrc,v 1.1 2011/12/22 -tclover Exp $
 #
 ## HW
-pcm.hda { type hw; card Intel; device 1; }
-ctl.hda { type hw; card Intel; }
-pcm.cmi { type hw; card CMI8788; device 1; }
-ctl.cmi { type hw; card CMI8788; }
+pcm.hda { type hw; card Intel; device 1 }
+ctl.hda { type hw; card Intel; device 1 }
+pcm.cmi { type hw; card CMI8788; device 1 }
+ctl.cmi { type hw; card CMI8788; device 1 }
+## DEFAULT
+ctl.!default { type hw; slave.ctl hda }
+pcm.!default { type hw; slave.pcm hda }
 ## BS2B
+pcm.crossfeed { type plug; slave.pcm "plug:tap_bs2b" }
+pcm.headsets { type plug; slave.pcm "plug:bs2b" }
 pcm.bs2b {
 	type ladspa
 	# hardware mixer
-	#slave.pcm plughw:0,1
+	slave.pcm plughw:0,1
 	# software mixer
-	slave.pcm plug:dmix
+	slave.pcm "plug:dmixer"
 	path /usr/lib/ladspa
 	plugins [
 	{
+		id 4221
 		label bs2b
 		input { controls [ 700 4.5 ] }
 	}
 	]
 }
-pcm.headsets { type plug; slave.pcm bs2b; }
+pcm.tap_bs2b {
+	type ladspa
+	slave.pcm "plug:dmixer"
+	path "/usr/local/lib/ladspa"
+	plugins [
+	{
+		label tap_bs2b
+		input { controls [ 2 1 ] }
+	}
+	]
+}
 ## JACK output
 pcm.jack {
 	type jack
@@ -35,21 +51,36 @@ pcm.jack {
 		1 alsa_pcm:capture_2
 	}
 }
-pcm.jackplug { type plug; slave.pcm jack; }
+pcm.jackplug { type plug; slave.pcm "plug:jack" }
 ## DMIX
+pcm.mixed { type plug; slave.pcm "plug:dmixer" }
 pcm.dmixer {
 	type dmix
-	ipc_key 7667 
+	ipc_key 0050853
 	ipc_perm 0660
 	ipc_gid audio
-	slave.pcm { type hw; slave.pcm cmi; }
+	slave { 
+		channel 6
+		pcm {
+			#format S32_LE
+			format S16_LE
+			rate 48000
+			type hw
+			slave.pcm cmi
+		}
+		period_size 1024
+		#period_time 20000
+		#periods 8
+		buffer_size 8192
+		#buffer_time 160000
+	}
+	capture.pcm "hw:0"
 }
-pcm.mixed { type plug; slave.pcm dmixer; }
 ## MBEQ
 pcm.eq {
 	type ladspa
 	# hardware mixer
-	#slave.pcm plughw:0,0
+	slave.pcm plughw:0,0
 	# software mixer 
 	slave.pcm plug:dmix
 	path /usr/lib/ladspa
@@ -65,9 +96,9 @@ pcm.eq {
 	}
 	]
 }
-pcm.plugeq { type ladspa; slave.pcm eq; }
+pcm.plugeq { type ladspa; slave.pcm "plug:eq" }
 ## EQUALIZER
-ctl.equal { type equal; }
+ctl.equal { type equal }
 pcm.equal { 
 	type equal
 	# hardware mixer
@@ -75,7 +106,7 @@ pcm.equal {
 	# software mixer
 	slave.pcm plug:dmix
 }
-pcm.plugequal { type plug; slave.pcm equal; }
+pcm.plugequal { type plug; slave.pcm "plug:equal" }
 ## ALSA EMULATION
 pcm.alsa {
 	type oss
@@ -87,9 +118,6 @@ mixer.alsa {
 }
 ## OSS EMULATION (through the EQ)
 ctl.oss { type oss; }
-pcm.oss { type plug; slave.pcm eq; }
-## DEFAULT
-ctl.!default { type hw; slave.ctl hda; }
-pcm.!default { type hw; slave.pcm hda; }
+pcm.oss { type plug; slave.pcm "plug:eq" }
 #
 # vim:fenc=utf-8:ci:pi:sts=0:sw=3:ts=3:

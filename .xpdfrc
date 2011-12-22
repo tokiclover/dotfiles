@@ -1,0 +1,32 @@
+unbind n scrLockOn
+unbind n scrLockOff
+
+bind h any scrollLeft(25)
+bind j any scrollDown(25)
+bind k any scrollUp(25)
+bind l any scrollRight(25)
+bind mousePress4 any scrollUpPrevPage(75)
+bind mousePress5 any scrollDownNextPage(75)
+bind H any scrollLeft(100)
+bind J any scrollDown(100)
+bind K any scrollUp(100)
+bind L any scrollRight(100)
+bind g any gotoPage(1)
+bind G any gotoLastPage
+bind ctrl-f any pageDown
+bind ctrl-b any pageUp
+bind : any focusToPageNum
+bind ctrl-g any focusToPageNum
+bind [ any prevPage
+bind ] any nextPage
+bind { any prevPageNoScroll
+bind } any nextPageNoScroll
+bind ^ any scrollToTopLeft
+bind $ any scrollToBottomRight
+bind / any find
+bind n any findNext
+bind ctrl-o any goBackward
+bind ctrl-i any goForward
+bind C any toggleContinuousMode
+bind F any toggleFullScreenMode
+bind O any toggleOutline

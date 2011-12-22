@@ -10,7 +10,7 @@ if [[ $UID = 0 ]] || [[ $USER = root ]]; then
 else 
 	PATH="/usr/local/bin:/usr/bin:/bin:${PATH}"
 	function adt() { source $HOME/.scripts/addt.sh; }
-	function ffp() { source $HOME/.scripts/ffp-pack; }; fi
+	function fhp() { source $HOME/.scripts/fhpack; }; fi
 export PATH
 unset ROOTPATH
 #

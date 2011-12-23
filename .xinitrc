@@ -1,4 +1,4 @@
-# $Id: $HOME/.xinitrc,v 1.1 2011/11/17 -tclover Exp $
+# $Id: $HOME/.xinitrc,v 1.1 2011/12/23 -tclover Exp $
 #
 # start gnome-keyring and nm-applet
 eval $(gnome-keyring-daemon)
@@ -10,7 +10,7 @@ dbus-launch nm-applet --sm-disable &
 # start gnome-color-manager
 dbus-launch gcm-session &
 # or xcalib for the matter
-#xcalib -gc 1.0 -b 0.0 -co 100.0 .icm/sRGB_v4_ICC_preference.icc
+#xcalib -gc 1.0 -b 0.0 -co 100.0 .icc/sRGB_v4_ICC_preference.icc
 /usr/libexec/polkit-gnome-authentication-agent-1 &
 # initialize X server settings
 unclutter -idle 8 -noevents &
@@ -30,7 +30,6 @@ xrdb -load $HOME/.Xresources
 #exec ck-launch-session dbus-launch --sh-syntax --exit-with-session enlightenment_start
 exec ck-launch-session dbus-launch --sh-syntax --exit-with-session enlightenment_start.sh
 #exec ck-launch-session lxsession
-#exec ck-launch-session startxfce4 
 #exec ck-launch-session pekwm
 #
 # vim:fenc=utf-8:ci:pi:sts=0:sw=4:ts=4:

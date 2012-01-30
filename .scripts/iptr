@@ -1,15 +1,30 @@
 #!/bin/sh
-# $Id: $HOME/.scripts/ipt-ext-iface.sh,v 1.1 2011/10/17 -tclover Exp $
-#
+# $Id: $HOME/.scripts/iptr,v 1.1 2012/01/28 -tclover Exp $
+usage()
+{
+cat <<-EOF
+	-i, --int eth0             internal interface
+	-e, --ext wlan0            external interface
+	-d, --dhcps 192.168.0.255  dhcp server IP
+	-u, --usage                print this help
+EOF
+}
+
+[[ $# = 0 ]] && echo "..."
+opt=$(getopt -o i:e:d:: --long int:,ext:,dhcp:: -n ${0##*/} -- "$@" || usage && exit 0)
+eval set -- "$opt"
+echo "$opt"
+while [[ $# > 0 ]]; do
+	case $1 in
+		-u|--usage) usage; exit 0;;
+		-e|--ext) EXTIF=${2}; shift 2;;
+		-i|--int) INTIF=${2}; shift 2;;
+		-d|--dhcps) DHCPS=${2}; shift 2;;
+		--) shift; break;;
+	esac
+done
 # First set LC_ALL to en to avoid l10n problems when awk-ing IPs etc.
 export LC_ALL="en_US.utf8"
-DHCP="yes"
-DHCPS="192.168.0.254"
-# External interface
-EXTIF=eth0
-EXTWF=wlan0
-# Internal interface
-INTIPR="192.168.0.0/32"
 # Loop device/localhost
 LPDIF=lo
 LPDIP=127.0.0.1
@@ -20,6 +35,94 @@ IPT='/sbin/iptables'
 IFC='/sbin/ifconfig'
 GRP='/bin/grep'
 SED='/bin/sed'
+AWK='/bin/awk'
+HST="$(uname -n)"
+
+# Internal interface
+intiface()
+{
+	# We are going to accept all traffic from our LAN
+	$IPT -A INPUT    -s $INTMSK/32 -j ACCEPT
+	$IPT -A FORWARD  -s $INTMSK/32 -j ACCEPT
+	$IPT -A OUTPUT   -s $INTMSK/32 -j ACCEPT
+}
+
+# External interface
+extiface()
+{	
+	EXTIF=eth0
+	# Setting up external interface environment variables
+	EXTIP="$($IFC  $EXTIF | $GRP 'inet '| $AWK '{ print $2 }')"
+	EXTBC="$($IFC  $EXTIF | $GRP 'broadcat ' | $AWK '{ print $4 }')"
+	EXTMSK="$($IFC $EXTIF | $GRP 'netmask ' | $AWK '{ print $6 }')"
+	EXTNET="$EXTIP/$EXTMSK"
+	echo "EXTIP=$EXTIP EXTBC=$EXTBC EXTMSK=$EXTMSK EXTNET=$EXTNET"
+	# Now we are going to accept all traffic from our loopback device
+	# if the IP matches any of our interfaces.
+	$IPT -A INPUT   -i $LPDIF -j ACCEPT
+	# Blocking Broadcasts
+	$IPT -A INPUT   -i $EXTIF -d   $EXTMSK   -j DROPl
+	$IPT -A OUTPUT  -o $EXTIF -d   $EXTMSK   -j DROPl
+	$IPT -A FORWARD -o $EXTIF -d   $EXTMSK   -j DROPl
+	# Block WAN access to internal network
+	# This also stops nefarious crackers from using our network as a
+	# launching point to attack other people
+	# iptables translation:
+	# "if input going into our external interface does not originate from our isp assigned
+	# ip address, drop it like a hot potato
+	$IPT -A INPUT   -i $EXTIF ! -d $EXTIP  -j DROPl
+	# An additional Egress check
+	$IPT -A OUTPUT  ! -o $EXTIF -s $EXTMSK -j DROPl
+	# Block outbound ICMP (except for PING)
+	$IPT -A OUTPUT  -o $EXTIF -p icmp ! --icmp-type 8 -j DROPl
+	$IPT -A FORWARD -o $EXTIF -p icmp ! --icmp-type 8 -j DROPl
+	# Opening up ftp connection tracking
+	#MODULES="ip_nat_ftp ip_conntrack_ftp"
+	#for i in $MODULES; do
+	#	echo "Inserting module $i"
+	#	modprobe $i
+	#done
+	# Defining some common chat clients. Remove these from your accepted list for better security.
+	# ICQ and AOL are 5190
+	# MSN is 1863
+	# Y! is 5050
+	# Jabber is 5222
+	# Y! and Jabber ports not added by author and therefore left out of the script
+	IRC='ircd'
+	#MSN=1863
+	#ICQ=5190
+	NFS='sunrpc'
+	# We have to sync!!
+	PORTAGE='rsync'
+	OpenPGP_HTTP_Keyserver=11371
+	# All services ports are read from /etc/services
+	TCPSERV="domain ssh http https ftp ftp-data mail pop3 pop3s imap3 imaps imap2 \
+		time $PORTAGE $IRC $MSN $ICQ $OpenPGP_HTTP_Keyserver"
+	UDPSERV="domain time"
+	echo -n "FW: Allowing inside systems to use service:"
+	for i in $TCPSERV; do
+		echo -n "$i "
+		$IPT -A OUTPUT  -o $EXTIF  -p tcp --dport $i --syn -m state --state NEW -j ACCEPT
+	done
+	echo ""
+	echo -n "FW: Allowing inside systems to use service:"
+	for i in $UDPSERV; do
+		echo -n "$i "
+		$IPT -A OUTPUT  -o $EXTIF  -p udp --dport $i -m state --state NEW -j ACCEPT
+	done
+	echo ""
+	# Allow to ping out
+	$IPT -A OUTPUT  -o $EXTIF  -p icmp --icmp-type 8 -m state --state NEW -j ACCEPT
+	# turning off DHT tracking for rTorrent
+	echo "FW: disabling tracking on 50555-udp-port PREROUTING and OUTPUT"
+	$IPT -t raw -A PREROUTING -i $EXTIF -p udp --dport 50555 -j NOTRACK
+	$IPT -t raw -A OUTPUT     -o $EXTIF -p udp --sport 50555 -j NOTRACK
+	# Torrents ports
+	echo "Opening 50550:50555 port for rTorrent"
+	$IPT -A INPUT -p tcp --dport 50550:50555 -i $EXTIF --syn -m state --state NEW -j ACCEPT
+	$IPT -A INPUT -p udp --dport 50555       -i $EXTIF -m state --state NEW -j ACCEPT
+}
+
 # Deny then accept: this keeps holes from opening up
 # while we close ports and such
 $IPT        -P INPUT       DROP
@@ -33,22 +136,11 @@ echo 1 > /proc/sys/net/ipv4/tcp_syncookies
 echo 1 > /proc/sys/net/ipv4/icmp_echo_ignore_broadcasts
 echo 1 > /proc/sys/net/ipv4/ip_dynaddr
 # Source Address Verification
-for f in /proc/sys/net/ipv4/conf/*/rp_filter; do echo 1 > $f; done
+for f in /proc/sys/net/ipv4/conf/*/rp_filter; do  echo 1 > $f; done
 # Disable IP source routing and ICMP redirects
 for f in /proc/sys/net/ipv4/conf/*/accept_source_route; do echo 0 > $f; done
-for f in /proc/sys/net/ipv4/conf/*/accept_redirects;    do echo 0 > $f; done
+for f in /proc/sys/net/ipv4/conf/*/accept_redirects; do echo 0 > $f; done
 echo 1 > /proc/sys/net/ipv4/ip_forward
-# Setting up external interface environment variables
-EXTIF="$($IFC $EXTIF|$GRP addr:|$SED 's/.*addr:\([^ ]*\) .*/\1/')"
-EXTBC="$($IFC $EXTIF|$GRP Bcast:|$SED 's/.*Bcast:\([^ ]*\) .*/\1/')"
-EXTWP="$($IFC $EXTWF|$GRP addr:|$SED 's/.*addr:\([^ ]*\) .*/\1/')"
-EXTWB="$($IFC $EXTWF|$GRP Bcast:|$SED 's/.*Bcast:\([^ ]*\) .*/\1/')"
-EXTMSK="$($IFC $EXTIF|$GRP Mask:|$SED 's/.*Mask:\([^ ]*\)/\1/')"
-EXTNET="$EXTIP/$EXTMSK"
-EXTWMK="$($IFC $EXTWP|$GRP Mask:|$SED 's/.*Mask:\([^ ]*\)/\1/')"
-EXTWNT="$EXTWP/$EXTWMK"
-echo "EXTWP=$EXTWP EXTBCW=$EXTWB EXTWMK=$EXTWMK EXTWNT=$EXTWNT"
-echo "EXTIP=$EXTIP EXTBCF=$EXTBC EXTMSK=$EXTMSK EXTNET=$EXTNET"
 # We are now going to create a few custom chains that will result in
 # logging of dropped packets. This will enable us to avoid having to
 # enter a log command prior to every drop we wish to log. The
@@ -74,29 +166,6 @@ $IPT -A OUTPUT  -p tcp -j BADTCP
 # Now we are going to accept all traffic from our loopback device
 # if the IP matches any of our interfaces.
 $IPT -A INPUT   -i $LPDIF -s   $LPDIP   -j ACCEPT
-$IPT -A INPUT   -i $LPDIF -s   $EXTIP   -j ACCEPT
-$IPT -A INPUT   -i $LPDIF -s   $EXTWP   -j ACCEPT
-# Blocking Broadcasts
-$IPT -A INPUT   -i $EXTIF  -d   $EXTBC   -j DROPl
-$IPT -A OUTPUT  -o $EXTIF  -d   $EXTBC   -j DROPl
-$IPT -A FORWARD -o $EXTIF  -d   $EXTBC   -j DROPl
-$IPT -A INPUT   -i $EXTWF  -d   $EXTWB   -j DROPl
-$IPT -A OUTPUT  -o $EXTWF  -d   $EXTWB   -j DROPl
-$IPT -A FORWARD -o $EXTWF  -d   $EXTWB   -j DROPl
-# Block WAN access to internal network
-# This also stops nefarious crackers from using our network as a
-# launching point to attack other people
-# iptables translation:
-# "if input going into our external interface does not originate from our isp assigned
-# ip address, drop it like a hot potato
-$IPT -A INPUT   -i $EXTIF ! -d $EXTIP  -j DROPl
-$IPT -A INPUT   -i $EXTWF ! -d $EXTWP  -j DROPl
-# An additional Egress check
-$IPT -A OUTPUT  ! -o $EXTIF -s $EXTNET -j DROPl
-$IPT -A OUTPUT  ! -o $EXTWF -s $EXTWNT -j DROPl
-# Block outbound ICMP (except for PING)
-$IPT -A OUTPUT  -o $EXTIF -p icmp ! --icmp-type 8 -j DROPl
-$IPT -A FORWARD -o $EXTWF -p icmp ! --icmp-type 8 -j DROPl
 # COMmon ports:
 # 0 is tcpmux; SGI had vulnerability, 1 is common attack
 # 13 is daytime
@@ -125,76 +194,23 @@ TCPBLOCK="$COMBLOCK 98 512:515 1080 6000:6009 6112"
 # 517:518 are talk and ntalk (more annoying than anything)
 UDPBLOCK="$COMBLOCK 161:162 520 123 517:518 1427 9000"
 echo -n "FW: Blocking attacks to TCP port "
-for i in $TCPBLOCK;
-do
-  echo -n "$i "
-  $IPT -A INPUT   -p tcp --dport $i  -j DROPl
-  $IPT -A OUTPUT  -p tcp --dport $i  -j DROPl
-  $IPT -A FORWARD -p tcp --dport $i  -j DROPl
+for i in $TCPBLOCK; do
+	echo -n "$i "
+	$IPT -A INPUT   -p tcp --dport $i  -j DROPl
+	$IPT -A OUTPUT  -p tcp --dport $i  -j DROPl
+	$IPT -A FORWARD -p tcp --dport $i  -j DROPl
 done
 echo ""
 echo -n "FW: Blocking attacks to UDP port "
-for i in $UDPBLOCK;
-do
-  echo -n "$i "
-  $IPT -A INPUT   -p udp --dport $i  -j DROPl
-  $IPT -A OUTPUT  -p udp --dport $i  -j DROPl
-  $IPT -A FORWARD -p udp --dport $i  -j DROPl
+for i in $UDPBLOCK; do
+	echo -n "$i "
+	$IPT -A INPUT   -p udp --dport $i  -j DROPl
+	$IPT -A OUTPUT  -p udp --dport $i  -j DROPl
+	$IPT -A FORWARD -p udp --dport $i  -j DROPl
 done
 echo ""
 # We are going to open udp-ports for DHCP server
-if [ $DHCP == "yes" ]; then
-$IPT -A INPUT -p udp -s $DHCPS --sport 67:68 --dport 67:68 -j ACCEPT
-fi
-# Opening up ftp connection tracking
-#MODULES="ip_nat_ftp ip_conntrack_ftp"
-#for i in $MODULES;
-#do
-# echo "Inserting module $i"
-# modprobe $i
-#done
-# Defining some common chat clients. Remove these from your accepted list for better security.
-# ICQ and AOL are 5190
-# MSN is 1863
-# Y! is 5050
-# Jabber is 5222
-# Y! and Jabber ports not added by author and therefore left out of the script
-IRC='ircd'
-#MSN=1863
-#ICQ=5190
-NFS='sunrpc'
-# We have to sync!!
-PORTAGE='rsync'
-OpenPGP_HTTP_Keyserver=11371
-# All services ports are read from /etc/services
-TCPSERV="domain ssh http https ftp ftp-data mail pop3 pop3s imap3 imaps imap2 \
-         time $PORTAGE $IRC $MSN $ICQ $OpenPGP_HTTP_Keyserver"
-UDPSERV="domain time"
-echo -n "FW: Allowing inside systems to use service:"
-for i in $TCPSERV;
-do
-  echo -n "$i "
-  $IPT -A OUTPUT  -o $EXTIF  -p tcp -s $EXTIP   --dport $i --syn -m state --state NEW -j ACCEPT
-  $IPT -A OUTPUT  -o $EXTIF  -p tcp -s $EXTWP   --dport $i --syn -m state --state NEW -j ACCEPT
-done
-echo ""
-echo -n "FW: Allowing inside systems to use service:"
-for i in $UDPSERV;
-do
-  echo -n "$i "
-  $IPT -A OUTPUT  -o $EXTIF  -p udp -s $EXTIP   --dport $i -m state --state NEW -j ACCEPT
-  $IPT -A OUTPUT  -o $EXTWF  -p udp -s $EXTWP   --dport $i -m state --state NEW -j ACCEPT
-done
-echo ""
-# Allow to ping out
-$IPT -A OUTPUT  -o $EXTIF  -p icmp -s $EXTIP   --icmp-type 8 -m state --state NEW -j ACCEPT
-$IPT -A OUTPUT  -o $EXTWF  -p icmp -s $EXTWP   --icmp-type 8 -m state --state NEW -j ACCEPT
-# turning off DHT tracking for rTorrent
-echo "FW: disabling tracking on 50555-udp-port PREROUTING and OUTPUT"
-$IPT -t raw -A PREROUTING       -p udp -s $EXTIP --dport 50555 -j NOTRACK
-$IPT -t raw -A OUTPUT -o $EXTIF -p udp -s $EXTIP --sport 50555 -j NOTRACK
-$IPT -t raw -A PREROUTING       -p udp -s $EXTWP --dport 50555 -j NOTRACK
-$IPT -t raw -A OUTPUT -o $EXTWF -p udp -s $EXTWP --sport 50555 -j NOTRACK
+[ -n "$DHCPS" ] && $IPT -A INPUT -p udp -s $DHCPS --sport 67:68 --dport 67:68 -j ACCEPT
 # CUPS tcp/udp port 631
 echo "Opening Input/Output UPD/TCP over 127.0.0.1:631 for CUPS"
 $IPT -A INPUT  -p tcp --dport 631 -i $LPDIP --syn -m state --state NEW -j ACCEPT
@@ -203,25 +219,16 @@ $IPT -A OUTPUT -p tcp --dport 631 -o $LPDIP --syn -m state --state NEW -j ACCEPT
 echo "Opening Input/Output UPD/TCP over 127.0.0.1:6600 for MPD"
 $IPT -A INPUT  -p tcp --dport 6600 -i $LPDIF --syn -m state --state NEW -j ACCEPT
 $IPT -A OUTPUT -p tcp --dport 6600 -o $LPDIF --syn -m state --state NEW -j ACCEPT
-# Torrents ports
-echo "Opening 50550:50555 port for rTorrent"
-$IPT -A INPUT -p tcp --dport 50550:50555 -i $EXTIP --syn -m state --state NEW -j ACCEPT
-$IPT -A INPUT -p udp --dport 50555       -i $EXTIP       -m state --state NEW -j ACCEPT
-$IPT -A INPUT -p tcp --dport 50550:50555 -i $EXTWP --syn -m state --state NEW -j ACCEPT
-$IPT -A INPUT -p udp --dport 50555       -i $EXTWP       -m state --state NEW -j ACCEPT
+[ -n "$EXTIF" ] && extiface
+[ -n "$INTIF" ] && EXTIF=$INTIF && extiface && intiface
 # NAT I/O F 
 $IPT -t nat -A PREROUTING  -j ACCEPT
 $IPT -t nat -A POSTROUTING -j ACCEPT
 $IPT -t nat -A OUTPUT -j ACCEPT
 $IPT -A INPUT -p tcp --dport auth --syn -m state --state NEW -j ACCEPT
-# Accept everything estabished... right away at the bat
 $IPT -A INPUT   -m state --state ESTABLISHED,RELATED -j ACCEPT
 $IPT -A OUTPUT  -m state --state ESTABLISHED,RELATED -j ACCEPT
 $IPT -A FORWARD -m state --state ESTABLISHED,RELATED -j ACCEPT
-# We are going to accept all traffic from our LAN
-$IPT -A INPUT    -s 192.168.0.0/24 -j ACCEPT
-$IPT -A FORWARD  -s 192.168.0.0/24 -j ACCEPT
-$IPT -A OUTPUT   -s 192.168.0.0/24 -j ACCEPT
 # Block and log what me may have forgot
 $IPT -A INPUT   -j DROPl
 $IPT -A OUTPUT  -j REJECTl

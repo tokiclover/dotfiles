@@ -1,0 +1,6 @@
+#!/bin/bash
+iface=$(ifconfig $1 | grep 'inet ' | awk '{ print $2 }')
+sed -e "s:192\.168.*/:$iface/:g" -i /var/lib/iptables/rules-save
+iptables-restore < /var/lib/iptables/rules-save
+/etc/init.d/iptables restart
+exit 0

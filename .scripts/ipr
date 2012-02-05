@@ -96,7 +96,7 @@ extiface()
 	PORTAGE='rsync'
 	OpenPGP_HTTP_Keyserver=11371
 	# All services ports are read from /etc/services
-	TCPSERV="domain ssh http https ftp ftp-data mail pop3 pop3s imap3 imaps imap2 \
+	TCPSERV="git domain ssh svn http https ftp ftp-data mail pop3 pop3s imap3 imaps imap2 \
 		time $PORTAGE $IRC $MSN $ICQ $OpenPGP_HTTP_Keyserver"
 	UDPSERV="domain time"
 	echo -n "FW: Allowing inside systems to use service:"

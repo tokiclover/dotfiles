@@ -53,7 +53,7 @@ extiface()
 	EXTIF=eth0
 	# Setting up external interface environment variables
 	EXTIP="$($IFC  $EXTIF | $GRP 'inet '| $AWK '{ print $2 }')"
-	EXTBC="$($IFC  $EXTIF | $GRP 'broadcat ' | $AWK '{ print $4 }')"
+	EXTBC="$($IFC  $EXTIF | $GRP 'broadcast ' | $AWK '{ print $4 }')"
 	EXTMSK="$($IFC $EXTIF | $GRP 'netmask ' | $AWK '{ print $6 }')"
 	EXTNET="$EXTIP/$EXTMSK"
 	echo "EXTIP=$EXTIP EXTBC=$EXTBC EXTMSK=$EXTMSK EXTNET=$EXTNET"

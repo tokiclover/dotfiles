@@ -1,0 +1,53 @@
+#!/sbin/runscript
+# Copyright 1999-2011 Gentoo Foundation
+# Distributed under the terms of the GNU General Public License v2
+# $Header: /etc/init.d/vartmp, v1.2 2011/10/26 -tclover  Exp $
+
+description="Mount various /var/* dirs to tmpfs based FS and tarball archive to restore states"
+
+:	${VARTMP:=/var/vartmp}
+
+depend() {
+        need localmount 
+        before bootmisc acpid
+}
+
+start() {
+        check_vartmp || return 1 
+        [[ -n "${TMPDIR}" ]] && for dir in ${TMPDIR}; do check_archive ${dir}; done
+        eend "$?"
+}
+
+stop() { for dir in ${TMPDIR}; do pack_vartmp ${dir}; done; }
+
+check_vartmp() {
+	if [[ -z "$(mount -t tmpfs | grep ${VARTMP})" ]]; then 
+		mkdir -p "${VARTMP}" 
+		mount vartmp ${VARTMP} -t tmpfs -o defaults,nodev,size=${VARSIZE:-64m}
+		eend "$?"; fi
+}
+
+check_archive() {
+	if [[ -f /var/.vartmp.${1}.tgz ]]; then unpack_vartmp ${1}
+	elif [[ -d "/var/${1}" ]]; then 
+		ewarn "packing /var/${1} for the 1st time"
+		cd /var && tar czpf .vartmp.${1}.tgz ${1}/
+		eend "$?" "failed to pack /var/.vartmp.${1}.tgz"
+		mv ${1} "${VARTMP}"/ && ln -s "${VARTMP}"/${1} ${1}
+		eend "$?" "failed to link /var/${1} to  ${VARTMP}/${1}"
+	else mkdir -p "${VARTMP}"/${1} && chmod 775 "${VARTMP}"/${1}; fi
+}
+
+unpack_vartmp() {
+	ebegin "unpacking /var/.${1}.tgz to ${VARTMP}/${1}"
+	tar xzpf /var/.vartmp.${1}.tgz -C "${VARTMP}"/
+	eend "$?" "failed to unpack /var/.vartmp.${1}.tgz"
+}
+
+pack_vartmp() {
+        ebegin "packing ${VARTMP}/${1}"
+        cd "${VARTMP}" && tar czpf /var/.vartmp.${1}.tgz ${1}/
+        eend "$?" "failed to pack /var/.vartmp.${1}.tgz"
+}
+
+# vim:fenc=utf-8:ft=gentoo-init-d:ci:pi:sts=0:sw=4:ts=4:

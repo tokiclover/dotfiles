@@ -14,7 +14,7 @@ dbus-launch gcm-session &
 /usr/libexec/polkit-gnome-authentication-agent-1 &
 # initialize X server settings
 unclutter -idle 8 -noevents &
-[[ -e $HOME/.Xmodmap ]] && xmodmap $HOME/.Xmodmap
+[ -e $HOME/.Xmodmap ] && xmodmap $HOME/.Xmodmap
 xset s off
 xset fp+ /usr/share/fonts/TTF-FD/
 xset fp+ /usr/share/fonts/artwiz-latin1

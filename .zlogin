@@ -1,7 +1,7 @@
 # $Id: $HOME/.zlogin,v 1.1 2011/11/15 -tclover Exp $
 #
 # auto startx if logging in at VC/1
-[[ -z $DISPLAY ]] && [[ ${(%):-%l} = 1 ]] && [[ $EUID != 0 ]] && startx &> $HOME/.xsession &
+[[ -z $DISPLAY ]] && [[ ${(%):-%l} = 1 ]] && [[ $EUID != 0 ]] && startx &> $HOME/.xsession-errors &
 # start gnome-keyring
 [[ -n $DISPLAY ]] && [[ -z $GNOME_KEYRING_PID ]] && {
 	eval $(gnome-keyring-daemon)

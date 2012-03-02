@@ -1,0 +1,2 @@
+#tmpdir=/var/vtmpfs
+vardir=log

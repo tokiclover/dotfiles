@@ -1,0 +1,49 @@
+#!/sbin/runscript
+# Copyright 1999-2012 Gentoo Foundation
+# Distributed under the terms of the GNU General Public License v2
+# $Header: /etc/init.d/vtmpfs, v2.0 2012/03/02 -tclover Exp $
+
+conf_file="/etc/conf.d/${SVCNAME}"
+description="use tmpfs and tarball archive to restore/save /var/{log,...}"
+:	${tmpdir:=/run}
+
+depend() {
+        need localmount 
+        before bootmisc acpid
+}
+
+start() {
+	if [[ -z "$(mount -t tmpfs | grep ${tmpdir})" ]]; then 
+		mkdir -p "${tmpdir}" 
+		mount tmpdir ${tmpdir} -t tmpfs -o rw,nosuid,nodev,relatime,mode=1775
+		eend "$?"; fi
+	for dir in ${vardir}; do check_tar ${dir}; done
+    eend "$?"
+}
+
+stop() { for dir in ${vardir}; do pack_dir ${dir}; done; }
+
+check_tar() {
+	if [[ -f /var/.${1}.tgz ]]; then unpack_dir ${1}
+	elif [[ -d "/var/${1}" ]]; then 
+		ewarn "packing /var/${1} for the 1st time"
+		cd /var && tar czpf .${1}.tgz ${1}/
+		eend "$?" "failed to pack /var/.${1}.tgz"
+		mv ${1} "${tmpdir}"/ && ln -s "${tmpdir}"/${1} ${1}
+		eend "$?" "failed to symlink /var/${1} to  ${tmpdir}/${1}"
+	else mkdir -p "${tmpdir}"/${1} && chmod 775 "${tmpdir}"/${1}; fi
+}
+
+unpack_dir() {
+	ebegin "unpacking /var/.${1}.tgz to ${tmpdir}/${1}"
+	tar xzpf /var/.${1}.tgz -C "${tmpdir}"/
+	eend "$?" "failed to unpack /var/.${1}.tgz"
+}
+
+pack_dir() {
+	ebegin "packing ${tmpdir}/${1}"
+	cd "${tmpdir}" && tar czpf /var/.${1}.tgz ${1}/
+	eend "$?" "failed to pack /var/.${1}.tgz"
+}
+
+# vim:fenc=utf-8:ft=gentoo-init-d:ci:pi:sts=0:sw=4:ts=4:

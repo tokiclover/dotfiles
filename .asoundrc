@@ -1,22 +1,17 @@
-# $Id: $HOME/.asoundrc,v 1.1 2011/12/22 -tclover Exp $
+# $Id: $HOME/.asoundrc,v 1.1 2013/03/14 -tclover Exp $
 #
 ## HW
 pcm.hda { type hw; card Intel; device 1 }
-ctl.hda { type hw; card Intel; device 1 }
 pcm.cmi { type hw; card CMI8788; device 1 }
-ctl.cmi { type hw; card CMI8788; device 1 }
 ## DEFAULT
-ctl.!default { type hw; slave.ctl hda }
-pcm.!default { type hw; slave.pcm hda }
+pcm.!default { type plug; slave.pcm jackplug }
+ctl.!default { type hw; card Intel }
 ## BS2B
-pcm.crossfeed { type plug; slave.pcm "plug:tap_bs2b" }
-pcm.headsets { type plug; slave.pcm "plug:bs2b" }
-pcm.bs2b {
+ctl.bs2b { type hw; card Intel }
+pcm.bs2b { type plug; slave.pcm plugbs2b }
+pcm.plugbs2b {
 	type ladspa
-	# hardware mixer
-	slave.pcm plughw:0,1
-	# software mixer
-	slave.pcm "plug:dmixer"
+	slave.pcm jackplug
 	path /usr/lib/ladspa
 	plugins [
 	{
@@ -26,19 +21,10 @@ pcm.bs2b {
 	}
 	]
 }
-pcm.tap_bs2b {
-	type ladspa
-	slave.pcm "plug:dmixer"
-	path "/usr/local/lib/ladspa"
-	plugins [
-	{
-		label tap_bs2b
-		input { controls [ 2 1 ] }
-	}
-	]
-}
 ## JACK output
-pcm.jack {
+ctl.jack { type hw; card Intel }
+pcm.jack { type plug; slave.pcm jackplug }
+pcm.jackplug {
 	type jack
 	playback_ports 
 	{
@@ -51,22 +37,22 @@ pcm.jack {
 		1 alsa_pcm:capture_2
 	}
 }
-pcm.jackplug { type plug; slave.pcm "plug:jack" }
 ## DMIX
-pcm.mixed { type plug; slave.pcm "plug:dmixer" }
-pcm.dmixer {
+ctl.dmixer { type hw; card Intel }
+pcm.dmixer { type plug; slave.pcm plugdmixer }
+pcm.plugdmixer {
 	type dmix
 	ipc_key 0050853
 	ipc_perm 0660
 	ipc_gid audio
 	slave { 
-		channel 6
+		channel 2
 		pcm {
 			#format S32_LE
 			format S16_LE
 			rate 48000
-			type hw
-			slave.pcm cmi
+			type plug
+			slave.pcm jackplug
 		}
 		period_size 1024
 		#period_time 20000
@@ -74,24 +60,21 @@ pcm.dmixer {
 		buffer_size 8192
 		#buffer_time 160000
 	}
-	capture.pcm "hw:0"
 }
 ## MBEQ
-pcm.plugeq { type ladspa; slave.pcm "plug:eq" }
-pcm.eq {
+ctl.eq { type hw; card Intel }
+pcm.eq { type plug; slave.pcm plugeq }
+pcm.plugeq {
 	type ladspa
-	# hardware mixer
-	#slave.pcm plughw:0,0
-	# software mixer 
-	slave.pcm plug:dmix
+	slave.pcm jackplug
 	path /usr/lib/ladspa
 	plugins [
 	{
 		label mbeq
 		id 1197
 		input {
-			#bands: 50hz,100hz,156hz,220hz,311hz,440hz,622hz,880hz,1250hz,1750hz,
-			#25000hz,50000hz,10000hz,20000hz
+			#bands: 50hz,100hz,156hz,220hz,311hz,440hz,622hz,880hz,
+			#1250hz,1750hz,25000hz,50000hz,10000hz,20000hz
 			controls [ -5 -5 -5 -5 -5 -10 -20 -15 -10 -10 -10 -10 -10 -3 -2 ]
 		}
 	}
@@ -99,25 +82,19 @@ pcm.eq {
 }
 ## EQUALIZER
 ctl.equal { type equal }
-pcm.equal { 
-	type equal
-	# hardware mixer
-	#slave.pcm "plughw:0,1"
-	# software mixer
-	slave.pcm plug:dmix
-}
-pcm.plugequal { type plug; slave.pcm "plug:equal" }
-## ALSA EMULATION
-pcm.alsa {
-	type oss
-	device /dev/oss/oss_cmi878x0/pcm1
-}
-mixer.alsa {
-	type oss
-	device /dev/oss/oss_cmi878x0/mix1
-}
-## OSS EMULATION (through the EQ)
-ctl.oss { type oss; }
-pcm.oss { type plug; slave.pcm "plug:eq" }
+pcm.equal { type plug; slave.pcm plugequal }
+pcm.plugequal { type equal; slave.pcm jackplug }
+## ALSA-EMU
+#pcm.alsa {
+#	type oss
+#	device /dev/oss/oss_cmi878x0/pcm1
+#}
+#mixer.alsa {
+#	type oss
+#	device /dev/oss/oss_cmi878x0/mix1
+#}
+## OSS-EMU
+ctl.oss { type oss }
+pcm.oss { type plug; slave.pcm jackplug }
 #
 # vim:fenc=utf-8:ci:pi:sts=0:sw=3:ts=3:

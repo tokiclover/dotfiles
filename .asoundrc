@@ -1,4 +1,4 @@
-# $Id: $HOME/.asoundrc,v 1.1 2013/03/14 -tclover Exp $
+# $Id: $HOME/.asoundrc,v 1.1 2013/03/16 -tclover Exp $
 #
 ## HW
 pcm.hda { type hw; card Intel; device 1 }
@@ -38,9 +38,9 @@ pcm.jackplug {
 	}
 }
 ## DMIX
-ctl.dmixer { type hw; card Intel }
-pcm.dmixer { type plug; slave.pcm plugdmixer }
-pcm.plugdmixer {
+ctl.dmix { type hw; card Intel }
+pcm.dmix { type plug; slave.pcm plugdmix }
+pcm.plugdmix {
 	type dmix
 	ipc_key 1024
 	ipc_perm 0660
@@ -48,17 +48,9 @@ pcm.plugdmixer {
 	slave { 
 		channel 2
 		pcm {
-			#format S32_LE
-			format S16_LE
-			rate 48000
 			type plug
 			slave.pcm jackplug
 		}
-		period_size 1024
-		#period_time 20000
-		#periods 8
-		buffer_size 8192
-		#buffer_time 160000
 	}
 }
 ## MBEQ

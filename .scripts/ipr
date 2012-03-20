@@ -1,171 +1,159 @@
 #!/bin/sh
-# $Id: $HOME/.scripts/iptr,v 1.1 2012/01/28 -tclover Exp $
+# $Id: $HOME/.scripts/iptr,v 1.2 2012/03/20 -tclover Exp $
 usage()
 {
 cat <<-EOF
-	-i, --int eth0             internal interface
-	-e, --ext wlan0            external interface
-	-d, --dhcps 192.168.0.255  dhcp server IP
-	-u, --usage                print this help
+	-i, --int=eth0    use internal interface
+	-e, --ext=wlan0   use external interface
+	-d, --dhcps=<ip>  use dhcp server IP
+	    --ipv=4,6     enable ipv{4,6} support
+	-4, --ipv=4       short hand for --ipv=4
+	-6, --ipv=6       short hand for --ipv=6
+	-u, --usage       print this help and exit
 EOF
 }
-
-[[ $# = 0 ]] && echo "..."
-opt=$(getopt -o i:e:d:: --long int:,ext:,dhcp:: -n ${0##*/} -- "$@" || usage && exit 0)
+[[ $# != 0 ]] && \
+opt=$(getopt -o 46i:e:d:: --long int:,ipv:,ext:,dhcp:: -n ${0##*/} -- "$@" || usage && exit 0)
 eval set -- "$opt"
-echo "$opt"
 while [[ $# > 0 ]]; do
 	case $1 in
 		-u|--usage) usage; exit 0;;
-		-e|--ext) EXTIF=${2}; shift 2;;
-		-i|--int) INTIF=${2}; shift 2;;
-		-d|--dhcps) DHCPS=${2}; shift 2;;
+		-e|--ext) extif=${2}; shift 2;;
+		-i|--int) intif=${2}; shift 2;;
+		-d|--dhcps) dhcps=${2}; shift 2;;
+		-4) ipv4=yes; shift;;
+		-6) ipv6=yes; shift;;
+		--ipv) for vrs in ${2/,/ }; do ipv${vrs}=yes; done; shift 2;;
 		--) shift; break;;
 	esac
 done
 # First set LC_ALL to en to avoid l10n problems when awk-ing IPs etc.
 export LC_ALL="en_US.utf8"
-# Loop device/localhost
-LPDIF=lo
-LPDIP=127.0.0.1
-LPDMSK=255.0.0.0
-LPDNET="$LPDIP/$LPDMSK"
-# Text tools variables
-IPT='/sbin/iptables'
-IFC='/sbin/ifconfig'
-GRP='/bin/grep'
-SED='/bin/sed'
-AWK='/bin/awk'
-HST="$(uname -n)"
-
-# Internal interface
-intiface()
-{
-	# We are going to accept all traffic from our LAN
-	$IPT -A INPUT    -s $INTMSK/32 -j ACCEPT
-	$IPT -A FORWARD  -s $INTMSK/32 -j ACCEPT
-	$IPT -A OUTPUT   -s $INTMSK/32 -j ACCEPT
-}
-
-# External interface
-extiface()
+awk="$(which awk)"
+ifc="$(which ifconfig)"
+ipt="$(which iptables)"
+grp="$(which grep)"
+lpdif=lo
+lpdip="$($ifc  $lpdif | $grp inet' ' | $awk '{ print $2 }')"
+lpdmsk="$($ifc  $lpdif | $grp netmask' ' | $awk '{ print $4 }')"
+lpdnet="$lpdip/$lpdmsk"
+#modules="ip_nat_ftp ip_conntrack_ftp iptable_filter iptable_raw ip6table_raw 
+#ip6table_mangle iptable_mangle ip_tables ip6_tables nf_conntrack_ipv4 
+#nf_conntrack_ipv6 nf_conntrack_irc nf_nat_irc nf_nat_ftp ip6t_LOG ip6t_REJECT 
+#ip6table_filter iptable_nat ipt_MASQUERADE ipt_REDIRECT ipt_REJECT ipt_LOG"
+#for mod in $modules; do modprobe $mod &> /dev/null; done
+iface()
 {	
-	EXTIF=eth0
 	# Setting up external interface environment variables
-	EXTIP="$($IFC  $EXTIF | $GRP 'inet '| $AWK '{ print $2 }')"
-	EXTBC="$($IFC  $EXTIF | $GRP 'broadcast ' | $AWK '{ print $4 }')"
-	EXTMSK="$($IFC $EXTIF | $GRP 'netmask ' | $AWK '{ print $6 }')"
-	EXTNET="$EXTIP/$EXTMSK"
-	echo "EXTIP=$EXTIP EXTBC=$EXTBC EXTMSK=$EXTMSK EXTNET=$EXTNET"
+	if [ -n "$ipv4" ]; then
+		local extbc="$($ifc  $extif | $grp broadcast' ' | $awk '{ print $4 }')"
+		local extmsk="$($ifc $extif | $grp netmask' ' | $awk '{ print $6 }')"
+		local extnet="$extip/$extmsk"
+		echo "extip=$extip extbc=$extbc extmsk=$extmsk extnet=$extnet"
+		# Blocking Broadcasts
+		$ipt -A INPUT   -i $extif -d   $extmsk   -j DROPl
+		$ipt -A OUTPUT  -o $extif -d   $extmsk   -j DROPl
+		$ipt -A FORWARD -o $extif -d   $extmsk   -j DROPl
+		# An additional Egress check
+		$ipt -A OUTPUT  ! -o $extif -s $extmsk -j DROPl
+	elif [ -n "$ipv6" ]; then echo "extip=$extip"; fi
 	# Now we are going to accept all traffic from our loopback device
 	# if the IP matches any of our interfaces.
-	$IPT -A INPUT   -i $LPDIF -j ACCEPT
-	# Blocking Broadcasts
-	$IPT -A INPUT   -i $EXTIF -d   $EXTMSK   -j DROPl
-	$IPT -A OUTPUT  -o $EXTIF -d   $EXTMSK   -j DROPl
-	$IPT -A FORWARD -o $EXTIF -d   $EXTMSK   -j DROPl
+	$ipt -A INPUT   -i $lpdif -j ACCEPT
 	# Block WAN access to internal network
 	# This also stops nefarious crackers from using our network as a
 	# launching point to attack other people
 	# iptables translation:
 	# "if input going into our external interface does not originate from our isp assigned
 	# ip address, drop it like a hot potato
-	$IPT -A INPUT   -i $EXTIF ! -d $EXTIP  -j DROPl
-	# An additional Egress check
-	$IPT -A OUTPUT  ! -o $EXTIF -s $EXTMSK -j DROPl
+	$ipt -A INPUT   -i $extif ! -d $extip  -j DROPl
 	# Block outbound ICMP (except for PING)
-	$IPT -A OUTPUT  -o $EXTIF -p icmp ! --icmp-type 8 -j DROPl
-	$IPT -A FORWARD -o $EXTIF -p icmp ! --icmp-type 8 -j DROPl
-	# Opening up ftp connection tracking
-	#MODULES="ip_nat_ftp ip_conntrack_ftp"
-	#for i in $MODULES; do
-	#	echo "Inserting module $i"
-	#	modprobe $i
-	#done
+	$ipt -A OUTPUT  -o $extif -p icmp ! --icmp-type 8 -j DROPl
+	$ipt -A FORWARD -o $extif -p icmp ! --icmp-type 8 -j DROPl
 	# Defining some common chat clients. Remove these from your accepted list for better security.
-	# ICQ and AOL are 5190
-	# MSN is 1863
-	# Y! is 5050
-	# Jabber is 5222
-	# Y! and Jabber ports not added by author and therefore left out of the script
-	IRC='ircd'
-	#MSN=1863
-	#ICQ=5190
-	NFS='sunrpc'
-	# We have to sync!!
-	PORTAGE='rsync'
-	OpenPGP_HTTP_Keyserver=11371
-	# All services ports are read from /etc/services
-	TCPSERV="git domain ssh svn http https ftp ftp-data mail pop3 pop3s imap3 imaps imap2 \
-		time $PORTAGE $IRC $MSN $ICQ $OpenPGP_HTTP_Keyserver"
-	UDPSERV="domain time"
-	echo -n "FW: Allowing inside systems to use service:"
-	for i in $TCPSERV; do
-		echo -n "$i "
-		$IPT -A OUTPUT  -o $EXTIF  -p tcp --dport $i --syn -m state --state NEW -j ACCEPT
+	# icq and aol are 5190
+	# msn is 1863
+	# y! is 5050
+	# jabber is 5222
+	# y! and jabber ports not added by author and therefore left out of the script
+	local irc='ircd'
+	#local msn=1863
+	#local icq=5190
+	local nfs='sunrpc'
+	# we have to sync!!
+	local portage='rsync'
+	local openpgp_http_keyserver=11371
+	# all services ports are read from /etc/services
+	local tcpserv="git domain ssh svn http https ftp ftp-data mail pop3 pop3s imap3 imaps imap2 \
+		time $portage $irc $msn $icq $openpgp_http_keyserver"
+	local udpserv="domain time"
+	echo -n "FW: Allowing inside systems to use service: "
+	for srv in $tcpserv; do
+		echo -n "$srv "
+		$ipt -A OUTPUT  -o $extif  -p tcp --dport $srv --syn -m state --state NEW -j ACCEPT
 	done
 	echo ""
-	echo -n "FW: Allowing inside systems to use service:"
-	for i in $UDPSERV; do
-		echo -n "$i "
-		$IPT -A OUTPUT  -o $EXTIF  -p udp --dport $i -m state --state NEW -j ACCEPT
+	echo -n "FW: Allowing inside systems to use service: "
+	for srv in $udpserv; do
+		echo -n "$srv "
+		$ipt -A OUTPUT  -o $extif  -p udp --dport $srv -m state --state NEW -j ACCEPT
 	done
 	echo ""
 	# Allow to ping out
-	$IPT -A OUTPUT  -o $EXTIF  -p icmp --icmp-type 8 -m state --state NEW -j ACCEPT
+	$ipt -A OUTPUT  -o $extif  -p icmp --icmp-type 8 -m state --state NEW -j ACCEPT
 	# turning off DHT tracking for rTorrent
 	echo "FW: disabling tracking on 50555-udp-port PREROUTING and OUTPUT"
-	$IPT -t raw -A PREROUTING -i $EXTIF -p udp --dport 50555 -j NOTRACK
-	$IPT -t raw -A OUTPUT     -o $EXTIF -p udp --sport 50555 -j NOTRACK
+	$ipt -t raw -A PREROUTING -i $extif -p udp --dport 50555 -j NOTRACK
+	$ipt -t raw -A OUTPUT     -o $extif -p udp --sport 50555 -j NOTRACK
 	# Torrents ports
 	echo "Opening 50550:50555 port for rTorrent"
-	$IPT -A INPUT -p tcp --dport 50550:50555 -i $EXTIF --syn -m state --state NEW -j ACCEPT
-	$IPT -A INPUT -p udp --dport 50555       -i $EXTIF -m state --state NEW -j ACCEPT
+	$ipt -A INPUT -p tcp --dport 50550:50555 -i $extif --syn -m state --state NEW -j ACCEPT
+	$ipt -A INPUT -p udp --dport 50555       -i $extif -m state --state NEW -j ACCEPT
 }
-
 # Deny then accept: this keeps holes from opening up
 # while we close ports and such
-$IPT        -P INPUT       DROP
-$IPT        -P OUTPUT      DROP
-$IPT        -P FORWARD     DROP
+$ipt        -P INPUT       DROP
+$ipt        -P OUTPUT      DROP
+$ipt        -P FORWARD     DROP
 # Flush all existing chains and erase personal chains
-CHAINS=$(cat /proc/net/ip_tables_names 2>/dev/null)
-for i in $CHAINS; do $IPT -t $i -F; done
-for i in $CHAINS; do $IPT -t $i -X; done
+chains=$(cat /proc/net/ip_tables_names 2>/dev/null)
+for cns in $chains; do $ipt -t $cns -F; done
+for cns in $chains; do $ipt -t $cns -X; done
+unset chains
 echo 1 > /proc/sys/net/ipv4/tcp_syncookies
 echo 1 > /proc/sys/net/ipv4/icmp_echo_ignore_broadcasts
 echo 1 > /proc/sys/net/ipv4/ip_dynaddr
 # Source Address Verification
-for f in /proc/sys/net/ipv4/conf/*/rp_filter; do  echo 1 > $f; done
+for flt in /proc/sys/net/ipv4/conf/*/rp_filter; do  echo 1 > $flt; done
 # Disable IP source routing and ICMP redirects
-for f in /proc/sys/net/ipv4/conf/*/accept_source_route; do echo 0 > $f; done
-for f in /proc/sys/net/ipv4/conf/*/accept_redirects; do echo 0 > $f; done
+for flt in /proc/sys/net/ipv4/conf/*/accept_source_route; do echo 0 > $flt; done
+for flt in /proc/sys/net/ipv4/conf/*/accept_redirects; do echo 0 > $flt; done
 echo 1 > /proc/sys/net/ipv4/ip_forward
 # We are now going to create a few custom chains that will result in
 # logging of dropped packets. This will enable us to avoid having to
 # enter a log command prior to every drop we wish to log. The
 # first will be first log drops the other will log rejects.
 # Do not complain if chain already exists (so restart is clean)
-$IPT -N DROPl   2> /dev/null
-$IPT -A DROPl   -j LOG --log-prefix 'IPT-Dl:'
-$IPT -A DROPl   -j DROP
-$IPT -N REJECTl 2> /dev/null
-$IPT -A REJECTl -j LOG --log-prefix 'IPT-Rl:'
-$IPT -A REJECTl -j REJECT
+$ipt -N DROPl   2> /dev/null
+$ipt -A DROPl   -j LOG --log-prefix 'IPT-Dl:'
+$ipt -A DROPl   -j DROP
+$ipt -N REJECTl 2> /dev/null
+$ipt -A REJECTl -j LOG --log-prefix 'IPT-Rl:'
+$ipt -A REJECTl -j REJECT
 # We will log and drop bad tcp packets stated NEW but without a SYN packet after being called by BADTCP filter
-$IPT -N BADTCPl 2> /dev/null
-$IPT -A BADTCPl -j LOG --log-prefix 'IPT-BTl:'
-$IPT -A BADTCPl -j DROP
+$ipt -N BADTCPl 2> /dev/null
+$ipt -A BADTCPl -j LOG --log-prefix 'IPT-BTl:'
+$ipt -A BADTCPl -j DROP
 # We will drop or rejetc bad tcp packets stated NEW but without a SYN packet
-$IPT -N BADTCP
-$IPT -A BADTCP  -p tcp --tcp-flags SYN,ACK SYN,ACK -m state --state NEW -j REJECT --reject-with tcp-reset
-$IPT -A BADTCP  -p tcp ! --syn -m state --state NEW -j BADTCPl
+$ipt -N BADTCP
+$ipt -A BADTCP  -p tcp --tcp-flags SYN,ACK SYN,ACK -m state --state NEW -j REJECT --reject-with tcp-reset
+$ipt -A BADTCP  -p tcp ! --syn -m state --state NEW -j BADTCPl
 # Now we are going to filter bad tcp right at the bat
-$IPT -A INPUT   -p tcp -j BADTCP
-$IPT -A OUTPUT  -p tcp -j BADTCP
+$ipt -A INPUT   -p tcp -j BADTCP
+$ipt -A OUTPUT  -p tcp -j BADTCP
 # Now we are going to accept all traffic from our loopback device
 # if the IP matches any of our interfaces.
-$IPT -A INPUT   -i $LPDIF -s   $LPDIP   -j ACCEPT
+$ipt -A INPUT   -i $lpdif -s   $lpdip   -j ACCEPT
 # COMmon ports:
 # 0 is tcpmux; SGI had vulnerability, 1 is common attack
 # 13 is daytime
@@ -179,7 +167,7 @@ $IPT -A INPUT   -i $LPDIF -s   $LPDIP   -j ACCEPT
 # 3049 is very virulent Linux Trojan, mistakable for NFS
 # Common attacks: 1999, 4329, 6346
 # Common Trojans 12345 65535
-COMBLOCK="0:1 13 98 111 137:139 161:162 445 1214 1999 2049 3049 4329 6346 3128 8000 8008 8080 12345 65535"
+comblock="0:1 13 98 111 137:139 161:162 445 1214 1999 2049 3049 4329 6346 3128 8000 8008 8080 12345 65535"
 # TCP ports:
 # 98 is Linuxconf
 # 512-515 is rexec, rlogin, rsh, printer(lpd)
@@ -187,49 +175,66 @@ COMBLOCK="0:1 13 98 111 137:139 161:162 445 1214 1999 2049 3049 4329 6346 3128 8
 # 1080 is Socks proxy server
 # 6000 is X (NOTE X over SSH is secure and runs on TCP 22)
 # Block 6112 (Sun's/HP's CDE)
-TCPBLOCK="$COMBLOCK 98 512:515 1080 6000:6009 6112"
+tcpblock="$comblock 98 512:515 1080 6000:6009 6112"
 # UDP ports:
 # 161:162 is SNMP
 # 520=RIP, 9000 is Sangoma
 # 517:518 are talk and ntalk (more annoying than anything)
-UDPBLOCK="$COMBLOCK 161:162 520 123 517:518 1427 9000"
+udpblock="$comblock 161:162 520 123 517:518 1427 9000"
 echo -n "FW: Blocking attacks to TCP port "
-for i in $TCPBLOCK; do
-	echo -n "$i "
-	$IPT -A INPUT   -p tcp --dport $i  -j DROPl
-	$IPT -A OUTPUT  -p tcp --dport $i  -j DROPl
-	$IPT -A FORWARD -p tcp --dport $i  -j DROPl
+for port in $tcpblock; do
+	echo -n "$port "
+	$ipt -A INPUT   -p tcp --dport $port  -j DROPl
+	$ipt -A OUTPUT  -p tcp --dport $port  -j DROPl
+	$ipt -A FORWARD -p tcp --dport $port  -j DROPl
 done
 echo ""
 echo -n "FW: Blocking attacks to UDP port "
-for i in $UDPBLOCK; do
-	echo -n "$i "
-	$IPT -A INPUT   -p udp --dport $i  -j DROPl
-	$IPT -A OUTPUT  -p udp --dport $i  -j DROPl
-	$IPT -A FORWARD -p udp --dport $i  -j DROPl
+for port in $udpblock; do
+	echo -n "$port "
+	$ipt -A INPUT   -p udp --dport $port  -j DROPl
+	$ipt -A OUTPUT  -p udp --dport $port  -j DROPl
+	$ipt -A FORWARD -p udp --dport $port  -j DROPl
 done
 echo ""
 # We are going to open udp-ports for DHCP server
-[ -n "$DHCPS" ] && $IPT -A INPUT -p udp -s $DHCPS --sport 67:68 --dport 67:68 -j ACCEPT
+[ -n "$dhcps" ] && $ipt -A INPUT -p udp -s $dhcps --sport 67:68 --dport 67:68 -j ACCEPT
 # CUPS tcp/udp port 631
 echo "Opening Input/Output UPD/TCP over 127.0.0.1:631 for CUPS"
-$IPT -A INPUT  -p tcp --dport 631 -i $LPDIP --syn -m state --state NEW -j ACCEPT
-$IPT -A OUTPUT -p tcp --dport 631 -o $LPDIP --syn -m state --state NEW -j ACCEPT
+$ipt -A INPUT  -p tcp --dport 631 -i $lpdip --syn -m state --state NEW -j ACCEPT
+$ipt -A OUTPUT -p tcp --dport 631 -o $lpdip --syn -m state --state NEW -j ACCEPT
 # MPD 6600
 echo "Opening Input/Output UPD/TCP over 127.0.0.1:6600 for MPD"
-$IPT -A INPUT  -p tcp --dport 6600 -i $LPDIF --syn -m state --state NEW -j ACCEPT
-$IPT -A OUTPUT -p tcp --dport 6600 -o $LPDIF --syn -m state --state NEW -j ACCEPT
-[ -n "$EXTIF" ] && extiface
-[ -n "$INTIF" ] && EXTIF=$INTIF && extiface && intiface
+$ipt -A INPUT  -p tcp --dport 6600 -i $lpdif --syn -m state --state NEW -j ACCEPT
+$ipt -A OUTPUT -p tcp --dport 6600 -o $lpdif --syn -m state --state NEW -j ACCEPT
+chkif() {
+	local icafe=$1
+	ip4="$($ifc  $iface | $grp inet' ' | $awk '{ print $2 }')"
+	ip6="$($ifc  $iface | $grp inet6' ' | $awk '{ print $2 }')"
+	[ -n "$extip4" ] && ipv4=yes
+	[ -n "$extip6" ] && ipv6=yes
+	for ip in ip{4,6}; do [ -n "$ip" ] && extip=$ip; iface; done
+
+}
+if [ -n "$extif" ]; then chkif "$extif" && unset ip{4,6}; fi
+if [ -n "$intif" ]; then chkif "$intif"
+	if [ -n "$ip4" ]; then
+		$ipt -A INPUT    -s $extmsk/32 -j ACCEPT
+		$ipt -A FORWARD  -s $extmsk/32 -j ACCEPT
+		$ipt -A OUTPUT   -s $extmsk/32 -j ACCEPT
+	fi
+fi
+unset -v extif extip extbb extmsk extnet lpdif lpdip lpdmsk lpdnet intif ip{4,6}
 # NAT I/O F 
-$IPT -t nat -A PREROUTING  -j ACCEPT
-$IPT -t nat -A POSTROUTING -j ACCEPT
-$IPT -t nat -A OUTPUT -j ACCEPT
-$IPT -A INPUT -p tcp --dport auth --syn -m state --state NEW -j ACCEPT
-$IPT -A INPUT   -m state --state ESTABLISHED,RELATED -j ACCEPT
-$IPT -A OUTPUT  -m state --state ESTABLISHED,RELATED -j ACCEPT
-$IPT -A FORWARD -m state --state ESTABLISHED,RELATED -j ACCEPT
+$ipt -t nat -A PREROUTING  -j ACCEPT
+$ipt -t nat -A POSTROUTING -j ACCEPT
+$ipt -t nat -A OUTPUT -j ACCEPT
+$ipt -A INPUT -p tcp --dport auth --syn -m state --state NEW -j ACCEPT
+$ipt -A INPUT   -m state --state ESTABLISHED,RELATED -j ACCEPT
+$ipt -A OUTPUT  -m state --state ESTABLISHED,RELATED -j ACCEPT
+$ipt -A FORWARD -m state --state ESTABLISHED,RELATED -j ACCEPT
 # Block and log what me may have forgot
-$IPT -A INPUT   -j DROPl
-$IPT -A OUTPUT  -j REJECTl
-$IPT -A FORWARD -j DROPl
+$ipt -A INPUT   -j DROPl
+$ipt -A OUTPUT  -j REJECTl
+$ipt -A FORWARD -j DROPl
+unset -v ipt grp sed awk

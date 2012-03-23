@@ -1,5 +1,5 @@
 #!/bin/sh
-# $Id: $HOME/.scripts/iptr,v 1.2 2012/03/20 -tclover Exp $
+# $Id: $HOME/.scripts/iptr,v 1.2 2012/03/22 -tclover Exp $
 usage()
 {
 cat <<-EOF
@@ -21,9 +21,9 @@ while [[ $# > 0 ]]; do
 		-e|--ext) extif=${2}; shift 2;;
 		-i|--int) intif=${2}; shift 2;;
 		-d|--dhcps) dhcps=${2}; shift 2;;
-		-4) ipv4=yes; shift;;
-		-6) ipv6=yes; shift;;
-		--ipv) for vrs in ${2/,/ }; do ipv${vrs}=yes; done; shift 2;;
+		-4) ip4=yes; shift;;
+		-6) ip6=yes; shift;;
+		--ipv) for vrs in ${2/,/ }; do ip${vrs}=yes; done; shift 2;;
 		--) shift; break;;
 	esac
 done
@@ -35,7 +35,7 @@ ipt="$(which iptables)"
 grp="$(which grep)"
 lpdif=lo
 lpdip="$($ifc  $lpdif | $grp inet' ' | $awk '{ print $2 }')"
-lpdmsk="$($ifc  $lpdif | $grp netmask' ' | $awk '{ print $4 }')"
+lpdmsk="$($ifc  $lpdif | $grp netmask | $awk '{ print $4 }')"
 lpdnet="$lpdip/$lpdmsk"
 #modules="ip_nat_ftp ip_conntrack_ftp iptable_filter iptable_raw ip6table_raw 
 #ip6table_mangle iptable_mangle ip_tables ip6_tables nf_conntrack_ipv4 
@@ -45,7 +45,7 @@ lpdnet="$lpdip/$lpdmsk"
 iface()
 {	
 	# Setting up external interface environment variables
-	if [ -n "$ipv4" ]; then
+	if [ -n "$ip4" ]; then
 		local extbc="$($ifc  $extif | $grp broadcast' ' | $awk '{ print $4 }')"
 		local extmsk="$($ifc $extif | $grp netmask' ' | $awk '{ print $6 }')"
 		local extnet="$extip/$extmsk"
@@ -56,7 +56,7 @@ iface()
 		$ipt -A FORWARD -o $extif -d   $extmsk   -j DROPl
 		# An additional Egress check
 		$ipt -A OUTPUT  ! -o $extif -s $extmsk -j DROPl
-	elif [ -n "$ipv6" ]; then echo "extip=$extip"; fi
+	elif [ -n "$ip6" ]; then echo "extip=$extip"; fi
 	# Now we are going to accept all traffic from our loopback device
 	# if the IP matches any of our interfaces.
 	$ipt -A INPUT   -i $lpdif -j ACCEPT
@@ -208,12 +208,12 @@ echo "Opening Input/Output UPD/TCP over 127.0.0.1:6600 for MPD"
 $ipt -A INPUT  -p tcp --dport 6600 -i $lpdif --syn -m state --state NEW -j ACCEPT
 $ipt -A OUTPUT -p tcp --dport 6600 -o $lpdif --syn -m state --state NEW -j ACCEPT
 chkif() {
-	local icafe=$1
-	ip4="$($ifc  $iface | $grp inet' ' | $awk '{ print $2 }')"
-	ip6="$($ifc  $iface | $grp inet6' ' | $awk '{ print $2 }')"
-	[ -n "$extip4" ] && ipv4=yes
-	[ -n "$extip6" ] && ipv6=yes
-	for ip in ip{4,6}; do [ -n "$ip" ] && extip=$ip; iface; done
+	local iface=$1
+	local extip4="$($ifc  $iface | $grp inet' ' | $awk '{ print $2 }')"
+	local extip6="$($ifc  $iface | $grp inet6 | $awk '{ print $2 }')"
+	echo $extip4/$extip6
+	[ -n "$extip4" ] && ip4=yes && extip=$extip4 && iface
+	[ -n "$extip6" ] && ip6=yes && extip=$extip6 && iface
 
 }
 if [ -n "$extif" ]; then chkif "$extif" && unset ip{4,6}; fi

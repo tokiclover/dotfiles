@@ -1,5 +1,5 @@
 #!/bin/sh
-# $Id: $HOME/.scripts/iptr,v 1.2 2012/03/23 -tclover Exp $
+# $Id: $HOME/.scripts/iptr,v 1.2 2012/03/30 -tclover Exp $
 usage()
 {
 cat <<-EOF
@@ -209,8 +209,8 @@ $ipt -A INPUT  -p tcp --dport 6600 -i $lpdif --syn -m state --state NEW -j ACCEP
 $ipt -A OUTPUT -p tcp --dport 6600 -o $lpdif --syn -m state --state NEW -j ACCEPT
 chkif() {
 	local iface=$1
-	local extip4="$($ifc  $iface | $grp inet' ' | $awk '{ print $2 }')"
-	local extip6="$($ifc  $iface | $grp inet6 | haid -n1 | $awk '{ print $2 }')"
+	local extip4="$($ifc  $iface | $grp inet' ' | head -n1 | $awk '{ print $2 }')"
+	local extip6="$($ifc  $iface | $grp inet6 | head -n1 | $awk '{ print $2 }')"
 	echo $extip4/$extip6
 	if [ -n "$extip4" ]; then extip=$extip4; iface
 		if [ -n "$intif" ]; then

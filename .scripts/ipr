@@ -1,5 +1,5 @@
 #!/bin/sh
-# $Id: $HOME/.scripts/iptr,v 1.2 2012/03/30 -tclover Exp $
+# $Id: $HOME/.scripts/iptr,v 1.2 2012/03/31 -tclover Exp $
 usage()
 {
 cat <<-EOF
@@ -46,10 +46,6 @@ iface()
 {	
 	# Setting up external interface environment variables
 	if [ -n "$extip4" ]; then
-		local extbc="$($ifc  $extif | $grp broadcast' ' | $awk '{ print $4 }')"
-		local extmsk="$($ifc $extif | $grp netmask' ' | $awk '{ print $6 }')"
-		local extnet="$extip/$extmsk"
-		echo "extip=$extip extbc=$extbc extmsk=$extmsk extnet=$extnet"
 		# Blocking Broadcasts
 		$ipt -A INPUT   -i $extif -d   $extmsk   -j DROPl
 		$ipt -A OUTPUT  -o $extif -d   $extmsk   -j DROPl
@@ -211,20 +207,24 @@ chkif() {
 	local iface=$1
 	local extip4="$($ifc  $iface | $grp inet' ' | head -n1 | $awk '{ print $2 }')"
 	local extip6="$($ifc  $iface | $grp inet6 | head -n1 | $awk '{ print $2 }')"
-	echo $extip4/$extip6
-	if [ -n "$extip4" ]; then extip=$extip4; iface
+	if [ -n "$extip4" ]; then extip=$extip4
+		local extbc="$($ifc  $extif | $grp broadcast' ' | $awk '{ print $4 }')"
+		local extmsk="$($ifc $extif | $grp netmask' ' | $awk '{ print $6 }')"
+		local extnet="$extip/$extmsk"
+		echo "extip=$extip extbc=$extbc extmsk=$extmsk extnet=$extnet"
+		iface
 		if [ -n "$intif" ]; then
 			$ipt -A INPUT    -s $extmsk -j ACCEPT
 			$ipt -A FORWARD  -s $extmsk -j ACCEPT
 			$ipt -A OUTPUT   -s $extmsk -j ACCEPT
 		fi
 	fi
-	[ -n "$extip6" ] && extip=$extif unset extbc extmsk && iface
+#	[ -n "$extip6" ] && { extip=$extip6; iface; }
 
 }
 [ -n "$extif" ] && chkif "$extif"
 [ -n "$intif" ] && chkif "$intif"
-unset -v extif extip extbb extmsk extnet lpdif lpdip lpdmsk lpdnet intif
+unset -v ext{if,ip,bc,msk,net} lpd{if,ip,msk,net} intif
 # NAT I/O F 
 $ipt -t nat -A PREROUTING  -j ACCEPT
 $ipt -t nat -A POSTROUTING -j ACCEPT

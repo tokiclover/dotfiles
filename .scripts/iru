@@ -1,6 +1,6 @@
 #!/bin/sh
-iface=$(ifconfig eth0 | grep 'inet ' | awk '{ print $2 }')
-sed -e "s:192\.168.*/:$iface/:g" -i /var/lib/iptables/rules-save
-iptables-restore < /var/lib/iptables/rules-save
+ipv4=$(ifconfig eth0 | grep 'inet ' | head -n1 | awk '{ print $2 }')
+[ -n "$ipv4" ] && /root/.scripts/ipr -eeth0
 /etc/init.d/iptables restart
+unset ipv4
 exit 0

@@ -71,6 +71,12 @@ opts[exclude]+=" mnt/* media home dev proc sys tmp var/portage var/local/portage
 "
 for file in ${opts[exclude]}; do opts[opt]+=" --exclude=./$file"; done
 opts[opt]+=" --create --absolute-names --${opts[comp]} --verbose --totals --file"
+if [ -n "${opts[sdr]}" ]; then
+	which sdr &> /dev/null || die "there's no sdr script in PATH"
+	sdr -o0 -U -dsbin:bin:lib32:lib64
+	sdr -o0    -dvar/db:var/cahce/edb:opt:usr
+	rsync -avR ${opts[root]}/sqfsd ${opts[stgdir]}
+	mv ${opts[stgdir]}/sqfsd{,-${opts[prefix]}}; fi
 if [ -n "${opts[boot]}" ]; then
 	mount /boot
 	sleep 3
@@ -91,10 +97,4 @@ if [ -n "${opts[gpg]}" ]; then
 if [ -n "${opts[split]}" ]; then
 	split --bytes=${opts[split]} ${opts[tarball]} ${opts[tarball]}.; fi
 rm -rf /bootcp
-if [ -n "${opts[sdr]}" ]; then
-	which sdr &> /dev/null || die "there's no sdr script in PATH"
-	sdr -o0 -U -dsbin:bin:lib32:lib64
-	sdr -o0    -dvar/db:var/cahce/edb:opt:usr
-	rsync -avR ${opts[root]}/sqfsd ${opts[stgdir]}
-	mv ${opts[stgdir]}/sqfsd{,-${opts[prefix]}}; fi
 unset opts opt

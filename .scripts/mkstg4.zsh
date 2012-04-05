@@ -68,6 +68,13 @@ opts[exclude]+=" mnt/* media home dev proc sys tmp var/portage var/local/portage
 "
 for file (${opts[exclude]//,/ }) { opts[opt]+=" --exclude=./$file" }
 opts[opt]+=" --create --absolute-names --${opts[comp]} --verbose --totals --file"
+if [[ -n ${opts[sdr]} ]] {
+	which sdr &> /dev/null || die "there's no sdr script in PATH"
+	sdr -o0 -U -dsbin:bin:lib32:lib64
+	sdr -o0    -dvar/db:var/cahce/edb:opt:usr
+	rsync -avR ${opts[root]}/sqfsd ${opts[stgdir]}
+	mv ${opts[stgdir]}/sqfsd{,-${opts[prefix]}}
+}
 if [[ -n ${opts[boot]} ]] {
 	mount /boot
 	sleep 3
@@ -92,11 +99,4 @@ if [[ -n ${opts[split]} ]] {
 	split --bytes=${opts[split]} ${opts[tarball]} ${opts[tarball]}.
 }
 rm -rf /bootcp
-if [[ -n ${opts[sdr]} ]] {
-	which sdr &> /dev/null || die "there's no sdr script in PATH"
-	sdr -o0 -U -dsbin:bin:lib32:lib64
-	sdr -o0    -dvar/db:var/cahce/edb:opt:usr
-	rsync -avR ${opts[root]}/sqfsd ${opts[stgdir]}
-	mv ${opts[stgdir]}/sqfsd{,-${opts[prefix]}}
-}
 unset opts opt

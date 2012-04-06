@@ -1,5 +1,5 @@
 #!/bin/bash
-# $Id: $HOME/.scripts/mkstg4.bash,v 1.1 2012/04/05 -tclover Exp $
+# $Id: $HOME/.scripts/mkstg4.bash,v 1.1 2012/04/06 -tclover Exp $
 usage() {
   cat <<-EOF
   usage: ${1##*/} [OPTIONS...]
@@ -54,7 +54,8 @@ done
 [[ -n "${opts[comp]}" ]] || opts[comp]=gzip
 [[ -n "${opts[cipher]}" ]] || opts[cipher]=aes
 [[ -n "${opts[pass]}" ]] || opts[pass]=1
-case ${opts[comp]%%\ *} in
+opts[tarball]="${opts[stgdir]}/${opts[tarball]}"
+case ${opts[comp]} in
 	bzip2)	opts[tarball]+=.tbz2;;
 	xz) 	opts[tarball]+=.txz;;
 	gzip) 	opts[tarball]+=.tgz;;
@@ -83,7 +84,6 @@ if [ -n "${opts[boot]}" ]; then
 	cp -aR /boot /bootcp
 	umount /boot
 	sleep 3; fi
-opts[tarball]="${opts[stgdir]}/${opts[tarball]}"
 tar ${opts[opt]} ${opts[tarball]} .;
 if [ -n "${opts[gpg]}" ]; then
 	cd ${opts[stgdir]}

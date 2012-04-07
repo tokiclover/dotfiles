@@ -1,5 +1,5 @@
 #!/bin/bash
-# $Id: $HOME/.scripts/mkstg4.bash,v 1.1 2012/04/06 -tclover Exp $
+# $Id: $HOME/.scripts/mkstg4.bash,v 1.1 2012/04/07 -tclover Exp $
 usage() {
   cat <<-EOF
   usage: ${1##*/} [OPTIONS...]
@@ -65,10 +65,9 @@ case ${opts[comp]} in
 esac
 cd ${opts[root]} || die "invalid root directory"
 opts[exclude]+=" mnt/* media home dev proc sys tmp var/portage var/local/portage 
-	usr opt run var/db var/cache/edb var/lib/layman var/run var/lock sqfsd/*/ro 
-	sqfsd/*/*/ro sqfsd/*/*/*/ro var/pkg var/dst lib*/rc/init.d lib*/splash/cache 
-	var/tmp var/blddir var/.*.tgz *.swp boot/*.iso boot/*.img bootcp/*iso *.swp 
-	${opts[tarball]} sqfsd/*.sfs sqfsd/*/*.sfs sqfsd/*/*/*.sfs bootcp/*.img
+	run var/run var/lock var/pkg var/dst lib*/rc/init.d lib*/splash/cache var/tmp 
+	var/blddir var/.*.tgz boot/*.iso boot/*.img bootcp/*iso *.swp bootcp/*.img
+	iusr/portage usr/local/portage ${opts[-tarball]}
 "
 for file in ${opts[exclude]}; do opts[opt]+=" --exclude=./$file"; done
 opts[opt]+=" --create --absolute-names --${opts[comp]} --verbose --totals --file"
@@ -77,7 +76,9 @@ if [ -n "${opts[sdr]}" ]; then
 	sdr -o0 -U -dsbin:bin:lib32:lib64
 	sdr -o0    -dvar/db:var/cahce/edb:opt:usr
 	rsync -avR ${opts[root]}/sqfsd ${opts[stgdir]}
-	mv ${opts[stgdir]}/sqfsd{,-${opts[prefix]}}; fi
+	mv ${opts[stgdir]}/sqfsd{,-${opts[prefix]}}
+	opts[-exclude]+=" usr opt var/db var/cache/edb var/lib/layman sqfsd/*.sfs
+	sqfsd/*/*.sfs sqfsd/*/*/*.sfs sqfsd/*/ro sqfsd/*/*/ro sqfsd/*/*/*/ro"; fi
 if [ -n "${opts[boot]}" ]; then
 	mount /boot
 	sleep 3

@@ -46,10 +46,9 @@ case ${=opts[-comp]} in
 esac
 cd ${opts[-root]} || die "invalid root directory"
 opts[-exclude]+=" mnt/* media home dev proc sys tmp var/portage var/local/portage 
-	usr opt run var/db var/cache/edb var/lib/layman var/run var/lock sqfsd/*/ro 
-	sqfsd/*/*/ro sqfsd/*/*/*/ro var/pkg var/dst lib*/rc/init.d lib*/splash/cache 
-	var/tmp var/blddir var/.*.tgz *.swp boot/*.iso boot/*.img bootcp/*iso *.swp 
-	${opts[-tarball]} sqfsd/*.sfs sqfsd/*/*.sfs sqfsd/*/*/*.sfs bootcp/*.img
+	run var/run var/lock var/pkg var/dst lib*/rc/init.d lib*/splash/cache var/tmp 
+	var/blddir var/.*.tgz boot/*.iso boot/*.img bootcp/*iso *.swp bootcp/*.img
+	usr/portage usr/local/portage ${opts[-tarball]}
 "
 for file (${=opts[-exclude]//,/ } ${=opts[-e]//,/ }) { 
 	opts[-opt]+=" --exclude=./$file"
@@ -61,6 +60,8 @@ if [[ -n ${opts[-sdr]} ]] || [[ -n ${opts[-Q]} ]] {
 	sdr -o0    -dvar/db:var/cahce/edb:opt:usr
 	rsync -avR ${opts[-root]}/sqfsd ${opts[-stgdir]}
 	mv ${opts[-stgdir]}/sqfsd{,-${opts[-prefix]}}
+	opts[-exclude]+=" usr opt var/db var/cache/edb var/lib/layman sqfsd/*.sfs
+	sqfsd/*/*.sfs sqfsd/*/*/*.sfs sqfsd/*/ro sqfsd/*/*/ro sqfsd/*/*/*/ro"
 }
 if [[ -n ${opts[-boot]} ]] || [[ -n ${opts[-b]} ]] {
 	mount /boot

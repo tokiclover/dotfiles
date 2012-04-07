@@ -1,23 +1,23 @@
 #!/bin/zsh
-# $Id: $HOME/.scripts/mkstg4.zsh,v 1.1 2012/04/06 -tclover Exp $
+# $Id: $HOME/.scripts/mkstg4.zsh,v 1.1 2012/04/07 -tclover Exp $
 usage() {
   cat <<-EOF
-  usage: ${1##*/} [OPTIONS...]
-  -b, -boot            whether to backup /boot to /bootcp
-  -c, -comp            compression command to use, default is 'gzip'
-  -C, -cipher<aes>    cipher to use when encypting the tarball archive
-  -e, -exclude<files> files/dirs to exclude from the tarball archive
-  -g, -gpg             encrypt using GnuPG, require --pubkey or -symmetric
-  -K, -pubkey<id>     encrypt the final tarball using <id> public key
-  -M, -symmetric       encrypt using a signed symmetricly encrypted key
-  -p, -prefix<p>      prefix scheme to name the tarball, default is $(uname -r | cut -c-3).
-  -P, -pass<1>        number of pass to encrypt the tarball when using -S
-  -t, -tarball         suffix scheme to name the tarball,default is 'stg4'
-  -r, -root</>        root directory for the backup, default is '/'
-  -Q, -sdr             use sdr script to squash squashed directories
-  -s, -stgdir          stage4 dircteroy, location to save the tarball
-  -S, -split<b>       size of byte to split the tarball archive
-  -u, -usage           print this help/usage and exit
+  usage: ${(%):-%1x} [OPTIONS...]
+  -b|-boot            whether to backup /boot to /bootcp
+  -c|-comp            compression command to use, default is 'gzip'
+  -C|-cipher <aes>    cipher to use when encypting the tarball archive
+  -e|-exclude <files> files/dirs to exclude from the tarball archive
+  -g|-gpg             encrypt using GnuPG, require --pubkey or -symmetric
+  -K|-pubkey <id>     encrypt the final tarball using <id> public key
+  -M|-symmetric       encrypt using a signed symmetricly encrypted key
+  -p|-prefix <p>      prefix scheme to name the tarball, default is $(uname -r | cut -c-3).
+  -P|-pass <1>        number of pass to encrypt the tarball when using -S
+  -t|-tarball         suffix scheme to name the tarball,default is 'stg4'
+  -r|-root </>        root directory for the backup, default is '/'
+  -Q|-sdr             use sdr script to squash squashed directories
+  -s|-stgdir          stage4 dircteroy, location to save the tarball
+  -S|-split <b>       size of byte to split the tarball archive
+  -u|-usage           print this help/usage and exit
 EOF
 }
 error() { print -P "%B%F{red}*%b%f $@"; }

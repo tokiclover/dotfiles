@@ -1,5 +1,5 @@
 #!/bin/bash
-# $Id: $HOME/.scripts/mkstg4.bash,v 1.0 2012/04/08 -tclover Exp $
+# $Id: $HOME/.scripts/mkstg4.bash,v 1.0 2012/04/09 -tclover Exp $
 usage() {
   cat <<-EOF
   usage: ${1##*/} [OPTIONS...]
@@ -97,7 +97,6 @@ tar ${opts[opt]} ${opts[tarball]} ${opts[root]}
 if [ -n "${opts[gpg]}" ]; then
 	[[ -n "${opts[cipher]}" ]] || opts[cipher]=aes
 	[[ -n "${opts[pass]}" ]] || opts[pass]=1
-	cd ${opts[dir]}
  	if [ -n "${opts[symmetric]}" ]; then
 		echo ${opts[pass]} | gpg --encrypt --batch --cipher-algo ${opts[cipher]} \
 			--passphrase-fd 0 --symmetric --output ${opts[tarball]}.gpg ${opts[tarball]}

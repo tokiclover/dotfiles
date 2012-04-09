@@ -1,5 +1,5 @@
 #!/bin/zsh
-# $Id: $HOME/.scripts/mkstg4.zsh,v 1.0 2012/04/08 -tclover Exp $
+# $Id: $HOME/.scripts/mkstg4.zsh,v 1.0 2012/04/09 -tclover Exp $
 usage() {
   cat <<-EOF
   usage: ${(%):-%1x} [OPTIONS...]
@@ -19,7 +19,7 @@ usage() {
      --sysdir <:dir>   system squashed dirs that require 'sdr --update' option
      --sqfsd <:dir>    local squashed dirs that do not require 'sdr --update'
   -d|--dir <dir>       stage4 dircteroy, location to store/save the tarball
-  -l|--split <bytes>   size of byte to split the tarball archive
+  -s|--split <bytes>   size of byte to split the tarball archive
   -u|--usage           print this help/usage and exit
 EOF
 }
@@ -74,7 +74,6 @@ if [[ -n ${(k)opts[--boot]} ]] || [[ -n ${(k)opts[-b]} ]] {
 opts[-o]+=" --create --absolute-names --${opts[-c]} --verbose --totals --file"
 tar ${=opts[-o]} ${opts[-t]} ${opts[-r]}
 if [[ -n ${(k)opts[--gpg]} ]] || [[ -n ${(k)opts[-g]} ]] {
-	cd ${opts[-d]}
  	if [[ -n ${(k)opts[--symmetric]} ]] {
 		echo ${opts[--pass]:-1} | gpg --encrypt --batch --cipher-algo ${opts[--cipher]:-aes} \
 			--passphrase-fd 0 --symmetric --output ${opts[-t]}.gpg ${opts[-t]}

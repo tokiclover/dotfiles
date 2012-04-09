@@ -1,60 +1,65 @@
 #!/bin/bash
-# $Id: $HOME/.scripts/mkstg4.bash,v 1.1 2012/04/07 -tclover Exp $
+# $Id: $HOME/.scripts/mkstg4.bash,v 1.0 2012/04/08 -tclover Exp $
 usage() {
   cat <<-EOF
   usage: ${1##*/} [OPTIONS...]
   -b, --boot            whether to backup /boot to /bootcp
   -c, --comp            compression command to use, default is 'gzip'
-  -C, --cipher <aes>    cipher to use when encypting the tarball archive
   -e, --exclude <files> files/dirs to exclude from the tarball archive
-  -g, --gpg             encrypt using GnuPG, require --pubkey or -symmetric
-  -K, --pubkey <id>     encrypt the final tarball using <id> public key
-  -M, --symmetric       encrypt using a signed symmetricly encrypted key
-  -p, --prefix <p>      prefix scheme to name the tarball, default is $(uname -r | cut -c-3).
-  -P, --pass <1>        number of pass to encrypt the tarball when using -S
-  -t, --tarball         suffix scheme to name the tarball,default is 'stg4'
+  -g, --gpg             encrypt the tarball, require --pubkey or -symmetric
+      --cipher <aes>    cipher to use when encypting the tarball archive
+      --pass <1>        number of pass to encrypt the tarball when using -S
+      --pubkey <id>     encrypt the final tarball using <id> public key
+      --symmetric       encrypt using a signed symmetricly encrypted key
+  -p, --prefix <3.3>    prefix scheme to name the tarball, default is $(uname -r | cut -c-3).
+  -t, --tarball <stg4>  suffix scheme to name the tarball,default is 'stg4'
   -r, --root </>        root directory for the backup, default is '/'
-  -Q, --sdr             use sdr script to squash squashed directories
-  -s, --stgdir          stage4 dircteroy, location to save the tarball
-  -S, --split <b>       size of byte to split the tarball archive
+  -q, --sdr             use sdr script to squash squashed directories
+      --sqfsdir <dir>   squashed directory-ies root directory tree
+      --sysdir <:dir>   system squashed dirs that require 'sdr --update' option
+      --sqfsd <:dir>    local squashed dirs that do not require 'sdr --update'
+  -d, --dir <dir>       stage4 dircteroy, location to save the tarball
+  -s, --split <bytes>   size of byte to split the tarball archive
   -u, --usage           print this help/usage and exit
 EOF
 }
 error() { echo -ne "\e[1;31m* \e[0m$@\n"; }
 die()   { error "$@"; exit 1; }
-opt=$(getopt -o c:e:gK:M:P:p:qr:S:s:t:u -l comp:,exclude:,gpg,pass:,pubkey:,stgdir: \
-	-l tarball:,sdr,split:,symmetric,root:,usage -n ${0##*/} -- "$@" || usage && exit 0)
+opt=$(getopt -o bc:e:gqp:r:s:d:t:u -l cipher:,comp:,exclude:,gpg,pass:,pubkey: \
+	-l sdr,sqfsd:,split:,sqfsdir:,dir:,symmetric,sysdir:,root:,tarball:,usage \
+	-n ${0##*/} -- "$@" || usage && exit 0)
 eval set -- "$opt"
-[[ -z "${opts[*]}" ]] && declare -A opts
+declare -A opts
 while [[ $# > 0 ]]; do
 	case $1 in
 		-u|--usage) usage; exit 0;;
 		-g|--gpg) opts[gpg]=y; shift;;
-		-Q|--sdr) opts[sdr]=y; shift;;
+		-q|--sdr) opts[sdr]=y; shift;;
 		-b|--boot) opts[boot]=y; shift;;
-		-P|pass) opts[pass]=${2}; shift 2;;
+		--pass) opts[pass]=${2}; shift 2;;
 		-c|--comp) opts[comp]="${2}"; shift 2;;
-		-C|--cipher) opts[cipher]="${2}"; shift 2;;
-		-K|--pubkey) opts[pubkey]="${2}"; shift 2;;
+		--cipher) opts[cipher]="${2}"; shift 2;;
+		--pubkey) opts[pubkey]="${2}"; shift 2;;
+		--symmetric) opts[symmetric]=y; shift;;
 		-p|--prefix) opts[prefix]="${2}"; shift 2;;
-		-s|--stgdir) opts[stgdir]="${2}"; shift 2;;
-		-S|--split) opts[split]="${2}"; shift 2;;
-		-M|--symmetric) opts[symmetric]=y; shift;;
+		-d|--dir) opts[dir]="${2}"; shift 2;;
+		-s|--split) opts[split]="${2}"; shift 2;;
+		--sqfsd) opts[sqfsd]=":${2}"; shift 2;;
 		-t|--tarball) opts[tarball]="${2}"; shift 2;;
 		-e|--exclude) opts[exclude]="${2//,/ }"; shift 2;;
+		--sqfsdir) opts[sqfsdir]="${2}"; shift 2;;
+		--sysdir) opts[sysdir]="${2}"; shift 2;;
 		-r|--root) opts[root]="${2}"; shift 2;;
 		--) shift; break;;
 	esac
 done
 [[ -n ${opts[prefix]} ]] || opts[prefix]="$(uname -r | cut -c-3)"
 [[ -n "${opts[root]}" ]] || opts[root]=/
-[[ -n "${opts[stgdir]}" ]] || opts[stgdir]=/mnt/sup/bik
-[[ -n "${opts[tarball]}" ]] && opts[tarball]=${opts[prefix]}${opts[tarball]} \
+[[ -n "${opts[dir]}" ]] || opts[dir]=/mnt/sup/bik
+[[ -n "${opts[tarball]}" ]] && opts[tarball]=${opts[prefix]}.${opts[tarball]} \
 	|| opts[tarball]=${opts[prefix]}.stg4
 [[ -n "${opts[comp]}" ]] || opts[comp]=gzip
-[[ -n "${opts[cipher]}" ]] || opts[cipher]=aes
-[[ -n "${opts[pass]}" ]] || opts[pass]=1
-opts[tarball]="${opts[stgdir]}/${opts[tarball]}"
+opts[tarball]="${opts[dir]}/${opts[tarball]}"
 case ${opts[comp]} in
 	bzip2)	opts[tarball]+=.tbz2;;
 	xz) 	opts[tarball]+=.txz;;
@@ -63,39 +68,49 @@ case ${opts[comp]} in
 	lzip)	opts[tarball]+=.tlz;;
 	lzop)	opts[tarball]+=.tlzo;;
 esac
+echo -ne "\e[1;32m>>> building ${opts[tarball]} stage4 tarball...\e[0m$@\n"
 cd ${opts[root]} || die "invalid root directory"
-opts[exclude]+=" mnt/* media home dev proc sys tmp var/portage var/local/portage 
-	run var/run var/lock var/pkg var/dst lib*/rc/init.d lib*/splash/cache var/tmp 
-	var/blddir var/.*.tgz boot/*.iso boot/*.img bootcp/*iso *.swp bootcp/*.img
-	iusr/portage usr/local/portage ${opts[-tarball]}
-"
-for file in ${opts[exclude]}; do opts[opt]+=" --exclude=./$file"; done
-opts[opt]+=" --create --absolute-names --${opts[comp]} --verbose --totals --file"
+for file in mnt/* media home dev proc sys tmp run boot/*.i{mg,so} bootcp/*.i{mg,so} \
+	var/{{,local/}portage,run,lock,pkg,dst,blddir,.*.tgz,tmp} lib*/rc/init.d *.swp \
+	lib*/splash/cache usr/{,local/}portage ${opts[tarball]}; do 
+	opts[opt]+=" --exclude=$file"; done
 if [ -n "${opts[sdr]}" ]; then
 	which sdr &> /dev/null || die "there's no sdr script in PATH"
-	sdr -o0 -U -dsbin:bin:lib32:lib64
-	sdr -o0    -dvar/db:var/cahce/edb:opt:usr
-	rsync -avR ${opts[root]}/sqfsd ${opts[stgdir]}
-	mv ${opts[stgdir]}/sqfsd{,-${opts[prefix]}}
-	opts[-exclude]+=" usr opt var/db var/cache/edb var/lib/layman sqfsd/*.sfs
-	sqfsd/*/*.sfs sqfsd/*/*/*.sfs sqfsd/*/ro sqfsd/*/*/ro sqfsd/*/*/*/ro"; fi
+	[[ -n "${opts[sqfsdir]}" ]] || opts[sqfsdir]=sqfsd
+	[[ -n "${opts[sysdir]}" ]] && sdr -r${opts[sqfsdir]} -o0 -U -d${opts[sysdir]}
+	[[ -n "${opts[sqfsd]}" ]] && sdr -r${opts[sqfsdir]} -o0  -d${opts[sqfsd]}
+	dirname=${opts[sqfsdir]}; dirname=${dirname##*/}
+	rsync -avuR ${opts[root]}/${opts[sqfsdir]}/./{*,*/*,*/*/*}.sfs \
+		${opts[dir]}/${dirname}-${opts[prefix]}
+	for file in usr opt var/{db,cache/edb,lib/layman} ${opts[sqfsdir]}/{*,*/*,*/*/*}.sfs \
+		${opts[sqfsdir]}/{*,*/*,*/*/*}/ro; do opts[opt]+=" --exclude=$file"; done
+fi
 if [ -n "${opts[boot]}" ]; then
 	mount /boot
 	sleep 3
 	cp -aR /boot /bootcp
 	umount /boot
-	sleep 3; fi
-tar ${opts[opt]} ${opts[tarball]} .;
+	sleep 3
+fi
+opts[opt]+=" --create --absolute-names --${opts[comp]} --verbose --totals --file"
+tar ${opts[opt]} ${opts[tarball]} ${opts[root]}
 if [ -n "${opts[gpg]}" ]; then
-	cd ${opts[stgdir]}
+	[[ -n "${opts[cipher]}" ]] || opts[cipher]=aes
+	[[ -n "${opts[pass]}" ]] || opts[pass]=1
+	cd ${opts[dir]}
  	if [ -n "${opts[symmetric]}" ]; then
 		echo ${opts[pass]} | gpg --encrypt --batch --cipher-algo ${opts[cipher]} \
 			--passphrase-fd 0 --symmetric --output ${opts[tarball]}.gpg ${opts[tarball]}
 	else gpg --encrypt --batch --recipient ${opts[pubkey]} --cipher-algo ${opts[cipher]} \
-			--output ${opts[tarball]}.gpg ${opts[tarball]}; fi
+			--output ${opts[tarball]}.gpg ${opts[tarball]}
+	fi
 	rm ${opts[tarball]}
-	opts[tarball]+=.gpg; fi
+	opts[tarball]+=.gpg
+fi
 if [ -n "${opts[split]}" ]; then
-	split --bytes=${opts[split]} ${opts[tarball]} ${opts[tarball]}.; fi
+	split --bytes=${opts[split]} ${opts[tarball]} ${opts[tarball]}.
+fi
 rm -rf /bootcp
-unset opts opt
+echo -ne "\e[1;32m>>> successfuly built ${opts[tarball]} stage4 tarball\e[0m$@\n"
+unset -v dirname opts opt
+# vim:fenc=utf-8:ft=sh:ci:pi:sts=0:sw=4:ts=4:

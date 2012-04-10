@@ -1,52 +1,56 @@
 #!/bin/bash
-# $Id: $HOME/.scripts/mkstg4.bash,v 1.0 2012/04/09 -tclover Exp $
+# $Id: $HOME/.scripts/mkstg4.bash,v 1.0 2012/04/10 -tclover Exp $
 usage() {
   cat <<-EOF
   usage: ${1##*/} [OPTIONS...]
-  -b, --boot            whether to backup /boot to /bootcp
-  -c, --comp            compression command to use, default is 'gzip'
-  -e, --exclude <files> files/dirs to exclude from the tarball archive
-  -g, --gpg             encrypt the tarball, require --pubkey or -symmetric
-      --cipher <aes>    cipher to use when encypting the tarball archive
-      --pass <1>        number of pass to encrypt the tarball when using -S
-      --pubkey <id>     encrypt the final tarball using <id> public key
-      --symmetric       encrypt using a signed symmetricly encrypted key
-  -p, --prefix <3.3>    prefix scheme to name the tarball, default is $(uname -r | cut -c-3).
-  -t, --tarball <stg4>  suffix scheme to name the tarball,default is 'stg4'
-  -r, --root </>        root directory for the backup, default is '/'
-  -q, --sdr             use sdr script to squash squashed directories
-      --sqfsdir <dir>   squashed directory-ies root directory tree
-      --sysdir <:dir>   system squashed dirs that require 'sdr --update' option
-      --sqfsd <:dir>    local squashed dirs that do not require 'sdr --update'
-  -d, --dir <dir>       stage4 dircteroy, location to save the tarball
-  -s, --split <bytes>   size of byte to split the tarball archive
-  -u, --usage           print this help/usage and exit
+  -b, --boot               whether to backup /boot to /bootcp
+  -c, --comp               compression command to use, default is 'gzip'
+  -e, --exclude <files>    files/dirs to exclude from the tarball archive
+  -g, --gpg                encrypt and/or sign the final tarball[.gpg]
+      --cipher <aes>       cipher to use when encypting the tarball archive
+      --encrypt            encrypt, may be combined with --symmetric/--sign
+      --pass <1>           number of pass to encrypt the tarball when using -S
+      --recipient <u-id>   encrypt the final tarball using <user-id> public key
+      --sign               sign the tarball using <user-id>, require --recipient
+      --symmetric          encrypt with a symmetric cipher using a passphrase
+  -p, --prefix <3.3>       prefix scheme to name the tarball, default is $(uname -r | cut -c-3).
+  -t, --tarball <stg4>     suffix scheme to name the tarball,default is 'stg4'
+  -r, --root </>           root directory for the backup, default is '/'
+  -q, --sdr                use sdr script to squash squashed directories
+      --sqfsdir <dir>      squashed directory-ies root directory tree
+      --sysdir <:dir>      system squashed dirs that require 'sdr --update' option
+      --sqfsd <:dir>       local squashed dirs that do not require 'sdr --update'
+  -d, --dir <dir>          stage4 dircteroy, location to save the tarball
+  -s, --split <bytes>      size of byte to split the tarball archive
+  -u, --usage              print this help/usage and exit
 EOF
 }
 error() { echo -ne "\e[1;31m* \e[0m$@\n"; }
 die()   { error "$@"; exit 1; }
-opt=$(getopt -o bc:e:gqp:r:s:d:t:u -l cipher:,comp:,exclude:,gpg,pass:,pubkey: \
+opt=$(getopt -o bc:e:gqp:r:s:d:t:u -l cipher:,comp:,encrypt,exclude:,gpg,pass: \
 	-l sdr,sqfsd:,split:,sqfsdir:,dir:,symmetric,sysdir:,root:,tarball:,usage \
-	-n ${0##*/} -- "$@" || usage && exit 0)
+	-l recipient:,sign -n ${0##*/} -- "$@" || usage && exit 0)
 eval set -- "$opt"
 declare -A opts
 while [[ $# > 0 ]]; do
 	case $1 in
 		-u|--usage) usage; exit 0;;
-		-g|--gpg) opts[gpg]=y; shift;;
-		-q|--sdr) opts[sdr]=y; shift;;
+		-g|--gpg) opts[gpg]=gpg; shift;;
+		-q|--sdr) opts[sdr]=sdr; shift;;
 		-b|--boot) opts[boot]=y; shift;;
 		--pass) opts[pass]=${2}; shift 2;;
-		-c|--comp) opts[comp]="${2}"; shift 2;;
-		--cipher) opts[cipher]="${2}"; shift 2;;
-		--pubkey) opts[pubkey]="${2}"; shift 2;;
-		--symmetric) opts[symmetric]=y; shift;;
+		--sign) opts[gpg]+=" --sign"; shift;;
+		--encrypt) opts[gpg]+=" --encrypt"; shift;;
+		--cipher) opts[gpg]+=" --cipher-algo ${2}"; shift 2;;
+		--recipient) opts[gpg]+=" --recipient ${2}"; shift 2;;
+		-e|--exclude) opts[exclude]="${2//,/ }"; shift 2;;
+		--symmetric) opts[gpg]+=" --symmetric"; shift;;
 		-p|--prefix) opts[prefix]="${2}"; shift 2;;
 		-d|--dir) opts[dir]="${2}"; shift 2;;
-		-s|--split) opts[split]="${2}"; shift 2;;
+		-c|--comp) opts[comp]="${2}"; shift 2;;
 		--sqfsd) opts[sqfsd]=":${2}"; shift 2;;
+		-s|--split) opts[split]="${2}"; shift 2;;
 		-t|--tarball) opts[tarball]="${2}"; shift 2;;
-		-e|--exclude) opts[exclude]="${2//,/ }"; shift 2;;
 		--sqfsdir) opts[sqfsdir]="${2}"; shift 2;;
 		--sysdir) opts[sysdir]="${2}"; shift 2;;
 		-r|--root) opts[root]="${2}"; shift 2;;
@@ -94,16 +98,9 @@ if [ -n "${opts[boot]}" ]; then
 fi
 opts[opt]+=" --create --absolute-names --${opts[comp]} --verbose --totals --file"
 tar ${opts[opt]} ${opts[tarball]} ${opts[root]}
-if [ -n "${opts[gpg]}" ]; then
-	[[ -n "${opts[cipher]}" ]] || opts[cipher]=aes
-	[[ -n "${opts[pass]}" ]] || opts[pass]=1
- 	if [ -n "${opts[symmetric]}" ]; then
-		echo ${opts[pass]} | gpg --encrypt --batch --cipher-algo ${opts[cipher]} \
-			--passphrase-fd 0 --symmetric --output ${opts[tarball]}.gpg ${opts[tarball]}
-	else gpg --encrypt --batch --recipient ${opts[pubkey]} --cipher-algo ${opts[cipher]} \
-			--output ${opts[tarball]}.gpg ${opts[tarball]}
-	fi
-	rm ${opts[tarball]}
+if [ -n "${opts[gpg]}" ]; then opts[gpg]+=" --output ${opts[tarball]}.gpg ${opts[tarball]}"
+ 	[[ -n "${opts[pass]}" ]] && opts[gpg]="echo ${opts[pass]} | ${opts[gpg]}"
+	$(${opts[gpg]} && rm ${opts[tarball]})
 	opts[tarball]+=.gpg
 fi
 if [ -n "${opts[split]}" ]; then

@@ -1,5 +1,5 @@
 #!/bin/zsh
-# $Id: $HOME/.scripts/mkstg4.zsh,v 1.0 2012/04/10 -tclover Exp $
+# $Id: $HOME/.scripts/mkstg4.zsh,v 1.0 2012/04/11 -tclover Exp $
 usage() {
   cat <<-EOF
   usage: ${(%):-%1x} [OPTIONS...]
@@ -24,6 +24,7 @@ usage() {
   -s|--split <bytes>      size of byte to split the tarball archive
   -u|--usage              print this help/usage and exit
 EOF
+exit 0
 }
 error() { print -P "%B%F{red}*%b%f $@"; }
 die()   { error $@; exit 1; }
@@ -31,8 +32,8 @@ alias die='die "%F{yellow}%1x:%U${(%):-%I}%u:%f" $@'
 zmodload zsh/zutil
 zparseopts -E -D -K -A opts b c: e: g q p: r: s: d: t: u -cipher: -comp: -dir: \
 	-exclude: -gpg -sdr -pass: -recipient: -root: -split: -sqfsdir: -sqfsd+: \
-	-encrypt -sign -symmetric -sysdir+: -tarball: -usage
-if [[ -n ${(k)opts[-u]} ]] || [[ -n ${(k)opts[--usage]} ]] { usage; exit 0 }
+	-encrypt -sign -symmetric -sysdir+: -tarball: -usage || usage
+if [[ -n ${(k)opts[-u]} ]] || [[ -n ${(k)opts[--usage]} ]] { usage }
 if [[ -z ${opts[*]} ]] { typeset -A opts }
 :	${opts[-c]:=${opts[--comp]:-gzip}}
 : 	${opts[-p]:=${opts[--prefix]:-$(uname -r | cut -c-3)}}

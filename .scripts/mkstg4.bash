@@ -1,5 +1,5 @@
 #!/bin/bash
-# $Id: $HOME/.scripts/mkstg4.bash,v 1.0 2012/04/10 -tclover Exp $
+# $Id: $HOME/.scripts/mkstg4.bash,v 1.0 2012/04/11 -tclover Exp $
 usage() {
   cat <<-EOF
   usage: ${1##*/} [OPTIONS...]
@@ -24,17 +24,18 @@ usage() {
   -s, --split <bytes>      size of byte to split the tarball archive
   -u, --usage              print this help/usage and exit
 EOF
+exit 0
 }
 error() { echo -ne "\e[1;31m* \e[0m$@\n"; }
 die()   { error "$@"; exit 1; }
 opt=$(getopt -o bc:e:gqp:r:s:d:t:u -l cipher:,comp:,encrypt,exclude:,gpg,pass: \
 	-l sdr,sqfsd:,split:,sqfsdir:,dir:,symmetric,sysdir:,root:,tarball:,usage \
-	-l recipient:,sign -n ${0##*/} -- "$@" || usage && exit 0)
+	-l recipient:,sign -n ${0##*/} -- "$@" || usage)
 eval set -- "$opt"
 declare -A opts
 while [[ $# > 0 ]]; do
 	case $1 in
-		-u|--usage) usage; exit 0;;
+		-u|--usage) usage;;
 		-g|--gpg) opts[gpg]=gpg; shift;;
 		-q|--sdr) opts[sdr]=sdr; shift;;
 		-b|--boot) opts[boot]=y; shift;;

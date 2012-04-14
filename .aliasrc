@@ -1,6 +1,11 @@
 # $Id: $HOME/.aliasrc,v 1.1 2011/10/25 -tclover Exp $
 
 # Push and pop directories on directory stack
+alias ipr='~/.scripts/ipr'
+alias iru='~/.scripts/iru'
+alias mks4='~/.scripts/mkstg4.bash'
+alias sdr='sdr.bash'
+alias mkifs='mkifs-ll.bash'
 alias pu='pushd'
 alias po='popd'
 

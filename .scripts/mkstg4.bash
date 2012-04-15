@@ -1,5 +1,5 @@
 #!/bin/bash
-# $Id: $HOME/.scripts/mkstg4.bash,v 1.0 2012/04/11 -tclover Exp $
+# $Id: $HOME/.scripts/mkstg4.bash,v 1.0 2012/04/15 -tclover Exp $
 usage() {
   cat <<-EOF
   usage: ${1##*/} [OPTIONS...]
@@ -80,10 +80,10 @@ for file in mnt/* media home dev proc sys tmp run boot/*.i{mg,so} bootcp/*.i{mg,
 	lib*/splash/cache usr/{,local/}portage ${opts[tarball]}; do 
 	opts[opt]+=" --exclude=$file"; done
 if [ -n "${opts[sdr]}" ]; then
-	which sdr &> /dev/null || die "there's no sdr script in PATH"
+	which sdr.bash &> /dev/null || die "there's no sdr script in PATH"
 	[[ -n "${opts[sqfsdir]}" ]] || opts[sqfsdir]=sqfsd
-	[[ -n "${opts[sysdir]}" ]] && sdr -r${opts[sqfsdir]} -o0 -U -d${opts[sysdir]}
-	[[ -n "${opts[sqfsd]}" ]] && sdr -r${opts[sqfsdir]} -o0  -d${opts[sqfsd]}
+	[[ -n "${opts[sysdir]}" ]] && sdr.bash -r${opts[sqfsdir]} -o0 -U -d${opts[sysdir]}
+	[[ -n "${opts[sqfsd]}" ]] && sdr.bash -r${opts[sqfsdir]} -o0  -d${opts[sqfsd]}
 	dirname=${opts[sqfsdir]}; dirname=${dirname##*/}
 	rsync -avuR ${opts[root]}/${opts[sqfsdir]}/./{*,*/*,*/*/*}.sfs \
 		${opts[dir]}/${dirname}-${opts[prefix]}

@@ -1,11 +1,12 @@
 #!/bin/zsh
-# $Id: $HOME/.scripts/mkstg4.zsh,v 1.0 2012/04/15 -tclover Exp $
+# $Id: $HOME/.scripts/mkstg4.zsh,v 1.0 2012/04/17 -tclover Exp $
 usage() {
   cat <<-EOF
   usage: ${(%):-%1x} [OPTIONS...]
   -b|-boot               whether to backup /boot to /bootcp
   -c|-comp               compression command to use, default is 'gzip'
   -e|-exclude <files>    files/dirs to exclude from the tarball archive
+  -E|-estring d          append an extra 'd' string after \${prefix}
   -g|-gpg                encrypt and/or sign the final tarball[.gpg]
      -cipher <aes>       cipher to use when encypting the tarball archive
      -encrypt            encrypt, may be combined with --symmetric/--sign
@@ -32,7 +33,7 @@ alias die='die "%F{yellow}%1x:%U${(%):-%I}%u:%f" $@'
 zmodload zsh/zutil
 zparseopts -E -D -K -A opts b c: e: g q p: r: s: d: t: u cipher: comp: dir: \
 	exclude: gpg sdr pass: recipient: root: split: sqfsdir: sqfsd+: \
-	encrypt sign symmetric sysdir+: tarball: usage || usage
+	encrypt sign symmetric sysdir+: tarball: usage E: estring: || usage
 if [[ -n ${(k)opts[-u]} ]] || [[ -n ${(k)opts[-usage]} ]] { usage }
 if [[ -z ${opts[*]} ]] { typeset -A opts }
 :	${opts[-comp]:=${opts[-c]:-gzip}}
@@ -40,7 +41,8 @@ if [[ -z ${opts[*]} ]] { typeset -A opts }
 :	${opts[-root]:=${opts[-r]:-/}}
 :	${opts[-dir]:=${opts[-d]:-/mnt/sup/bik}}
 : 	${opts[-tarball]:=${opts[-t]:-stg4}}
-opts[-tarball]=${opts[-dir]}/${opts[-prefix]}.${opts[-tarball]}
+:	${opts[-estring]:-${opts[-E]}}
+opts[-tarball]=${opts[-dir]}/${opts[-prefix]}${opts[-estring]}.${opts[-tarball]}
 case ${opts[-comp]} in
 	bzip2)	opts[-tarball]+=.tbz2;;
 	xz) 	opts[-tarball]+=.txz;;
@@ -61,7 +63,7 @@ if [[ -n ${(k)opts[-sdr]} ]] || [[ -n ${(k)opts[-q]} ]] {
 	if [[ -n ${opts[-sysdir]} ]] { sdr.zsh -r${opts[-sqfsdir]} -o0 -U -d${opts[-sysdir]} }
 	if [[ -n ${opts[-sqfsd]} ]] { sdr.zsh -r${opts[-sqfsdir]} -o0  -d${opts[-sqfsd]} }
 	rsync -avuR ${opts[-root]}/${opts[-sqfsdir]}/./{*,*/*,*/*/*}.sfs \
-		${opts[-dir]}/${opts[-sqfsdir]:t}-${opts[-prefix]}
+		${opts[-dir]}/${opts[-sqfsdir]:t}-${opts[-prefix]}${opts[-estring]}
 	for file (usr opt var/{db,cache/edb,lib/layman} ${opts[-sqfsdir]}/{*,*/*,*/*/*}.sfs 
 		${opts[-sqfsdir]}/{*,*/*,*/*/*}/ro) { opts[-opt]+=" --exclude=$file"	}
 }

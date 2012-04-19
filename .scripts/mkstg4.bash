@@ -1,5 +1,5 @@
 #!/bin/bash
-# $Id: $HOME/.scripts/mkstg4.bash,v 1.0 2012/04/17 -tclover Exp $
+# $Id: $HOME/.scripts/mkstg4.bash,v 1.0 2012/04/19 -tclover Exp $
 usage() {
   cat <<-EOF
   usage: ${1##*/} [OPTIONS...]
@@ -62,7 +62,7 @@ while [[ $# > 0 ]]; do
 done
 [[ -n ${opts[prefix]} ]] || opts[prefix]="$(uname -r | cut -c-3)"
 [[ -n "${opts[root]}" ]] || opts[root]=/
-[[ -n "${opts[dir]}" ]] || opts[dir]=/mnt/sup/bik
+[[ -n "${opts[dir]}" ]] || opts[dir]=/mnt/sup/$(uname -m)}
 [[ -n "${opts[tarball]}" ]] && opts[tarball]=${opts[prefix]}.${opts[tarball]} \
 	|| opts[tarball]=${opts[prefix]}${opts[estring]}.stg4
 [[ -n "${opts[comp]}" ]] || opts[comp]=gzip
@@ -78,7 +78,7 @@ esac
 echo -ne "\e[1;32m>>> building ${opts[tarball]} stage4 tarball...\e[0m$@\n"
 cd ${opts[root]} || die "invalid root directory"
 for file in mnt/* media home dev proc sys tmp run boot/*.i{mg,so} bootcp/*.i{mg,so} \
-	var/{{,local/}portage,run,lock,pkg,dst,blddir,.*.tgz,tmp} lib*/rc/init.d *.swp \
+	var/{{,local/}portage,run,lock,pkg,src,bldir,.*.tgz,tmp} lib*/rc/init.d *.swp \
 	lib*/splash/cache usr/{,local/}portage ${opts[tarball]}; do 
 	opts[opt]+=" --exclude=$file"; done
 if [ -n "${opts[sdr]}" ]; then

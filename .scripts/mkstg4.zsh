@@ -1,5 +1,5 @@
 #!/bin/zsh
-# $Id: $HOME/.scripts/mkstg4.zsh,v 1.0 2012/04/17 -tclover Exp $
+# $Id: $HOME/.scripts/mkstg4.zsh,v 1.0 2012/04/19 -tclover Exp $
 usage() {
   cat <<-EOF
   usage: ${(%):-%1x} [OPTIONS...]
@@ -39,7 +39,7 @@ if [[ -z ${opts[*]} ]] { typeset -A opts }
 :	${opts[-comp]:=${opts[-c]:-gzip}}
 : 	${opts[-prefix]:=${opts[-p]:-$(uname -r | cut -c-3)}}
 :	${opts[-root]:=${opts[-r]:-/}}
-:	${opts[-dir]:=${opts[-d]:-/mnt/sup/bik}}
+:	${opts[-dir]:=${opts[-d]:-/mnt/sup/$(uname -m)}}
 : 	${opts[-tarball]:=${opts[-t]:-stg4}}
 :	${opts[-estring]:-${opts[-E]}}
 opts[-tarball]=${opts[-dir]}/${opts[-prefix]}${opts[-estring]}.${opts[-tarball]}
@@ -55,7 +55,7 @@ setopt NULL_GLOB
 print -P "%F{green}>>> building ${opts[-tarball]} stage4 tarball...%f"
 cd ${opts[-root]} || die "invalid root directory"
 for file (mnt/* media home dev proc sys tmp run boot/*.i{mg,so} bootcp/*.i{mg,so} 
-	var/{{,local/}portage,run,lock,pkg,dst,blddir,.*.tgz,tmp} lib*/rc/init.d *.swp 
+	var/{{,local/}portage,run,lock,pkg,src,blddir,.*.tgz,tmp} lib*/rc/init.d *.swp 
 	lib*/splash/cache usr/{,local/}portage ${opts[-tarball]}) { opts[-opt]+=" --exclude=$file" }
 if [[ -n ${(k)opts[-sdr]} ]] || [[ -n ${(k)opts[-q]} ]] {
 	which sdr.zsh &> /dev/null || die "there's no sdr script in PATH"

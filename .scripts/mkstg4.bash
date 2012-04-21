@@ -1,5 +1,5 @@
 #!/bin/bash
-# $Id: $HOME/.scripts/mkstg4.bash,v 1.0 2012/04/20 -tclover Exp $
+# $Id: ~/.scripts/mkstg4.bash,v 1.0 2012/04/20 -tclover Exp $
 usage() {
   cat <<-EOF
   usage: ${1##*/} [OPTIONS...]
@@ -17,6 +17,7 @@ usage() {
   -p, --prefix <3.3>       prefix scheme to name the tarball, default is $(uname -r | cut -c-3).
   -t, --tarball <stg4>     suffix scheme to name the tarball,default is 'stg4'
   -r, --root </>           root directory for the backup, default is '/'
+  -R, --restore [<dir>]    restore the stage4 backup from optional <dir>
   -q, --sdr                use sdr script to squash squashed directories
       --sqfsdir <dir>      squashed directory-ies root directory tree
       --sysdir <:dir>      system squashed dirs that require 'sdr --update' option
@@ -29,9 +30,9 @@ exit 0
 }
 error() { echo -ne "\e[1;31m* \e[0m$@\n"; }
 die()   { error "$@"; exit 1; }
-opt=$(getopt -o bc:e:gqp:r:s:d:t:u -l cipher:,comp:,encrypt,exclude:,gpg,pass: \
+opt=$(getopt -o bc:e:gqp:r:R::s:d:t:u -l cipher:,comp:,encrypt,exclude:,gpg,pass: \
 	-l sdr,sqfsd:,split:,sqfsdir:,dir:,symmetric,sysdir:,root:,tarball:,usage \
-	-l recipient:,sign,estring: -o E: -n ${0##*/} -- "$@" || usage)
+	-l recipient:,sign,estring:,restore:: -o E: -n ${0##*/} -- "$@" || usage)
 eval set -- "$opt"
 declare -A opts
 while [[ $# > 0 ]]; do
@@ -57,6 +58,8 @@ while [[ $# > 0 ]]; do
 		--sqfsdir) opts[sqfsdir]="${2}"; shift 2;;
 		--sysdir) opts[sysdir]="${2}"; shift 2;;
 		-r|--root) opts[root]="${2}"; shift 2;;
+		-R|--restore) opts[restore]="${2}"; shift 2
+		[[ -n ${opts[restore]} ]] || opts[restore]=y;;
 		--) shift; break;;
 	esac
 done
@@ -75,6 +78,7 @@ case ${opts[comp]} in
 	lzip)	opts[tarball]+=.tlz;;
 	lzop)	opts[tarball]+=.tlzo;;
 esac
+build() {
 echo -ne "\e[1;32m>>> building ${opts[tarball]} stage4 tarball...\e[0m$@\n"
 cd ${opts[root]} || die "invalid root directory"
 for file in mnt/* media home dev proc sys tmp run boot/*.i{mg,so} bootcp/*.i{mg,so} \
@@ -100,12 +104,12 @@ fi
 if [ -n "${opts[boot]}" ]; then
 	mount /boot
 	sleep 3
-	cp -aR /boot /bootcp
+	cp -aR /boot{,cp}
 	umount /boot
 	sleep 3
 fi
 opts[opt]+=" --create --absolute-names --${opts[comp]} --verbose --totals --file"
-tar ${opts[opt]} ${opts[tarball]} ${opts[root]}
+tar ${opts[opt]} ${opts[tarball]} ${opts[root]} || die "failed to backup"
 if [ -n "${opts[gpg]}" ]; then opts[gpg]+=" --output ${opts[tarball]}.gpg ${opts[tarball]}"
  	[[ -n "${opts[pass]}" ]] && opts[gpg]="echo ${opts[pass]} | ${opts[gpg]}"
 	$(${opts[gpg]} && rm ${opts[tarball]})
@@ -114,7 +118,19 @@ fi
 if [ -n "${opts[split]}" ]; then
 	split --bytes=${opts[split]} ${opts[tarball]} ${opts[tarball]}.
 fi
-rm -rf /bootcp
 echo -ne "\e[1;32m>>> successfuly built ${opts[tarball]} stage4 tarball\e[0m$@\n"
+}
+if [[ -n "${opts[restore]}" ]]; then
+	echo -ne "\e[1;32m>>> restoring ${opts[tarball]} stage4 tarball...\e[0m$@\n"
+	[[ -n "${opts[sdr]}" ]] && rsync -avuR \
+		${opts[dir]}/./${opts[sqfsdir]:t}-${opts[prefix]}${opts[estring]} ${opts[dir]}/
+	[[ -n "${opts[gpg]}" ]] && opts[-gpg]="gpg --decrypt ${opts[tarball]}.gpg |"
+	$(${opts[opt]}) tar -xvpf ${opts[tarball]} -C ${opts[root]} || die "failed to restore"
+	[[ -d /bootcp ]] && mount /boot && cp -aru /bootcp/* /boot/
+	sed -e 's:^\#.*(.*)::g' -e 's:SUBSYSTEM.*".*"::g' -i /etc/udev/rules.d/*persistent-cd.rules \
+		-i /etc/udev/rules.d/*persistent-net.rules
+	echo -ne "\e[1;32m>>> successfuly restored ${opts[tarball]} stage4 tarball\e[0m$@\n"
+else build; fi
+rm -rf /bootcp
 unset -v dirname opts opt
 # vim:fenc=utf-8:ft=sh:ci:pi:sts=0:sw=4:ts=4:

@@ -1,5 +1,5 @@
 #!/bin/zsh
-# $Id: $HOME/.scripts/mkstg4.zsh,v 1.0 2012/04/20 -tclover Exp $
+# $Id: ~/.scripts/mkstg4.zsh,v 1.0 2012/04/21 -tclover Exp $
 usage() {
   cat <<-EOF
   usage: ${(%):-%1x} [OPTIONS...]
@@ -17,6 +17,7 @@ usage() {
   -p|-prefix <3.3>       prefix scheme to name the tarball, default is $(uname -r | cut -c-3).
   -t|-tarball <stg4>     sufix scheme to name the tarball,default is 'stg4'
   -r|-root </>           root directory for the backup, default is '/'
+  -R|-restore [<dir>]    restore the stage4 backup from optional <dir>
   -q|-sdr                use sdr script to squash squashed directories
      -sqfsdir <dir>      squashed directory-ies root directory tree
      -sysdir <:dir>      system squashed dirs that require 'sdr -update' option
@@ -32,7 +33,7 @@ die()   { error $@; exit 1; }
 alias die='die "%F{yellow}%1x:%U${(%):-%I}%u:%f" $@'
 zmodload zsh/zutil
 zparseopts -E -D -K -A opts b c: e: g q p: r: s: d: t: u cipher: comp: dir: \
-	exclude: gpg sdr pass: recipient: root: split: sqfsdir: sqfsd+: \
+	exclude: gpg sdr pass: recipient: root: R:: restore:: split: sqfsdir: sqfsd+: \
 	encrypt sign symmetric sysdir+: tarball: usage E: estring: || usage
 if [[ -n ${(k)opts[-u]} ]] || [[ -n ${(k)opts[-usage]} ]] { usage }
 if [[ -z ${opts[*]} ]] { typeset -A opts }
@@ -52,6 +53,7 @@ case ${opts[-comp]} in
 	lzop)	opts[-tarball]+=.tlzo;;
 esac
 setopt NULL_GLOB
+build() {
 print -P "%F{green}>>> building ${opts[-tarball]} stage4 tarball...%f"
 cd ${opts[-root]} || die "invalid root directory"
 for file (mnt/* media home/* dev proc sys tmp run boot/*.i{mg,so} bootcp/*.i{mg,so} 
@@ -76,12 +78,12 @@ if [[ -n ${(k)opts[-sdr]} ]] || [[ -n ${(k)opts[-q]} ]] {
 if [[ -n ${(k)opts[-boot]} ]] || [[ -n ${(k)opts[-b]} ]] {
 	mount /boot
 	sleep 3
-	cp -aR /boot /bootcp
+	cp -aR /boot{,cp}
 	umount /boot
 	sleep 3 
 }
 opts[-opt]+=" --wildcards --create --absolute-names --${opts[-comp]} --verbose --totals --file"
-tar ${=opts[-opt]} ${opts[-tarball]} ${opts[-root]}
+tar ${=opts[-opt]} ${opts[-tarball]} ${opts[-root]} || die "failed to backup"
 if [[ -n ${(k)opts[-gpg]} ]] || [[ -n ${(k)opts[-g]} ]] {
 :	${opts[-gpg]:=gpg}
 	for opt (cipher encrypt recipient sign symmetric) {
@@ -97,6 +99,22 @@ if [[ -n ${opts[-split]} ]] || [[ -n ${opts[-s]} ]] {
 	split --bytes=${opts[-s]} ${opts[-tarball]} ${opts[-tarball]}.
 }
 print -P "%F{green}>>> successfuly built ${opts[-tarball]} stage4 tarball%f"
+}
+if [[ -n ${(k)opts[-restore]} ]] || [[ -n ${(k)opts[-R]} ]] {
+	print -P "%F{green}>>> restoring ${opts[-tarball]} stage4 tarball...%f"
+:	${opts[-restore]:-${opts[-R]:-${opts[-dir]}}}
+	if [[ -n ${(k)opts[-sdr]} ]] || [[ -n ${(k)opts[-q]} ]] { rsync -avuR \
+		${opts[-dir]}/./${opts[-sqfsdir]:t}-${opts[-prefix]}${opts[-estring]} ${opts[-dir]}/
+	}
+	if [[ -n ${(k)opts[-gpg]} ]] || [[ -n ${(k)opts[-g]} ]] { 
+		opts[-gpg]="gpg --decrypt ${opts[-tarball]}.gpg |"
+	}
+	${=(e)opts[-opt]} tar -xvpf ${opts[-tarball]} -C ${opts[-root]} || die "failed to restore"
+	if [[ -d /bootcp ]] { mount /boot && cp -aru /bootcp/* /boot/ }
+	sed -e 's:^\#.*(.*)::g' -e 's:SUBSYSTEM.*".*"::g' -i /etc/udev/rules.d/*persistent-cd.rules \
+		-i /etc/udev/rules.d/*persistent-net.rules
+	print -P "%F{green}>>> successfuly restored ${opts[-tarball]} stage4 tarball%f"
+} else { build }
 rm -rf /bootcp
 unset opts
 # vim:fenc=utf-8:ci:pi:sts=0:sw=4:ts=4:

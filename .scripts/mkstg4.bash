@@ -1,5 +1,5 @@
 #!/bin/bash
-# $Id: $HOME/.scripts/mkstg4.bash,v 1.0 2012/04/19 -tclover Exp $
+# $Id: $HOME/.scripts/mkstg4.bash,v 1.0 2012/04/20 -tclover Exp $
 usage() {
   cat <<-EOF
   usage: ${1##*/} [OPTIONS...]
@@ -80,7 +80,9 @@ cd ${opts[root]} || die "invalid root directory"
 for file in mnt/* media home dev proc sys tmp run boot/*.i{mg,so} bootcp/*.i{mg,so} \
 	var/{{,local/}portage,run,lock,pkg,src,bldir,.*.tgz,tmp} lib*/rc/init.d *.swp \
 	lib*/splash/cache usr/{,local/}portage ${opts[tarball]}; do 
-	opts[opt]+=" --exclude=$file"; done
+	if [[ -f "${file}" ]]; then opts[-opt]+=" --exclude=${file}"
+	elif [[ -d "${file}" ]]; then opts[-opt]+=" --exclude=${file}/*"; fi
+done
 if [ -n "${opts[sdr]}" ]; then
 	which sdr.bash &> /dev/null || die "there's no sdr script in PATH"
 	[[ -n "${opts[sqfsdir]}" ]] || opts[sqfsdir]=sqfsd
@@ -90,7 +92,10 @@ if [ -n "${opts[sdr]}" ]; then
 	rsync -avuR ${opts[root]}/${opts[sqfsdir]}/./{*,*/*,*/*/*}.sfs \
 		${opts[dir]}/${dirname}-${opts[prefix]}${opts[estring]}
 	for file in usr opt var/{db,cache/edb,lib/layman} ${opts[sqfsdir]}/{*,*/*,*/*/*}.sfs \
-		${opts[sqfsdir]}/{*,*/*,*/*/*}/ro; do opts[opt]+=" --exclude=$file"; done
+		${opts[sqfsdir]}/{*,*/*,*/*/*}/ro; do 
+		if [[ -f "${file}" ]]; then opts[-opt]+=" --exclude=${file}"
+		elif [[ -d "${file}" ]]; then opts[-opt]+=" --exclude=${file}/*"; fi
+	done
 fi
 if [ -n "${opts[boot]}" ]; then
 	mount /boot

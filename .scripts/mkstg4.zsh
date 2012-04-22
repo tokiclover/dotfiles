@@ -95,7 +95,7 @@ if [[ -n ${opts[-split]} ]] || [[ -n ${opts[-s]} ]] {
 print -P "%F{green}>>> successfuly built ${opts[-tarball]} stage4 tarball%f"
 }
 if [[ -n ${(k)opts[-restore]} ]] || [[ -n ${(k)opts[-R]} ]] {
-	opts[opt]="--extract --verbose --preserve --directory ${opts[-root]}"
+	opts[-opt]="--extract --verbose --preserve --directory ${opts[-root]}"
 	print -P "%F{green}>>> restoring ${opts[-tarball]} stage4 tarball...%f"
 :	${opts[-restore]:-${opts[-R]:-${opts[-dir]}}}
 	if [[ -n ${(k)opts[-sdr]} ]] || [[ -n ${(k)opts[-q]} ]] { rsync -avuR \

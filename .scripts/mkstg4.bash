@@ -1,5 +1,5 @@
 #!/bin/bash
-# $Id: ~/.scripts/mkstg4.bash,v 1.0 2012/04/20 -tclover Exp $
+# $Id: ~/.scripts/mkstg4.bash,v 1.0 2012/04/22 -tclover Exp $
 usage() {
   cat <<-EOF
   usage: ${1##*/} [OPTIONS...]
@@ -10,7 +10,6 @@ usage() {
   -g, --gpg                encrypt and/or sign the final tarball[.gpg]
       --cipher <aes>       cipher to use when encypting the tarball archive
       --encrypt            encrypt, may be combined with --symmetric/--sign
-      --pass <1>           number of pass to encrypt the tarball when using -S
       --recipient <u-id>   encrypt the final tarball using <user-id> public key
       --sign               sign the tarball using <user-id>, require --recipient
       --symmetric          encrypt with a symmetric cipher using a passphrase
@@ -30,7 +29,7 @@ exit 0
 }
 error() { echo -ne "\e[1;31m* \e[0m$@\n"; }
 die()   { error "$@"; exit 1; }
-opt=$(getopt -o bc:e:gqp:r:R::s:d:t:u -l cipher:,comp:,encrypt,exclude:,gpg,pass: \
+opt=$(getopt -o bc:e:gqp:r:R::s:d:t:u -l cipher:,comp:,encrypt,exclude:,gpg \
 	-l sdr,sqfsd:,split:,sqfsdir:,dir:,symmetric,sysdir:,root:,tarball:,usage \
 	-l recipient:,sign,estring:,restore:: -o E: -n ${0##*/} -- "$@" || usage)
 eval set -- "$opt"
@@ -38,16 +37,15 @@ declare -A opts
 while [[ $# > 0 ]]; do
 	case $1 in
 		-u|--usage) usage;;
-		-g|--gpg) opts[gpg]=gpg; shift;;
 		-q|--sdr) opts[sdr]=sdr; shift;;
 		-b|--boot) opts[boot]=y; shift;;
-		--pass) opts[pass]=${2}; shift 2;;
 		--sign) opts[gpg]+=" --sign"; shift;;
 		--encrypt) opts[gpg]+=" --encrypt"; shift;;
 		--cipher) opts[gpg]+=" --cipher-algo ${2}"; shift 2;;
-		--recipient) opts[gpg]+=" --recipient ${2}"; shift 2;;
+		--recipient) opts[gpg]+=" --recipient \"${2}\""; shift 2;;
+		-g|--gpg) opts[gpg]="gpg ${opts[gpg]}"; shift;;
 		-E|--estring) opts[estring]="${2}"; shift 2;;
-		-e|--exclude) opts[exclude]="${2//,/ }"; shift 2;;
+		-e|--exclude) exclude="${2//:/ }"; shift 2;;
 		--symmetric) opts[gpg]+=" --symmetric"; shift;;
 		-p|--prefix) opts[prefix]="${2}"; shift 2;;
 		-d|--dir) opts[dir]="${2}"; shift 2;;
@@ -65,7 +63,7 @@ while [[ $# > 0 ]]; do
 done
 [[ -n ${opts[prefix]} ]] || opts[prefix]="$(uname -r | cut -c-3)"
 [[ -n "${opts[root]}" ]] || opts[root]=/
-[[ -n "${opts[dir]}" ]] || opts[dir]=/mnt/sup/$(uname -m)}
+[[ -n "${opts[dir]}" ]] || opts[dir]=/mnt/sup/$(uname -m)
 [[ -n "${opts[tarball]}" ]] && opts[tarball]=${opts[prefix]}.${opts[tarball]} \
 	|| opts[tarball]=${opts[prefix]}${opts[estring]}.stg4
 [[ -n "${opts[comp]}" ]] || opts[comp]=gzip
@@ -83,22 +81,22 @@ echo -ne "\e[1;32m>>> building ${opts[tarball]} stage4 tarball...\e[0m$@\n"
 cd ${opts[root]} || die "invalid root directory"
 for file in mnt/* media home dev proc sys tmp run boot/*.i{mg,so} bootcp/*.i{mg,so} \
 	var/{{,local/}portage,run,lock,pkg,src,bldir,.*.tgz,tmp} lib*/rc/init.d *.swp \
-	lib*/splash/cache usr/{,local/}portage ${opts[tarball]}; do 
-	if [[ -f "${file}" ]]; then opts[-opt]+=" --exclude=${file}"
-	elif [[ -d "${file}" ]]; then opts[-opt]+=" --exclude=${file}/*"; fi
+	lib*/splash/cache usr/{,local/}portage ${opts[tarball]}; do
+	if [[ -f "${file}" ]]; then opts[opt]+=" --exclude=${file}"
+	elif [[ -d "${file}" ]]; then opts[opt]+=" --exclude=${file}/*"; fi
 done
 if [ -n "${opts[sdr]}" ]; then
-	which sdr.bash &> /dev/null || die "there's no sdr script in PATH"
+	which sdr &> /dev/null || die "there's no sdr script in PATH"
 	[[ -n "${opts[sqfsdir]}" ]] || opts[sqfsdir]=sqfsd
 	[[ -n "${opts[sysdir]}" ]] && sdr.bash -r${opts[sqfsdir]} -o0 -U -d${opts[sysdir]}
 	[[ -n "${opts[sqfsd]}" ]] && sdr.bash -r${opts[sqfsdir]} -o0  -d${opts[sqfsd]}
-	dirname=${opts[sqfsdir]}; dirname=${dirname##*/}
+	dirname=${opts[sqfsdir]##*/}
 	rsync -avuR ${opts[root]}/${opts[sqfsdir]}/./{*,*/*,*/*/*}.sfs \
 		${opts[dir]}/${dirname}-${opts[prefix]}${opts[estring]}
-	for file in usr opt var/{db,cache/edb,lib/layman} ${opts[sqfsdir]}/{*,*/*,*/*/*}.sfs \
-		${opts[sqfsdir]}/{*,*/*,*/*/*}/ro; do 
-		if [[ -f "${file}" ]]; then opts[-opt]+=" --exclude=${file}"
-		elif [[ -d "${file}" ]]; then opts[-opt]+=" --exclude=${file}/*"; fi
+	for file in usr opt var/{db,cache/edb,lib/layman} \
+	${opts[sqfsdir]}/{*,*/*,*/*/*}.sfs ${opts[sqfsdir]}/{*,*/*,*/*/*}/ro; do
+		if [[ -f "${file}" ]]; then opts[opt]+=" --exclude=${file}"
+		elif [[ -d "${file}" ]]; then opts[opt]+=" --exclude=${file}/*"; fi
 	done
 fi
 if [ -n "${opts[boot]}" ]; then
@@ -108,24 +106,26 @@ if [ -n "${opts[boot]}" ]; then
 	umount /boot
 	sleep 3
 fi
-opts[opt]+=" --create --absolute-names --${opts[comp]} --verbose --totals --file"
-tar ${opts[opt]} ${opts[tarball]} ${opts[root]} || die "failed to backup"
-if [ -n "${opts[gpg]}" ]; then opts[gpg]+=" --output ${opts[tarball]}.gpg ${opts[tarball]}"
- 	[[ -n "${opts[pass]}" ]] && opts[gpg]="echo ${opts[pass]} | ${opts[gpg]}"
-	$(${opts[gpg]} && rm ${opts[tarball]})
+opts[opt]+=" --create --absolute-names --${opts[comp]} --verbose --totals"
+if [ -n "${opts[gpg]}" ]; then
+	opts[opt]+=" | ${opts[gpg]} --output ${opts[tarball]}.gpg"
 	opts[tarball]+=.gpg
+else  opts[opt]+=" --file ${opts[tarball]}"
 fi
+tar ${opts[opt]} ${opts[root]} || die "failed to backup"
 if [ -n "${opts[split]}" ]; then
 	split --bytes=${opts[split]} ${opts[tarball]} ${opts[tarball]}.
 fi
 echo -ne "\e[1;32m>>> successfuly built ${opts[tarball]} stage4 tarball\e[0m$@\n"
 }
 if [[ -n "${opts[restore]}" ]]; then
+	opts[opt]="--extract --verbose --preserve --directory ${opts[root]}"
 	echo -ne "\e[1;32m>>> restoring ${opts[tarball]} stage4 tarball...\e[0m$@\n"
 	[[ -n "${opts[sdr]}" ]] && rsync -avuR \
-		${opts[dir]}/./${opts[sqfsdir]:t}-${opts[prefix]}${opts[estring]} ${opts[dir]}/
-	[[ -n "${opts[gpg]}" ]] && opts[-gpg]="gpg --decrypt ${opts[tarball]}.gpg |"
-	$(${opts[opt]}) tar -xvpf ${opts[tarball]} -C ${opts[root]} || die "failed to restore"
+		${opts[dir]}/./${opts[sqfsdir]:t}-${opts[prefix]}${opts[estring]} ${opts[root]}/
+	if [[ -n "${opts[gpg]}" ]]; then opts[gpg]="gpg --decrypt ${opts[tarball]}.gpg |"
+	else opts[opt]+=" --file ${opts[tarball]}"
+	${opts[gpg]} tar ${opts[opt]} || die "failed to restore"
 	[[ -d /bootcp ]] && mount /boot && cp -aru /bootcp/* /boot/
 	sed -e 's:^\#.*(.*)::g' -e 's:SUBSYSTEM.*".*"::g' -i /etc/udev/rules.d/*persistent-cd.rules \
 		-i /etc/udev/rules.d/*persistent-net.rules

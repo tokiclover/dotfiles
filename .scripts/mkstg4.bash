@@ -1,5 +1,5 @@
 #!/bin/bash
-# $Id: ~/.scripts/mkstg4.bash,v 1.0 2012/04/22 -tclover Exp $
+# $Id: ~/.scripts/mkstg4.bash,v 1.0 2012/04/27 -tclover Exp $
 usage() {
   cat <<-EOF
   usage: ${1##*/} [OPTIONS...]
@@ -108,11 +108,11 @@ if [ -n "${opts[boot]}" ]; then
 fi
 opts[opt]+=" --create --absolute-names --${opts[comp]} --verbose --totals"
 if [ -n "${opts[gpg]}" ]; then
-	opts[opt]+=" | ${opts[gpg]} --output ${opts[tarball]}.gpg"
+	opts[opt]+=" ${opts[root]} | ${opts[gpg]} --output ${opts[tarball]}.gpg"
 	opts[tarball]+=.gpg
-else  opts[opt]+=" --file ${opts[tarball]}"
+else  opts[opt]+=" --file ${opts[tarball]} ${opts[root]}"
 fi
-tar ${opts[opt]} ${opts[root]} || die "failed to backup"
+tar ${opts[opt]} || die "failed to backup"
 if [ -n "${opts[split]}" ]; then
 	split --bytes=${opts[split]} ${opts[tarball]} ${opts[tarball]}.
 fi
@@ -124,7 +124,8 @@ if [[ -n "${opts[restore]}" ]]; then
 	[[ -n "${opts[sdr]}" ]] && rsync -avuR \
 		${opts[dir]}/./${opts[sqfsdir]:t}-${opts[prefix]}${opts[estring]} ${opts[root]}/
 	if [[ -n "${opts[gpg]}" ]]; then opts[gpg]="gpg --decrypt ${opts[tarball]}.gpg |"
-	else opts[opt]+=" --file ${opts[tarball]}"
+	else opts[opt]+=" --file ${opts[tarball]}"; opts[gpg]=
+	fi
 	${opts[gpg]} tar ${opts[opt]} || die "failed to restore"
 	[[ -d /bootcp ]] && mount /boot && cp -aru /bootcp/* /boot/
 	sed -e 's:^\#.*(.*)::g' -e 's:SUBSYSTEM.*".*"::g' -i /etc/udev/rules.d/*persistent-cd.rules \

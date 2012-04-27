@@ -1,5 +1,5 @@
 #!/bin/zsh
-# $Id: ~/.scripts/mkstg4.zsh,v 1.0 2012/04/22 -tclover Exp $
+# $Id: ~/.scripts/mkstg4.zsh,v 1.0 2012/04/27 -tclover Exp $
 usage() {
   cat <<-EOF
   usage: ${(%):-%1x} [OPTIONS...]
@@ -31,8 +31,8 @@ error() { print -P "%B%F{red}*%b%f $@"; }
 die()   { error $@; exit 1; }
 alias die='die "%F{yellow}%1x:%U${(%):-%I}%u:%f" $@'
 zmodload zsh/zutil
-zparseopts -E -D -K -A opts b c: e: g q p: r: s: d: t: u cipher: comp: dir: \
-	exclude: gpg sdr recipient: root: R:: restore:: split: sqfsdir: sqfsd+: \
+zparseopts -E -D -K -A opts b c: e+: g q p: r: s: d: t: u cipher: comp: dir: \
+	exclude+: gpg sdr recipient: root: R:: restore:: split: sqfsdir: sqfsd+: \
 	encrypt sign symmetric sysdir+: tarball: usage E: estring: || usage
 if [[ -n ${(k)opts[-u]} ]] || [[ -n ${(k)opts[-usage]} ]] { usage }
 if [[ -z ${opts[*]} ]] { typeset -A opts }
@@ -84,10 +84,10 @@ if [[ -n ${(k)opts[-gpg]} ]] || [[ -n ${(k)opts[-g]} ]] {
 	for opt (cipher encrypt recipient sign symmetric) {
 		if [[ -n ${(k)opts[-${opt}]} ]] { opts[-gpg]+=" --${opt} ${opts[-${opt}]:+${(qq)opts[-${opt}]}}" }
 	}
-	opts[-opt]+=" | gpg ${opts[-gpg]} --output ${opts[-tarball]}.gpg"
+	opts[-opt]+=" ${opts[-root]} | gpg ${opts[-gpg]} --output ${opts[-tarball]}.gpg"
 	opts[-tarball]+=.gpg
-} else { opts[-opt]+=" --file ${opts[-tarball]}" }
-tar ${=opts[-opt]} ${opts[-root]} || die "failed to backup"
+} else { opts[-opt]+=" --file ${opts[-tarball]} ${opts[-root]}" }
+tar ${=opts[-opt]} || die "failed to backup"
 if [[ -n ${opts[-split]} ]] || [[ -n ${opts[-s]} ]] {
 :	${opts[-s]:=${opts[-split]}}
 	split --bytes=${opts[-s]} ${opts[-tarball]} ${opts[-tarball]}.
@@ -103,7 +103,7 @@ if [[ -n ${(k)opts[-restore]} ]] || [[ -n ${(k)opts[-R]} ]] {
 	}
 	if [[ -n ${(k)opts[-gpg]} ]] || [[ -n ${(k)opts[-g]} ]] { 
 		opts[-gpg]="gpg --decrypt ${opts[-tarball]}.gpg |"
-	} else { opts[-opt]+=" --file ${opts[-tarball]}" }
+	} else { opts[-opt]+=" --file ${opts[-tarball]}"; opts[-gpg]= }
 	${=opts[-gpg]} tar ${opts[-opt]} || die "failed to restore"
 	if [[ -d /bootcp ]] { mount /boot && cp -aru /bootcp/* /boot/ }
 	sed -e 's:^\#.*(.*)::g' -e 's:SUBSYSTEM.*".*"::g' -i /etc/udev/rules.d/*persistent-cd.rules \

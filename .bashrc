@@ -1,8 +1,7 @@
-# $Id: $HOME/.bashrc,v 1.1 2011/11/16 -tclover Exp $
-#
+# $Id: ~/.bashrc, 2012/04/29 -tclover Exp $
 [[ $- != *i* ]] && return
-[[ -f $HOME/.aliasrc ]] && source $HOME/.aliasrc
-export FHP=$(ls -d $HOME/.mozilla/firefox/*.default)
+[[ -f ~/.aliasrc ]] && source ~/.aliasrc
+export FHP=$(ls -d ~/.mozilla/firefox/*.default)
 
 ## ANSI color codes
 RS="\e[0m" # reset
@@ -34,7 +33,7 @@ bash_prompt() {
 		local LENGTH=$((${COLUMNS}-${#PROMPT}-16))
 		local NPWD=...${PWD:(($COLUMNS-$LENTH)):$LENGTH}
 	else NPWD=$PWD; fi
-	[[ -n "${NPWD%%HOME*}" ]] && NPWD=${NPWD/$HOME/\~}
+	[[ -n "${NPWD%%HOME*}" ]] && NPWD=${NPWD/~/\~}
 	## And the prompt
 	case "$TERM" in
 	xterm*|rxvt*)

@@ -1,12 +1,11 @@
-# $Id: $HOME/.zshrc,v 1.1 2011/11/04 -tclover Exp $
-
-if [[ -f $HOME/.dir_colors ]] { eval $(dircolors -b $HOME/.dir_colors) 
+# $Id: ~/.zshrc, 2012/04/29 -tclover Exp $
+if [[ -f ~/.dir_colors ]] { eval $(dircolors -b ~/.dir_colors) 
 } elif [[ -f /etc/DIR_COLORS ]] { eval $(dircolors -b /etc/DIR_COLORS) 
 } else { eval $(dircolors) }
 export ZLS_COLORS=$LS_COLORS
-export FHP=$(print $HOME/.mozilla/firefox/*.default(/))
+export FHP=$(print ~/.mozilla/firefox/*.default(/))
 #export CDPATH='.:~:/var/dst/git-src:/var/dst/egit-src:/var/dst/svn-serc:/usr/src:/mnt'
-export ZSH=$HOME/.oh-my-zsh
+export ZSH=~/.oh-my-zsh
 # Load all of the config files in ~/.oh-my-zsh that end in .zsh
 # TIP: Add files you don't want in git to .gitignore
 for config_file ($ZSH/lib/*.zsh) source $config_file
@@ -41,5 +40,4 @@ for plugin ($plugins)
 		source $ZSH/custom/plugins/$plugin/$plugin.plugin.zsh
 	} elif [[ -f $ZSH/plugins/$plugin/$plugin.plugin.zsh ]] {
 		source $ZSH/plugins/$plugin/$plugin.plugin.zsh }
-
 # vim:fenc=utf-8:ci:pi:sts=0:sw=2:ts=2:

@@ -1,8 +1,8 @@
 #!/bin/bash
-# $Id: ~/.scripts/mkstg4.bash,v 1.0 2012/04/27 -tclover Exp $
+# $Id: ~/.scripts/mkstg4.bash,v 1.0 2012/05/01 -tclover Exp $
 usage() {
   cat <<-EOF
-  usage: ${1##*/} [OPTIONS...]
+  usage: ${0##*/} [OPTIONS...]
   -b, --boot               whether to backup /boot to /bootcp
   -c, --comp               compression command to use, default is 'gzip'
   -e, --exclude <files>    files/dirs to exclude from the tarball archive

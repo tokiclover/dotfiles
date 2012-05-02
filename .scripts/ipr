@@ -40,11 +40,11 @@ lpdip="$($ifc  $lpdif | $grp inet' ' | $awk '{ print $2 }')"
 lpdmsk="$($ifc  $lpdif | $grp netmask | $awk '{ print $4 }')"
 lpdnet="$lpdip/$lpdmsk"
 if [ -n "${modules}" ]; then
-	for module in ip_nat_{ftp,irc} ip_conntrack_{ftp,irc} iptable{s,_{filter,mangle,raw}} \
+	for module in ip_nat_{ftp,irc} ip_conntrack_{ftp,irc} iptable_{filter,mangle,raw} \
 		nf_conntrack_ipv4 iptable_nat ipt_{MASQUERADE,REDIRECT,REJECT,LOG}
 	do modprobe ${module} &> /dev/null; done
 	if [[ -n "${ip6}" ]]; then
-		for module in ip6_table{s,_{filter,mangle,raw}} nf_conntrack_ipv6 ip6t_{LOG,REJECT} 
+		for module in ip6table_{filter,mangle,raw} nf_conntrack_ipv6 ip6t_{LOG,REJECT} 
 		do modprobe ${module}; done
 	fi
 fi

@@ -2,16 +2,15 @@
 if [[ -e /etc/profile.env ]] { source /etc/profile.env }
 export EDITOR=${EDITOR:-/bin/nano}
 export PAGER=${PAGER:-/usr/bin/less}
-export ZLS_COLORS=$LS_COLORS
+export ZLS_COLORS=${LS_COLORS}
 export FHP=$(print ~/.mozilla/firefox/*.default(/))
 export CDPATH='.:~:/var/src/git-src:/var/src/egit-src:/var/src/svn-src:/usr/src:/mnt'
 # 077 would be more secure, but 022 is generally quite realistic
 umask 022
 # set path
-if [[ $EUID = 0 || $USER = root ]] {
-	PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:${ROOTPATH}
-} else { PATH=/usr/local/bin:/usr/bin:/bin:${PATH} }
-PATH+=:~/.scripts
+if [[ ${EUID} = 0 ]] || [[ ${USER} = root ]] {
+	PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:~/.scripts:${ROOTPATH}
+} else { PATH=/usr/local/bin:/usr/bin:/bin:~/.scripts:${PATH} }
 export PATH
 unset ROOTPATH
 for sh (/etc/profile.d/*.sh) if [[ -r ${sh} ]] { source ${sh} }

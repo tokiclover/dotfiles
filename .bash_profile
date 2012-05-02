@@ -5,9 +5,8 @@ shopt -s extglob
 shopt -s cdable_vars
 set -o vi
 if [[ ${UID} = 0 ]] || [[ ${USER} = root ]]; then
-	PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:${ROOTPATH}"
-else PATH="/usr/local/bin:/usr/bin:/bin:${PATH}"; fi
-PATH+=:~/.scripts
+	PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:~/.scripts:${ROOTPATH}"
+else PATH="/usr/local/bin:/usr/bin:/bin:~/.scripts:${PATH}"; fi
 export PATH
 unset ROOTPATH
 export FHP=$(ls -d ~/.mozilla/firefox/*.default)

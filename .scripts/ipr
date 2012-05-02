@@ -1,5 +1,5 @@
 #!/bin/sh
-# $Id: $HOME/.scripts/iptr,v 1.2 2012/03/31 -tclover Exp $
+# $Id: ~/.scripts/iptr,v 1.2 2012/05/02 -tclover Exp $
 usage()
 {
 cat <<-EOF
@@ -9,6 +9,7 @@ cat <<-EOF
 	    --ipv=4,6     enable ipv{4,6} support
 	-4, --ipv=4       short hand for --ipv=4
 	-6, --ipv=6       short hand for --ipv=6
+	-m, --module      insert kernel modules
 	-u, --usage       print this help and exit
 EOF
 }
@@ -23,7 +24,8 @@ while [[ $# > 0 ]]; do
 		-d|--dhcps) dhcps=${2}; shift 2;;
 		-4) ip4=yes; shift;;
 		-6) ip6=yes; shift;;
-		--ipv) for vrs in ${2/,/ }; do ip${vrs}=yes; done; shift 2;;
+		-m|--module) modules=y; shift;;
+		--ipv) for ip in ${2/,/ }; do ip${ip}=y; done; shift 2;;
 		--) shift; break;;
 	esac
 done
@@ -37,11 +39,15 @@ lpdif=lo
 lpdip="$($ifc  $lpdif | $grp inet' ' | $awk '{ print $2 }')"
 lpdmsk="$($ifc  $lpdif | $grp netmask | $awk '{ print $4 }')"
 lpdnet="$lpdip/$lpdmsk"
-#modules="ip_nat_ftp ip_conntrack_ftp iptable_filter iptable_raw ip6table_raw 
-#ip6table_mangle iptable_mangle ip_tables ip6_tables nf_conntrack_ipv4 
-#nf_conntrack_ipv6 nf_conntrack_irc nf_nat_irc nf_nat_ftp ip6t_LOG ip6t_REJECT 
-#ip6table_filter iptable_nat ipt_MASQUERADE ipt_REDIRECT ipt_REJECT ipt_LOG"
-#for mod in $modules; do modprobe $mod &> /dev/null; done
+if [ -n "${modules}" ]; then
+	for module in ip_nat_{ftp,irc} ip_conntrack_{ftp,irc} iptable{s,_{filter,mangle,raw}} \
+		nf_conntrack_ipv4 iptable_nat ipt_{MASQUERADE,REDIRECT,REJECT,LOG}
+	do modprobe ${module} &> /dev/null; done
+	if [[ -n "${ip6}" ]]; then
+		for module in ip6_table{s,_{filter,mangle,raw}} nf_conntrack_ipv6 ip6t_{LOG,REJECT} 
+		do modprobe ${module}; done
+	fi
+fi
 iface()
 {	
 	# Setting up external interface environment variables

@@ -1,7 +1,6 @@
-# $Id: ~/.bashrc, 2012/04/29 -tclover Exp $
+# $Id: ~/.bashrc, 2012/05/02 -tclover Exp $
 [[ $- != *i* ]] && return
 [[ -f ~/.aliasrc ]] && source ~/.aliasrc
-export FHP=$(ls -d ~/.mozilla/firefox/*.default)
 
 ## ANSI color codes
 RS="\e[0m" # reset
@@ -51,11 +50,9 @@ bash_prompt() {
 	*) PS1="$FBLE($FMAG\u$FBLE::$FMAG\h:$(tty|cut -b6-)$FBLE::$FMAG\W$FBLE)─\$$RS ";;
     esac
 }
-
 PROMPT_COMMAND=bash_prompt
 bash_prompt
 
 if [[ -f /etc/bash_completion ]] && ! shopt -oq posix; then
 	source /etc/bash_completion; fi
-#
 # vim:fenc=utf-8:ci:pi:sts=0:sw=2:ts=2:

@@ -1,10 +1,9 @@
 # $Id: ~/.xinitrc, 2012/04/30 -tclover Exp $
-[[ -z ${GNOME_KEYRING_PID} ]] && { eval $(gnome-keyring-daemon)
-	export GNOME_KEYRING_PID
-	export GNOME_KEYRING_SOCKET
-	export SSH_AUTH_SOCK
-	export GPG_AGENT_INFO
-}
+eval $(gnome-keyring-daemon)
+export GNOME_KEYRING_PID
+export GNOME_KEYRING_SOCKET
+export SSH_AUTH_SOCK
+export GPG_AGENT_INFO
 dbus-launch nm-applet --sm-disable &
 dbus-launch gcm-session &
 /usr/libexec/polkit-gnome-authentication-agent-1 &

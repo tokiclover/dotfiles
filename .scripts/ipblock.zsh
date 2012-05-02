@@ -43,13 +43,13 @@ opts[-oldtime]=$(gtime)
 wget -qNP ${opts[-datadir]} ${opts[-target]} || die "IPSet: ${opt[-file]} wget failed"
 opts[-time]=$(gtime)
 if [[ ${opts[-time]} != ${opts[-oldtime]} ]] {
-	opts[ipset]=${opts[-file]%.*}
-	opts[tmp]=${opts[-ipset]}.tmp
+	opts[-ipset]=${opts[-file]%.*}
+	opts[-tmp]=${opts[-ipset]}.tmp
 	ipset create ${opts[-tmp]} ${=opts[-params]}
 	networks=($(grep -E '^[0-9]' ${opts[-datafile]} | \
 		sed -rne 's/(^([0-9]{1,3}.){3}[0-9]{1,3}).*$/\1/p'))
 	ip=${#networks[*]}
-	while [[ $((--ip)) -ge 0 ]] { ipset add ${opts[-tmp]} ${networks[-ip]} }
+	while [[ $((--ip)) -ge 0 ]] { ipset add ${opts[-tmp]} ${networks[ip]} }
 	ipset create -exist ${opts[-ipset]} ${=opts[-params]}
 	ipset swap ${opts[-tmp]} ${opts[-ipset]}
 	ipset destroy ${opts[-tmp]}

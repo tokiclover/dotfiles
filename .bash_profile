@@ -9,5 +9,4 @@ if [[ ${UID} = 0 ]] || [[ ${USER} = root ]]; then
 else PATH="/usr/local/bin:/usr/bin:/bin:~/.scripts:${PATH}"; fi
 export PATH
 unset ROOTPATH
-export FHP=$(ls -d ~/.mozilla/firefox/*.default)
 # vim:fenc=utf-8:ci:pi:sts=0:sw=2:ts=2:

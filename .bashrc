@@ -1,6 +1,7 @@
 # $Id: ~/.bashrc, 2012/05/02 -tclover Exp $
 [[ $- != *i* ]] && return
 [[ -f ~/.aliasrc ]] && source ~/.aliasrc
+export FHP=$(ls -d ~/.mozilla/firefox/*.default)
 
 ## ANSI color codes
 RS="\e[0m" # reset

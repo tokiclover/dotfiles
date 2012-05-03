@@ -6,8 +6,9 @@ export PAGER=${PAGER:-/usr/bin/less}
 umask 022
 # set path
 if [[ ${EUID} = 0 ]] || [[ ${USER} = root ]] {
-	PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:~/.scripts:${ROOTPATH}
-} else { PATH=/usr/local/bin:/usr/bin:/bin:~/.scripts:${PATH} }
+	PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:${ROOTPATH}
+} else { PATH=/usr/local/bin:/usr/bin:/bin:${PATH} }
+PATH+=:\~/.scripts
 export PATH
 unset ROOTPATH
 for sh (/etc/profile.d/*.sh) if [[ -r ${sh} ]] { source ${sh} }

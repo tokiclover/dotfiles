@@ -2,6 +2,9 @@
 if [[ -f ~/.dir_colors ]] { eval $(dircolors -b ~/.dir_colors) 
 } elif [[ -f /etc/DIR_COLORS ]] { eval $(dircolors -b /etc/DIR_COLORS) 
 } else { eval $(dircolors) }
+export FHP=$(print ~/.mozilla/firefox/*.default(/))
+export CDPATH='.:~:/var/src/git-src:/var/src/egit-src:/var/src/svn-src:/usr/src:/mnt'
+export ZLS_COLORS=${LS_COLORS}
 export ZSH=~/.oh-my-zsh
 # Load all of the config files in ~/.oh-my-zsh that end in .zsh
 # TIP: Add files you don't want in git to .gitignore

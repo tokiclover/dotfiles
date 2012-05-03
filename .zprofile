@@ -2,9 +2,6 @@
 if [[ -e /etc/profile.env ]] { source /etc/profile.env }
 export EDITOR=${EDITOR:-/bin/nano}
 export PAGER=${PAGER:-/usr/bin/less}
-export ZLS_COLORS=${LS_COLORS}
-export FHP=$(print ~/.mozilla/firefox/*.default(/))
-export CDPATH='.:~:/var/src/git-src:/var/src/egit-src:/var/src/svn-src:/usr/src:/mnt'
 # 077 would be more secure, but 022 is generally quite realistic
 umask 022
 # set path

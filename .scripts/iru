@@ -1,6 +1,11 @@
 #!/bin/sh
-ipv4=$(ifconfig eth0 | grep 'inet ' | head -n1 | awk '{ print $2 }')
-[ -n "$ipv4" ] && /root/.scripts/ipr -eeth0
-/etc/init.d/iptables restart
-unset ipv4
-exit 0
+# $Id: ~/.scripts/iru, 2012/05/03 -tclover Exp $
+for iface in eth0 wlan0; do
+	ipv4=$(ifconfig $iface | grep 'inet ' | head -n1 | awk '{ print $2 }')
+	if [ -n "$ipv4" ]; then 
+		~/.scripts/ipr -e$iface && /etc/init.d/iptables restart
+		~/.scripts/ipb.zsh && /etc/init.d/ipset restart
+	fi
+	unset ipv4
+done
+# vim:fenc=utf-8:ci:pi:sts=0:sw=4:ts=4:

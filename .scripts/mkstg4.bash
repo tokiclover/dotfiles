@@ -1,5 +1,5 @@
 #!/bin/bash
-# $Id: ~/.scripts/mkstg4.bash,v 1.0 2012/05/01 -tclover Exp $
+# $Id: ~/.scripts/mkstg4.bash,v 1.0 2012/05/04 -tclover Exp $
 usage() {
   cat <<-EOF
   usage: ${0##*/} [OPTIONS...]
@@ -25,7 +25,7 @@ usage() {
   -s, --split <bytes>      size of byte to split the tarball archive
   -u, --usage              print this help/usage and exit
 EOF
-exit 0
+exit $?
 }
 error() { echo -ne "\e[1;31m* \e[0m$@\n"; }
 die()   { error "$@"; exit 1; }
@@ -36,7 +36,6 @@ eval set -- "$opt"
 declare -A opts
 while [[ $# > 0 ]]; do
 	case $1 in
-		-u|--usage) usage;;
 		-q|--sdr) opts[sdr]=sdr; shift;;
 		-b|--boot) opts[boot]=y; shift;;
 		--sign) opts[gpg]+=" --sign"; shift;;
@@ -59,6 +58,7 @@ while [[ $# > 0 ]]; do
 		-R|--restore) opts[restore]="${2}"; shift 2
 		[[ -n ${opts[restore]} ]] || opts[restore]=y;;
 		--) shift; break;;
+		-u|--usage|*) usage;;
 	esac
 done
 [[ -n ${opts[prefix]} ]] || opts[prefix]="$(uname -r | cut -c-3)"

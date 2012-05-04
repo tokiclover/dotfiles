@@ -1,5 +1,5 @@
 #!/bin/bash
-# $Id: ~/.scripts/ipblock.bash , 2012/05/01 -tclover Exp $
+# $Id: ~/.scripts/ipblock.bash , 2012/05/04 -tclover Exp $
 usage() {
   cat <<-EOF
   usage: ${0##*/} [OPTIONS...]
@@ -10,7 +10,7 @@ usage() {
   -t, --target <url>      URL to retrieve the data file
   -u, --usage             print this help/usage and exit
 EOF
-exit 0
+exit $?
 }
 error() { 
 	echo -ne "\e[1;31m* \e[0m$@\n"
@@ -27,13 +27,13 @@ eval set -- "$opt"
 declare -A opts
 while [[ $# > 0 ]]; do
 	case $1 in
-		-u|--usage) usage;;
 		-l|--logger) opts[logger]=y; shift;;
 		-f|--file) opts[file]="${2}"; shift 2;;
 		-p|--params) opts[params]="${2}"; shift 2;;
 		-d|--datadir) opts[datadir]="${2}"; shift 2;;
 		-t|--target) opts[target]+=" ${2}"; shift 2;;
 		--) shift; break;;
+		-u|--usage|*) usage;;
 	esac
 done
 [[ -n ${opts[datadir]} ]] || opts[datadir]="/var/lib/ipset"

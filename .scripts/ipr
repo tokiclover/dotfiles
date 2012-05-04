@@ -1,5 +1,5 @@
 #!/bin/sh
-# $Id: ~/.scripts/iptr,v 1.2 2012/05/02 -tclover Exp $
+# $Id: ~/.scripts/iptr,v 1.2 2012/05/04 -tclover Exp $
 usage()
 {
 cat <<-EOF
@@ -12,13 +12,13 @@ cat <<-EOF
 	-m, --module      insert kernel modules
 	-u, --usage       print this help and exit
 EOF
+exit $?
 }
 [[ $# != 0 ]] && \
-opt=$(getopt -o 46i:e:d:: --long int:,ipv:,ext:,dhcp:: -n ${0##*/} -- "$@" || usage && exit 0)
+opt=$(getopt -o 46i:e:d::u -l int:,ipv:,ext:,dhcp::,usage -n ${0##*/} -- "$@" || usage)
 eval set -- "$opt"
 while [[ $# > 0 ]]; do
 	case $1 in
-		-u|--usage) usage; exit 0;;
 		-e|--ext) extif=${2}; shift 2;;
 		-i|--int) intif=${2}; shift 2;;
 		-d|--dhcps) dhcps=${2}; shift 2;;
@@ -27,6 +27,7 @@ while [[ $# > 0 ]]; do
 		-m|--module) modules=y; shift;;
 		--ipv) for ip in ${2/,/ }; do ip${ip}=y; done; shift 2;;
 		--) shift; break;;
+		-u|--usage|*) usage;;
 	esac
 done
 # First set LC_ALL to en to avoid l10n problems when awk-ing IPs etc.

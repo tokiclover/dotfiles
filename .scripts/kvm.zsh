@@ -25,6 +25,7 @@ if [[ -n ${(k)opts[-u]} ]] || [[ -n ${(k)opts[-usage]} ]] { usage }
 if [[ -z ${opts[*]} ]] { typeset -A opts }
 export PATH=$PATH:/usr/sbin:/sbin
 :	${opts[-tap]:=${opts[-t]}}
+:	${opts[-mem]:=${opts[-m]:-1024}}
 if [[ -n ${opts[-net]} ]] || [[ -n ${opts[-n]} ]] {
 :	${opts[-net]:=${opts[-n]}}
 :	${opts[-br-if]:=${opts[-b]:-br0}}
@@ -46,9 +47,9 @@ if [[ -n ${opts[-net]} ]] || [[ -n ${opts[-n]} ]] {
 	iptables -I INPUT -i ${opts[-br-if]} -j ACCEPT || die
 }
 export SDL_VIDEO_X11_DGAMOUSE=0
-if [[ ${$(uname -p)[(w)1]} =~ Intel ]] { opts[-mod]=-intel
-} elif [[ ${$(uname -p)[(w)1]} =~ AMD ]] { opts[-mod]=-amd }
+if [[ ${$(uname -p)[(w)1]} = Intel* ]] { opts[-mod]=-intel
+} elif [[ ${$(uname -p)[(w)1]} = AMD* ]] { opts[-mod]=-amd }
 modprobe -a kvm{,${opts[-mod]}} &> /dev/null
-qemu-kvm ${opts[-tap]:+-net nic -net tap,ifname=${opts[-tap]},script=no} -vga std \
-	-m ${opts[-mem]:-2048} -usbdevice tablet -boot d ${=opts[-cmd]} ${=opts[-c]}
+qemu-kvm ${=opts[-tap]:+-net nic -net tap,ifname=${opts[-tap]},script=no} -vga std \
+	-m ${opts[-mem]} ${=opts[-cmd]} ${=opts[-c]} -usbdevice tablet -boot d
 unset -v opts

@@ -1,5 +1,5 @@
-# $Id: ~/.xinitrc, 2012/04/30 -tclover Exp $
-eval $(gnome-keyring-daemon)
+# $Id: ~/.xinitrc, 2012/05/05 -tclover Exp $
+eval $(gnome-keyring-daemon --components=pkcs11,secrets,ssh,gpg)
 export GNOME_KEYRING_PID
 export GNOME_KEYRING_SOCKET
 export SSH_AUTH_SOCK

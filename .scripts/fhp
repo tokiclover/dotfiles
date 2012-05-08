@@ -1,8 +1,8 @@
 #!/bin/sh
-# $Id: $HOME/.scripts/fhp,v 1.0 2012/04/15 -tclover Exp $
+# $Id: ~/.scripts/fhp,v 1.0 2012/05/09 00:02:46 -tclover Exp $
 # a script to put firefox profile to tmpfs, the following line should be put in 
-# ~/.*shrc or ~/.*profile: `export FHP=$(ls -d $HOME/.mozilla/firefox/*.default)'
-# and something like... in a crontab job: */30 * * * * $USER $HOME/.scripts/fhp.bash
+# ~/.*shrc or ~/.*profile: `export FHP=$(ls -d ~/.mozilla/firefox/*.default)'
+# and something like... in a crontab job: */30 * * * * $USER ~/.scripts/fhp.bash
 die() {  echo "* $@"; exit 1; }
 [[ -z $FHP ]] && die "FHP profile env string is empty."
 if [[ -z $(mount -t tmpfs | grep -F $FHP) ]]; then

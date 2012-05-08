@@ -1,11 +1,11 @@
 bq. another @dotfiles@ repository
 
-h3. just clone the repository if you want to make use of it
-@% cd && git clone git://github.com/tokiclover/dotfiles.git@
-h3. zsh users can clone my fork of oh-my-zsh
-@% git clone --recurse-submodules git://github.com/tokiclover/oh-my-zsh.git .oh-my-zsh@
-h3. and then exec your shell with
-@% exec $SHELL@
+h3. clone the repository or repositories
+
+* @% cd && git clone git://github.com/tokiclover/dotfiles.git@
+* zsh users may clone my fork of oh-my-zsh: 
+  @% git clone --recurse-submodules git://github.com/tokiclover/oh-my-zsh.git .oh-my-zsh@
+* and then exec your shell with: @% exec $SHELL@
 
 h3. .scripts: extra info
 

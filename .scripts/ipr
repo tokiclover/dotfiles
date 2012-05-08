@@ -1,7 +1,6 @@
 #!/bin/sh
-# $Id: ~/.scripts/iptr,v 1.2 2012/05/04 -tclover Exp $
-usage()
-{
+# $Id: ~/.scripts/iptr,v 1.2 2012/05/08 17:01:15 -tclover Exp $
+usage() {
 cat <<-EOF
 	-i, --int=eth0    use internal interface
 	-e, --ext=wlan0   use external interface
@@ -14,8 +13,8 @@ cat <<-EOF
 EOF
 exit $?
 }
-[[ $# != 0 ]] && \
-opt=$(getopt -o 46i:e:d::u -l int:,ipv:,ext:,dhcp::,usage -n ${0##*/} -- "$@" || usage)
+[[ $# != 0 ]] && opt=$(getopt -o 46i:e:d::u -l int:,ipv:,ext:,dhcp::,usage \
+	-n ${0##*/} -- "$@" || usage)
 eval set -- "$opt"
 while [[ $# > 0 ]]; do
 	case $1 in
@@ -40,7 +39,7 @@ lpdif=lo
 lpdip="$($ifc  $lpdif | $grp inet' ' | $awk '{ print $2 }')"
 lpdmsk="$($ifc  $lpdif | $grp netmask | $awk '{ print $4 }')"
 lpdnet="$lpdip/$lpdmsk"
-if [ -n "${modules}" ]; then
+if [[ -n "${modules}" ]]; then
 	for module in ip_nat_{ftp,irc} ip_conntrack_{ftp,irc} iptable_{filter,mangle,raw} \
 		nf_conntrack_ipv4 iptable_nat ipt_{MASQUERADE,REDIRECT,REJECT,LOG}
 	do modprobe ${module} &> /dev/null; done
@@ -49,17 +48,16 @@ if [ -n "${modules}" ]; then
 		do modprobe ${module}; done
 	fi
 fi
-iface()
-{	
+iface() {	
 	# Setting up external interface environment variables
-	if [ -n "$extip4" ]; then
+	if [[ -n "$extip4" ]]; then
 		# Blocking Broadcasts
 		$ipt -A INPUT   -i $extif -d   $extmsk   -j DROPl
 		$ipt -A OUTPUT  -o $extif -d   $extmsk   -j DROPl
 		$ipt -A FORWARD -o $extif -d   $extmsk   -j DROPl
 		# An additional Egress check
 		$ipt -A OUTPUT  ! -o $extif -s $extmsk -j DROPl
-	elif [ -n "$extip6" ]; then echo "extip=$extip"; fi
+	elif [[ -n "$extip6" ]]; then echo "extip=$extip"; fi
 	# Now we are going to accept all traffic from our loopback device
 	# if the IP matches any of our interfaces.
 	$ipt -A INPUT   -i $lpdif -j ACCEPT
@@ -120,17 +118,25 @@ $ipt        -P OUTPUT      DROP
 $ipt        -P FORWARD     DROP
 # Flush all existing chains and erase personal chains
 chains=$(cat /proc/net/ip_tables_names 2>/dev/null)
-for cns in $chains; do $ipt -t $cns -F; done
-for cns in $chains; do $ipt -t $cns -X; done
+for cns in $chains; do 
+	$ipt -t $cns -F
+	$ipt -t $cns -X
+done
 unset chains
 echo 1 > /proc/sys/net/ipv4/tcp_syncookies
 echo 1 > /proc/sys/net/ipv4/icmp_echo_ignore_broadcasts
 echo 1 > /proc/sys/net/ipv4/ip_dynaddr
 # Source Address Verification
-for flt in /proc/sys/net/ipv4/conf/*/rp_filter; do  echo 1 > $flt; done
+for flt in /proc/sys/net/ipv4/conf/*/rp_filter; do 
+	echo 1 > $flt
+done
 # Disable IP source routing and ICMP redirects
-for flt in /proc/sys/net/ipv4/conf/*/accept_source_route; do echo 0 > $flt; done
-for flt in /proc/sys/net/ipv4/conf/*/accept_redirects; do echo 0 > $flt; done
+for flt in /proc/sys/net/ipv4/conf/*/accept_source_route; do 
+	echo 0 > $flt
+done
+for flt in /proc/sys/net/ipv4/conf/*/accept_redirects; do 
+	echo 0 > $flt
+done
 echo 1 > /proc/sys/net/ipv4/ip_forward
 # We are now going to create a few custom chains that will result in
 # logging of dropped packets. This will enable us to avoid having to
@@ -214,24 +220,22 @@ chkif() {
 	local iface=$1
 	local extip4="$($ifc  $iface | $grp inet' ' | head -n1 | $awk '{ print $2 }')"
 	local extip6="$($ifc  $iface | $grp inet6 | head -n1 | $awk '{ print $2 }')"
-	if [ -n "$extip4" ]; then extip=$extip4
+	if [[ -n "$extip4" ]]; then extip=$extip4
 		local extbc="$($ifc  $extif | $grp broadcast' ' | $awk '{ print $4 }')"
 		local extmsk="$($ifc $extif | $grp netmask' ' | $awk '{ print $6 }')"
 		local extnet="$extip/$extmsk"
 		echo "extip=$extip extbc=$extbc extmsk=$extmsk extnet=$extnet"
 		iface
-		if [ -n "$intif" ]; then
+		if [[ -n "$intif" ]]; then
 			$ipt -A INPUT    -s $extmsk -j ACCEPT
 			$ipt -A FORWARD  -s $extmsk -j ACCEPT
 			$ipt -A OUTPUT   -s $extmsk -j ACCEPT
 		fi
 	fi
-#	[ -n "$extip6" ] && { extip=$extip6; iface; }
-
+#	if [[ -n "$extip6" ]]; then extip=$extip6; iface; fi
 }
-[ -n "$extif" ] && chkif "$extif"
-[ -n "$intif" ] && chkif "$intif"
-unset -v ext{if,ip,bc,msk,net} lpd{if,ip,msk,net} intif
+[[ -n "$extif" ]] && chkif "$extif"
+[[ -n "$intif" ]] && chkif "$intif"
 # NAT I/O F 
 $ipt -t nat -A PREROUTING  -j ACCEPT
 $ipt -t nat -A POSTROUTING -j ACCEPT
@@ -244,4 +248,4 @@ $ipt -A FORWARD -m state --state ESTABLISHED,RELATED -j ACCEPT
 $ipt -A INPUT   -j DROPl
 $ipt -A OUTPUT  -j REJECTl
 $ipt -A FORWARD -j DROPl
-unset -v ipt grp sed awk
+unset -v ext{if,ip,bc,msk,net} lpd{if,ip,msk,net} intif ipt grp sed awk {tcp,udp,com}block

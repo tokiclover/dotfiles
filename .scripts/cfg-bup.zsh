@@ -1,5 +1,5 @@
 #!/bin/zsh
-# $Id: $HOME/.scripts/cfg-bup.zsh,v 1.0 2012/04/27 -tclover Exp $
+# $Id: ~/.scripts/cfg-bup.zsh,v 1.0 2012/05/09 00:02:51 -tclover Exp $
 usage() {
   cat <<-EOF
   usage: ${(%):-%1x} -s|-r [<date>]

@@ -1,10 +1,9 @@
-@$Id: dotfiles/README.textile, 2012/05/09 12:48:51 -tclover Exp $
+@$Id: dotfiles/README.textile, 2012/05/09 12:50:16 -tclover Exp $
 
 another @dotfiles@ repository
 
-h3. clone the repository or repositories
-
-* @% cd && git clone git://github.com/tokiclover/dotfiles.git@
+*  clone the repository or repositories
+@% cd && git clone git://github.com/tokiclover/dotfiles.git@
 * zsh users may clone my fork of oh-my-zsh: 
 @% git clone --recurse-submodules git://github.com/tokiclover/oh-my-zsh.git .oh-my-zsh@
 @% cd ~/.oh-my-zsh && git checkout my-zsh@

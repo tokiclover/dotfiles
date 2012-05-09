@@ -1,4 +1,4 @@
-@$Id: dotfiles/README.textile, 2012/05/09 12:50:16 -tclover Exp $
+@$Id: dotfiles/README.textile, 2012/05/09 12:51:07 -tclover Exp $@
 
 another @dotfiles@ repository
 

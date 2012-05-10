@@ -1,2 +1,4 @@
+# $Header: /etc/conf.d/vtmpfs, 2012/05/10 13:05:19 -tclover Exp $
 #tmpdir=/var/vtmpfs
 vardir=log
+# vim:fenc=utf-8:ft=gentoo-conf-d:ci:pi:sts=0:sw=4:ts=4:

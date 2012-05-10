@@ -1,7 +1,7 @@
 #!/sbin/runscript
 # Copyright 1999-2012 Gentoo Foundation
 # Distributed under the terms of the 2-clause BSD license
-# $Header: /etc/init.d/vtmpfs, v2.0 2012/04/20 -tclover Exp $
+# $Header: /etc/init.d/vtmpfs,v 2.0 2012/05/10 13:05:23 -tclover Exp $
 
 conf_file="/etc/conf.d/${SVCNAME}"
 description="use tmpfs and tarball archive to restore/save /var/{log,...}"
@@ -15,10 +15,10 @@ depend() {
 start() {
 	if [[ -z "$(mount -t tmpfs | grep ${tmpdir})" ]]; then 
 		mkdir -p "${tmpdir}" 
-		mount tmpdir ${tmpdir} -t tmpfs -o rw,nosuid,nodev,relatime,mode=1775
-		eend "$?"; fi
+		mount tmpdir ${tmpdir} -t tmpfs -o rw,nosuid,nodev,relatime,mode=775
+		eend "$?" "failed to mount tmpfs dir"
+	fi
 	for dir in ${vardir}; do check ${dir}; done
-    eend "$?"
 }
 
 stop() { for dir in ${vardir}; do pack ${dir}; done; }

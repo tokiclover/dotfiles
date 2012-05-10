@@ -1,4 +1,4 @@
-# $Id: ~/.zprofile, 2012/05/02 -tclover Exp $
+# $Id: ~/.zprofile, 2012/05/10 11:19:07 -tclover Exp $
 if [[ -e /etc/profile.env ]] { source /etc/profile.env }
 export EDITOR=${EDITOR:-/bin/nano}
 export PAGER=${PAGER:-/usr/bin/less}
@@ -8,7 +8,7 @@ umask 022
 if [[ ${EUID} = 0 ]] || [[ ${USER} = root ]] {
 	PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:${ROOTPATH}
 } else { PATH=/usr/local/bin:/usr/bin:/bin:${PATH} }
-PATH+=:\~/.scripts
+PATH+=:~/.scripts
 export PATH
 unset ROOTPATH
 for sh (/etc/profile.d/*.sh) if [[ -r ${sh} ]] { source ${sh} }

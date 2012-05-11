@@ -1,19 +1,23 @@
-@$Id: dotfiles/README.textile, 2012/05/11 02:40:26 -tclover Exp $@
+$Id: dotfiles/README.textile, 2012/05/11 19:37:04 -tclover Exp $
 
-another @dotfiles@ repository
+---
 
-*  clone the repository or repositories
-@% git clone git://github.com/tokiclover/dotfiles.git ~/@
-* zsh users may clone my fork of oh-my-zsh: 
-@% git clone --recurse-submodules git://github.com/tokiclover/oh-my-zsh.git .oh-my-zsh@
-@% cd ~/.oh-my-zsh && git checkout my-zsh@
-* and then exec your shell with: @% exec $SHELL@
+another _dotfiles_ repository
 
-h3. .scripts: extra info
+# using this repository
+
+* clone the repository or repositories: 
+	$ git clone git://github.com/tokiclover/dotfiles.git ~/
+* zsh users may clone my fork of [my-zsh][] of [oh-my-zsh][]: 
+	$ git clone --recurse-submodules git://github.com/tokiclover/oh-my-zsh.git .oh-my-zsh
+	$ cd ~/.oh-my-zsh && git checkout my-zsh
+* and then exec your shell with `exec $SHELL`
+
+# .scripts: extra info
 
 * cfg-bup is a simple script to back up/restore cfg files or directories;
 * fhp: is a simple script which put firefox profile inn tmpfs, 
-a zsh version is in ~/.oh-my-zsh/functions/fhp;
+	a zsh version is in ~/.oh-my-zsh/functions/fhp;
 * hdu: is a simple script which ease updating '$Header:...$' or '$Id:...$' update;
 * ipb: is a script which can be used to retrieve IP block lists to be added to iptables rules;
 * ipr: is script to generate iptables net rules;
@@ -25,4 +29,8 @@ a zsh version is in ~/.oh-my-zsh/functions/fhp;
 * term'*': terminal colors display scripts;
 * vtmps: an init svc scripts which can put several directories (var/{log,run,lock}..) into tmpfs.
 
-@vim:fenc=utf-8:@
+[my-zsh]: https://github.com/tokiclover/oh-my-zsh
+[oh-my-zsh]: https://github.com/robbyrussell/oh-my-zsh
+
+---
+vim:fenc=utf-8:

@@ -1,4 +1,4 @@
-$Id: dotfiles/README.textile, 2012/05/11 19:43:30 -tclover Exp $
+$Id: dotfiles/README.textile, 2012/05/11 19:46:39 -tclover Exp $
 
 ---
 
@@ -7,11 +7,11 @@ another _dotfiles_ repository
 # using this repository
 
 * clone the repository or repositories: 
-`git clone git://github.com/tokiclover/dotfiles.git ~/`
+`% git clone git://github.com/tokiclover/dotfiles.git ~/`
 * zsh users may clone my fork of [my-zsh][] of [oh-my-zsh][]: 
-`git clone --recurse-submodules git://github.com/tokiclover/oh-my-zsh.git .oh-my-zsh`
-`cd ~/.oh-my-zsh && git checkout my-zsh`
-* and then exec your shell with `exec $SHELL`
+`% git clone --recurse-submodules git://github.com/tokiclover/oh-my-zsh.git .oh-my-zsh`
+`% cd ~/.oh-my-zsh && git checkout my-zsh`
+* and then exec your shell with `% exec $SHELL`
 
 # .scripts: extra info
 

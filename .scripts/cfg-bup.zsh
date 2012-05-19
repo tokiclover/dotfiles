@@ -1,5 +1,5 @@
 #!/bin/zsh
-# $Id: ~/.scripts/cfg-bup.zsh,v 1.0 2012/05/19 17:42:34 -tclover Exp $
+# $Id: ~/.scripts/cfg-bup.zsh,v 1.0 2012/05/19 17:44:53 -tclover Exp $
 usage() {
   cat <<-EOF
   usage: ${(%):-%1x} -s|-r [<date>]
@@ -24,13 +24,13 @@ opts[-file]+=:/etc/make.conf:/etc/fstab:/etc/portage:/var/lib/portage:${opts[-d]
 setopt NULL_GLOB EXTENDED_GLOB
 if [[ -n ${(k)opts[-s]} ]] || [[ -n ${(k)opts[-save]} ]] {
 :	${opts[-date]:=${opts[-D]:-$(date +%Y%m%d%H%M)}}
-	for dir (${(pws,:,)opts[-file]}) { 
+	for dir (${(pws,:,)opts[-file]} ${(pws,:,)opts[-f]}) { 
 		mkdir -p ${opts[-root]}/${dir:h}
 		cp -ar ${dir} ${opts[-root]}/${dir}:${opts[-date]}
 	}
 }
 if [[ -n ${(k)opts[-r]} ]] || [[ -n ${(k)opts[-restore]} ]] {
-	for dir (${(pws,:,)opts[-file]}) { 
+	for dir (${(pws,:,)opts[-file]} ${(pws,:,)opts[-f]}) { 
 		if [[ ! -e ${opts[-root]}/${dir}:${opts[-date]}* ]] { 
 			opts[-date]=$(ls -d ${opts[-root]}/${dir}:* | tail -n1)
 		}; cp -ar ${opts[-root]}/${dir}:${opts[-date]}* ${dir}

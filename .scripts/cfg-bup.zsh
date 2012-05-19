@@ -1,5 +1,5 @@
 #!/bin/zsh
-# $Id: ~/.scripts/cfg-bup.zsh,v 1.0 2012/05/09 00:02:51 -tclover Exp $
+# $Id: ~/.scripts/cfg-bup.zsh,v 1.0 2012/05/19 17:38:35 -tclover Exp $
 usage() {
   cat <<-EOF
   usage: ${(%):-%1x} -s|-r [<date>]
@@ -19,10 +19,9 @@ zmodload zsh/zutil
 zparseopts -E -D -K -A opts d: date: f: file: s save r:: restore:: R: root:	u usage || usage
 if [[ -n ${(k)opts[-u]} ]] || [[ -n ${(k)opts[-usage]} ]] { usage }
 if [[ -z ${opts[*]} ]] { typeset -A opts }
-:	${opts[-root]:=${opts[-r]:-~/.cfg}}
+:	${opts[-root]:=${opts[-R]:-~/.cfg}}
 opts[-file]+=:/etc/make.conf:/etc/fstab:/etc/portage:/var/lib/portage:${opts[-d]}
-setopt NULL_GLOB
-setopt EXTENDED_GLOB
+setopt NULL_GLOB EXTENDED_GLOB
 if [[ -n ${(k)opts[-s]} ]] || [[ -n ${(k)opts[-save]} ]] {
 :	${opts[-date]:=${opts[-D]:-$(date +%Y%m%d%H%M)}}
 	for dir (${(pws,:,)opts[-file]}) { 

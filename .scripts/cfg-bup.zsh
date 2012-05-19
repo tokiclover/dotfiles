@@ -1,5 +1,5 @@
 #!/bin/zsh
-# $Id: ~/.scripts/cfg-bup.zsh,v 1.0 2012/05/19 17:38:35 -tclover Exp $
+# $Id: ~/.scripts/cfg-bup.zsh,v 1.0 2012/05/19 17:42:34 -tclover Exp $
 usage() {
   cat <<-EOF
   usage: ${(%):-%1x} -s|-r [<date>]
@@ -16,7 +16,7 @@ error() { print -P "%B%F{red}*%b%f $@"; }
 die()   { error $@; exit 1; }
 alias die='die "%F{yellow}%1x:%U${(%):-%I}%u:%f" $@'
 zmodload zsh/zutil
-zparseopts -E -D -K -A opts d: date: f: file: s save r:: restore:: R: root:	u usage || usage
+zparseopts -E -D -K -A opts d: date: f+: file+: s save r:: restore:: R: root:	u usage || usage
 if [[ -n ${(k)opts[-u]} ]] || [[ -n ${(k)opts[-usage]} ]] { usage }
 if [[ -z ${opts[*]} ]] { typeset -A opts }
 :	${opts[-root]:=${opts[-R]:-~/.cfg}}

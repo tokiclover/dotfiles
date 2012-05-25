@@ -1,4 +1,4 @@
-$Id: dotfiles/README.textile, 2012/05/11 19:46:39 -tclover Exp $
+`$Id: dotfiles/README.textile, 2012/05/24 22:17:26 -tclover Exp $`
 
 ---
 
@@ -33,4 +33,4 @@ another _dotfiles_ repository
 [oh-my-zsh]: https://github.com/robbyrussell/oh-my-zsh
 
 ---
-vim:fenc=utf-8:
+`vim:fenc=utf-8:`

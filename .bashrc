@@ -1,4 +1,4 @@
-# $Id: ~/.bashrc, 2012/05/02 -tclover Exp $
+# $Id: ~/.bashrc, 2012/06/20 15:52:12 -tclover Exp $
 [[ $- != *i* ]] && return
 [[ -f ~/.aliasrc ]] && source ~/.aliasrc
 export FHP=$(ls -d ~/.mozilla/firefox/*.default)

@@ -1,4 +1,4 @@
-# $Id: ~/.zshrc, 2012/05/02 -tclover Exp $
+# $Id: ~/.zshrc, 2012/06/20 15:40:40 -tclover Exp $
 if [[ -f ~/.dir_colors ]] { eval $(dircolors -b ~/.dir_colors) 
 } elif [[ -f /etc/DIR_COLORS ]] { eval $(dircolors -b /etc/DIR_COLORS) 
 } else { eval $(dircolors) }
@@ -40,4 +40,6 @@ for plugin ($plugins)
 		source $ZSH/custom/plugins/$plugin/$plugin.plugin.zsh
 	} elif [[ -f $ZSH/plugins/$plugin/$plugin.plugin.zsh ]] {
 		source $ZSH/plugins/$plugin/$plugin.plugin.zsh }
+
+for scr (~/.scripts/*.zsh) alias ${${scr:t}%.zsh}='~/.scripts/'${scr:t}
 # vim:fenc=utf-8:ci:pi:sts=0:sw=2:ts=2:

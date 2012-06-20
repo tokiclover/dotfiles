@@ -56,4 +56,8 @@ bash_prompt
 
 if [[ -f /etc/bash_completion ]] && ! shopt -oq posix; then
 	source /etc/bash_completion; fi
+
+for scr in $(ls ~/.scripts/*.bash &>/dev/null); do
+	alias $(basename ${src/.bash/})='~/.scripts/'${scr##*/}
+done
 # vim:fenc=utf-8:ci:pi:sts=0:sw=2:ts=2:

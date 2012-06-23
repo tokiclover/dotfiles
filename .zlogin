@@ -1,6 +1,8 @@
-# $Id: ~/.zlogin, 2012/04/29 -tclover Exp $
+# $Id: ~/.zlogin, 2012/06/23 02:27:12 -tclover Exp $
 # auto startx depending on the tty
-if [[ -z $DISPLAY ]] && [[ $EUID != 0 ]] { startx &> ~/.xsession-errors & }
+if [[ -z $DISPLAY ]] && [[ $EUID != 0 ]] && [[ ${$(tty)#*tty} -le 3 ]] { 
+	startx &> ~/.xsession-errors &
+}
 # start gnome-keyring
 if [[ -n $DISPLAY ]] && [[ -z $GNOME_KEYRING_PID ]] {
 	eval $(gnome-keyring-daemon)

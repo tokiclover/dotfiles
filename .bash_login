@@ -1,6 +1,7 @@
-# $Id: ~/.bash_login, 2012/04/29 -tclover Exp $
+# $Id: ~/.bash_login, 2012/06/23 02:26:52 -tclover Exp $
 # auto startx depending on the tty
-[[ -z $DISPLAY ]] [[ $UID != 0 ]] && startx &> ~/.xsession-errors &
+[[ -z $DISPLAY ]] && [[ $UID != 0 ]] && [[ $(tty | cut -c9) -le 3 ]] &&
+	startx &> ~/.xsession-errors &
 # start gnome-keyring
 [[ -n $DISPLAY ]] && [[ -z $GNOME_KEYRING_PID ]] && {
 	eval $(gnome-keyring-daemon)

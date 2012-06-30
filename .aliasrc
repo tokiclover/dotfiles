@@ -1,6 +1,9 @@
-# $Id: $HOME/.aliasrc,v 1.1 2011/10/25 -tclover Exp $
+# $Id: $HOME/.aliasrc, 2012/06/30 11:22:55 -tclover Exp $
 
-# Push and pop directories on directory stack
+alias ipr='~/.scripts/ipr'
+alias iru='~/.scripts/iru'
+alias lbd='~/.scripts/lbd'
+
 alias pu='pushd'
 alias po='popd'
 
@@ -11,11 +14,11 @@ alias grep='grep --color=auto'
 alias fgrep='fgrep --color=auto'
 alias egrep='egrep --color=auto'
 
-alias lsd='ls -d *$@*' 	 # only show directories
-alias lad='ls -Ad .*$@*' # only show dot-directories/files
-alias lsa='ls -Ad .*$@*' # only show dot-files
-alias lsn='ls -hrtl *$@* | tail' # display the newest files
-alias lso='ls -hrtl *$@* | head' # display the oldest files
+alias lsd='ls -d *$@*'
+alias lad='ls -Ad .*$@*'
+alias lsa='ls -Ad .*$@*'
+alias lsn='ls -hrtl *$@* | tail'
+alias lso='ls -hrtl *$@* | head'
 alias lsl='ls -Alh'
 alias halt='sudo /sbin/halt'
 alias root='sudo /sbin/reboot'
@@ -32,7 +35,6 @@ alias xt="tar -xvpf"
 
 alias esync='layman -s ALL && eix-sync'
 
-# and here follow a set of (logical/lexical) equery aliases
 alias eqf='equery f'
 alias equ='equery u'
 alias eqh='equery h'

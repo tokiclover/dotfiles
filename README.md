@@ -16,15 +16,15 @@ another _dotfiles_ repository
 # .scripts: extra info
 
 * cfg-bup is a simple script to back up/restore cfg files or directories;
-* fhp: is a simple script which put firefox profile inn tmpfs, 
+* fhp: is a simple script which put firefox profile into tmpfs, 
 	a zsh version is in ~/.oh-my-zsh/functions/fhp;
 * hdu: is a simple script which ease updating '$Header:...$' or '$Id:...$' update;
 * ipb: is a script which can be used to retrieve IP block lists to be added to iptables rules;
-* ipr: is script to generate iptables net rules;
+* ipr: is script to generate ip[6]tables net rules;
 * iru: is an '/etc/local.d/ipr.start' svc script to ease ipr and ipb start up if an iface is up;
 * kvm: is a script to ease kvm loadind with a few default option;
 * lbd: is a script to add/remove loop back devices;
-* mkstg4: a stage4 maker scripts with squashed (system and/or local) directories;
+* mkstg4: a stage4 maker scripts with squashed (system and/or local) directories support;
 * soundon.user: an oss4 user soundon script;
 * term'*': terminal colors display scripts;
 * vtmps.initd: an init svc which can put several directories (var/{log,run,lock}..) into tmpfs.

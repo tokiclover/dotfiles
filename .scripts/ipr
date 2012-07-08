@@ -33,7 +33,7 @@ while [[ $# > 0 ]]; do
 		-4) ip4=ipv4; shift;;
 		-6) ip6=ipv6; shift;;
 		-m|--module) module=y; shift;;
-		--mpd) port+=" ${2:-6600}"; shift 2;;
+		--mpd) mpd=${2:-6600}; shift 2;;
 		-b|--block) bck+=" $2",; shift 2;;
 		--msn) port+=" ${2:-1853}"; shift 2;;
 		--icq) port+=" ${2:-5190}"; shift 2;;
@@ -136,10 +136,15 @@ pre() {
 	echo -n "FW: Allowing inside systems to use service: "
 	for s in $srv $port; do
 		echo -n "$s "
-		$ipt -A OUTPUT  -o $ext  -p tcp --dport $s --syn -m state --state NEW -j ACCEPT
-		$ipt -A OUTPUT  -o $ext  -p udp --dport $s       -m state --state NEW -j ACCEPT
+		$ipt -A INPUT   -o $ext  -p tcp --dport $s --syn -m state --state NEW -j ACCEPT
+		$ipt -A INPUT   -o $ext  -p udp --dport $s       -m state --state NEW -j ACCEPT
 	done
 	echo ""
+	if [ -n "$mpd" ]; then
+		echo "Opening Input/Output UPD/TCP over 127.0.0.1:$mpd:-6600 for MPD"
+		$ipt -A INPUT  -p tcp --dport $mpd -i $lpdif --syn -m state --state NEW -j ACCEPT
+		$ipt -A OUTPUT -p tcp --dport $mpd -o $lpdif --syn -m state --state NEW -j ACCEPT
+	fi
 	if [[ -n "$torrent" ]]; then
 		# turning off DHT tracking for torrent
 		echo "FW: disabling tracking on ${torrent#*:}-udp-port PREROUTING and OUTPUT"

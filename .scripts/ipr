@@ -9,7 +9,7 @@ cat <<-EOF
 	-4, --ipv=4                  short hand for --ipv=4
 	-6, --ipv=6                  short hand for --ipv=6
 	-m, --module                 insert kernel modules
-	    --mpd  [6600]            short hand of '-s|-p 6600'
+	    --mpd  [6600]            open mpd port
 	    --msn  [1863]            short hand of '-s|-p 1863'
 	    --icq  [5190]            short hand of '-s|-p 5190'
 	    --jabber [5222]          short hand of '-s|-p 5222'
@@ -136,12 +136,12 @@ pre() {
 	echo -n "FW: Allowing inside systems to use service: "
 	for s in $srv $port; do
 		echo -n "$s "
-		$ipt -A INPUT   -o $ext  -p tcp --dport $s --syn -m state --state NEW -j ACCEPT
-		$ipt -A INPUT   -o $ext  -p udp --dport $s       -m state --state NEW -j ACCEPT
+		$ipt -A OUTPUT  -o $ext  -p tcp --dport $s --syn -m state --state NEW -j ACCEPT
+		$ipt -A OUTPUT  -o $ext  -p udp --dport $s       -m state --state NEW -j ACCEPT
 	done
 	echo ""
 	if [ -n "$mpd" ]; then
-		echo "Opening Input/Output UPD/TCP over 127.0.0.1:$mpd:-6600 for MPD"
+		echo "Opening Input/Output UPD/TCP over 127.0.0.1:$mpd for MPD"
 		$ipt -A INPUT  -p tcp --dport $mpd -i $lpdif --syn -m state --state NEW -j ACCEPT
 		$ipt -A OUTPUT -p tcp --dport $mpd -o $lpdif --syn -m state --state NEW -j ACCEPT
 	fi

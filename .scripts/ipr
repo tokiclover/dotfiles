@@ -1,5 +1,5 @@
 #!/bin/sh
-# $Id: ~/.scripts/ipr,v 2.0 2012/06/26 16:33:27 -tclover Exp $
+# $Id: ~/.scripts/ipr,v 2.0 2012/07/08 22:41:12 -tclover Exp $
 usage() {
 cat <<-EOF
 	-b, --block '1863 ntp'       block service or port '1863 ntp'
@@ -23,7 +23,7 @@ EOF
 exit $?
 }
 [[ $# = 0 ]] && usage
-opt=$(getopt -o 46b:i:e:d:S::s:u -l block:,ext:,jabber::,icq::,mpd::,msn::,torrent:: \
+opt=$(getopt -o 46b:i:e:d:p:S::s:u -l block:,ext:,jabber::,icq::,mpd::,msn::,torrent:: \
 	-l int:,ipv:,dhcp:,mpd,save::,service:,usage,yahoo:: -n ${0##*/} -- "$@" || usage)
 eval set -- "$opt"
 while [[ $# > 0 ]]; do
@@ -73,22 +73,22 @@ if [[ -n "$module" ]]; then
 	fi
 fi
 if [[ -n "$ip4" ]]; then
-	echo 1 > /proc/sys/net/ipv4/tcp_syncookies
-	echo 1 > /proc/sys/net/ipv4/icmp_echo_ignore_broadcasts
-	echo 1 > /proc/sys/net/ipv4/ip_dynaddr
+	echo 1 >/proc/sys/net/ipv4/tcp_syncookies
+	echo 1 >/proc/sys/net/ipv4/icmp_echo_ignore_broadcasts
+	echo 1 >/proc/sys/net/ipv4/ip_dynaddr
 	# Source Address Verification
 	for filter in /proc/sys/net/ipv4/conf/*/rp_filter; do 
-		echo 1 > $filter
+		echo 1 >$filter
 	done
-	echo 1 > /proc/sys/net/ipv4/ip_forward
+	echo 1 >/proc/sys/net/ipv4/ip_forward
 fi
 for iv in $ip4 $ip6; do
 	# Disable IP source routing and ICMP redirects
 	for filter in /proc/sys/net/$iv/conf/*/accept_source_route; do 
-		echo 0 > $filter
+		echo 0 >$filter
 	done
 	for filter in /proc/sys/net/$iv/conf/*/accept_redirects; do 
-		echo 0 > $filter
+		echo 0 >$filter
 	done
 done
 pre() {
@@ -134,7 +134,7 @@ pre() {
 			$ipt -A INPUT -p udp -s $dhcps --sport dhcpv6-server --dport dhcpv6-server -j ACCEPT
 	fi
 	echo -n "FW: Allowing inside systems to use service: "
-	for s in $srv; do
+	for s in $srv $port; do
 		echo -n "$s "
 		$ipt -A OUTPUT  -o $ext  -p tcp --dport $s --syn -m state --state NEW -j ACCEPT
 		$ipt -A OUTPUT  -o $ext  -p udp --dport $s       -m state --state NEW -j ACCEPT

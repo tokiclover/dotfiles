@@ -163,7 +163,7 @@ post() {
 		$ipt -A POSTROUTING -t nat -j ACCEPT
 		$ipt -A OUTPUT      -t nat -j ACCEPT
 	fi
-	$ipt -A INPUT -p tcp --dport auth --syn -m state --state NEW -j ACCEPT
+	$ipt -A INPUT   -p tcp --dport auth --syn -m state --state NEW -j ACCEPT
 	$ipt -A INPUT   -m state --state ESTABLISHED,RELATED -j ACCEPT
 	$ipt -A OUTPUT  -m state --state ESTABLISHED,RELATED -j ACCEPT
 	$ipt -A FORWARD -m state --state ESTABLISHED,RELATED -j ACCEPT
@@ -181,15 +181,15 @@ iface() {
 		# An additional Egress check
 		$ipt -A OUTPUT  ! -o $ext -s $msk -j DROPl
 	elif [[ -n "$ip6" ]]; then echo "ip=$ip"; fi
-	# Accept all traffic from our loopback device if the IP matches any of our interfaces
+	# Accept all traffic from loopback device if the IP matches any of our interfaces
 	$ipt -A INPUT   -i $lbdif -d $ip -j ACCEPT
 	# Block WAN access to internal network
 	$ipt -A INPUT   -i $ext ! -d $ip -j DROPl
 	# Block outbound ICMP (except for PING)
-	$ipt -A OUTPUT  -o $ext -p $icmp ! --${icmp}-type 8 -j DROPl
-	$ipt -A FORWARD -o $ext -p $icmp ! --${icmp}-type 8 -j DROPl
+	$ipt -A OUTPUT  -o $ext -p $icmp ! --$icmp-type 8 -j DROPl
+	$ipt -A FORWARD -o $ext -p $icmp ! --$icmp-type 8 -j DROPl
 	# Allow to ping out
-	$ipt -A OUTPUT  -o $ext  -p $icmp --${icmp}-type 8 -m state --state NEW -j ACCEPT
+	$ipt -A OUTPUT  -o $ext  -p $icmp  --$icmp-type 8 -m state --state NEW -j ACCEPT
 }
 main() {
 	local bc icmp if=$1 lbdif=lo lbdmsk lbdnet msk net
@@ -209,14 +209,14 @@ main() {
 			$ipt -A OUTPUT   -o $int -s $msk -j ACCEPT
 		fi
 		post
-		[[ -n "$fsave" ]] && ${ipt}-save > $fsave
+		[[ -n "$fsave" ]] && $ipt-save >$fsave
 	fi
 	if [[ -n "$ip6" ]]; then icmp=icmpv6 ipt="$(which ip6tables)"
 		ip="$($ifc  $if | $grp inet6 | head -n1 | $awk '{ print $2 }')"
 		lbdip="$($ifc  $lbdif | $grp inet6 | $awk '{ print $2 }')"
 		unset -v ip4 {,lbd}{bc,msk,net}
 		$ipt -F; $ipt -X; pre; iface; post
-		[[ -n "$fsave" ]] && ${ipt}-save > ${fsave/ipt/ip6t}
+		[[ -n "$fsave" ]] && $ipt-save >${fsave/ipt/ip6t}
 	fi
 }
 [[ -n "$ext" ]] && main "$ext"

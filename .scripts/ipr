@@ -141,9 +141,9 @@ pre() {
 	done
 	echo ""
 	if [ -n "$mpd" ]; then
-		echo "Opening Input/Output UPD/TCP over 127.0.0.1:$mpd for MPD"
-		$ipt -A INPUT  -p tcp --dport $mpd -i $lpdif --syn -m state --state NEW -j ACCEPT
-		$ipt -A OUTPUT -p tcp --dport $mpd -o $lpdif --syn -m state --state NEW -j ACCEPT
+		echo "Opening TCP Input/Output over $lbdip:$mpd for MPD"
+		$ipt -A INPUT  -p tcp --dport $mpd -s $lbdip --syn -m state --state NEW -j ACCEPT
+		$ipt -A OUTPUT -p tcp --dport $mpd -s $lbdip --syn -m state --state NEW -j ACCEPT
 	fi
 	if [[ -n "$torrent" ]]; then
 		# turning off DHT tracking for torrent

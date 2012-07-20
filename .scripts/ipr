@@ -1,5 +1,5 @@
 #!/bin/sh
-# $Id: ~/.scripts/ipr,v 2.0 2012/07/08 22:41:12 -tclover Exp $
+# $Id: ~/.scripts/ipr,v 2.0 2012/07/20 21:31:38 -tclover Exp $
 usage() {
 cat <<-EOF
 	-b, --block '1863 ntp'       block service or port '1863 ntp'
@@ -142,8 +142,8 @@ pre() {
 	echo ""
 	if [ -n "$mpd" ]; then
 		echo "Opening TCP Input/Output over $lbdip:$mpd for MPD"
-		$ipt -A INPUT  -p tcp --dport $mpd -s $lbdip --syn -m state --state NEW -j ACCEPT
-		$ipt -A OUTPUT -p tcp --dport $mpd -s $lbdip --syn -m state --state NEW -j ACCEPT
+		$ipt -A OUTPUT -p tcp --dport $mpd -o $lbdip --syn -m state --state NEW -j ACCEPT
+
 	fi
 	if [[ -n "$torrent" ]]; then
 		# turning off DHT tracking for torrent

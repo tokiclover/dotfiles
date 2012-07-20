@@ -1,5 +1,5 @@
 #!/bin/sh
-# $Id: ~/.scripts/ipr,v 2.0 2012/07/20 21:31:38 -tclover Exp $
+# $Id: ~/.scripts/ipr,v 2.0 2012/07/20 22:23:14 -tclover Exp $
 usage() {
 cat <<-EOF
 	-b, --block '1863 ntp'       block service or port '1863 ntp'
@@ -115,7 +115,7 @@ pre() {
 	$ipt -A INPUT   -p tcp -j BADTCP
 	$ipt -A OUTPUT  -p tcp -j BADTCP
 	# Accept all traffic from loopback device if the IP matches any of our interfaces.
-	$ipt -A INPUT   -i $lbdif -s   $lbdip   -j ACCEPT
+	$ipt -A INPUT   -i $ext -s   $lbdip   -j ACCEPT
 	echo -n "FW: Blocking attacks to TCP/UDP port "
 	for p in $bck; do
 		echo -n "$p "
@@ -126,7 +126,6 @@ pre() {
 		done
 	done
 	echo ""
-	# We are going to open udp-ports for DHCP server
 	if [[ -n "$dhcps" ]]; then 
 		[[ -n "$ip4" ]] &&
 			$ipt -A INPUT -p udp -s $dhcps --sport 67:68         --dport 67:68         -j ACCEPT
@@ -141,8 +140,8 @@ pre() {
 	done
 	echo ""
 	if [ -n "$mpd" ]; then
-		echo "Opening TCP Input/Output over $lbdip:$mpd for MPD"
-		$ipt -A OUTPUT -p tcp --dport $mpd -o $lbdip --syn -m state --state NEW -j ACCEPT
+		echo "Opening TCP Output over $lbdip:$mpd for MPD"
+		$ipt -A OUTPUT -p tcp --dport $mpd -o $lbdif --syn -m state --state NEW -j ACCEPT
 
 	fi
 	if [[ -n "$torrent" ]]; then

@@ -25,6 +25,6 @@ case $(tty | cut -b9-) in
 	1) exec ck-launch-session dbus-launch --sh-syntax --exit-with-session enlightenment_start.sh;;
 	2) exec ck-launch-session dbus-launch --sh-syntax --exit-with-session lxsession             ;;
 	3) exec ck-launch-session dbus-launch --sh-syntax --exit-with-session openbox-session       ;;
-	4) exec ck-launch-session dbus-launch --sh-syntax --exit-with-session razorqt-session       ;;
+	4) exec ck-launch-session dbus-launch --sh-syntax --exit-with-session razor-session         ;;
 esac
 # vim:fenc=utf-8:ci:pi:sts=0:sw=4:ts=4:

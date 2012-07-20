@@ -8,7 +8,7 @@ dbus-launch nm-applet --sm-disable &
 dbus-launch gcm-session &
 #xcalib -gc 1.0 -b 0.0 -co 100.0 ~/.icc/sRGB_v4_ICC_preference.icc &
 /usr/libexec/polkit-gnome-authentication-agent-1 &
-laditray &>/dev/null &
+laditray 1>/dev/null 2>&1 &
 unclutter -idle 8 -noevents &
 [[ -f ~/.Xmodmap ]] && xmodmap ~/.Xmodmap
 xset s off

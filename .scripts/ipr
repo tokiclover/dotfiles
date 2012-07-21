@@ -141,7 +141,8 @@ pre() {
 	echo ""
 	if [ -n "$mpd" ]; then
 		echo "Opening TCP Output over $lbdip:$mpd for MPD"
-		$ipt -A OUTPUT -p tcp --dport $mpd -o $lbdif --syn -m state --state NEW -j ACCEPT
+		$ipt -A INPUT  -p tcp --dport $mpd -s $lbdip --syn -m state --state NEW -j ACCEPT
+		$ipt -A OUTPUT -p tcp --dport $mpd -s $lbdip --syn -m state --state NEW -j ACCEPT
 
 	fi
 	if [[ -n "$torrent" ]]; then

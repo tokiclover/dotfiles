@@ -1,5 +1,5 @@
 #!/bin/zsh
-# $Id: ~/.scripts/ipblock.zsh , 2012/05/01 -tclover Exp $
+# $Id: ~/.scripts/ips.zsh , 2012/07/27 01:56:24 -tclover Exp $
 usage() {
   cat <<-EOF
   usage: ${(%):-%1x} [OPTIONS...]

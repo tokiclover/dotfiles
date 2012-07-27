@@ -1,5 +1,5 @@
 #!/bin/sh
-# $ID: /usr/lib/oss/soundon.user, 2012/02/13 -tclover Exp $
+# $ID: /usr/lib/oss/soundon.user, 2012/07/27 12:57:40 -tclover Exp $
 modprobe -a oss_{cmi878x,hdaudio}
 /usr/sbin/ossdetect -diu
 /usr/sbin/ossdevlinks 
@@ -23,5 +23,4 @@ else
 	ln -sf /dev/oss/oss_hdaudio0/spdout0 /dev/dsp_out
 #	vmixctl attach /dev/oss/oss_hdaudio0/pcm0 /dev/oss/oss_hdaudio0/pcmin0
 fi
-exit 0
 # vim:fenc=utf-8:ft=sh:ci:pi:sts=0:sw=2:ts=2:

@@ -1,5 +1,5 @@
 #!/bin/sh
-# $Id: ~/.scripts/ipr,v 2.0 2012/07/20 22:23:14 -tclover Exp $
+# $Id: ~/.scripts/ipr,v 2.0 2012/07/29 12:03:35 -tclover Exp $
 usage() {
 cat <<-EOF
 	-b, --block '1863 ntp'       block service or port '1863 ntp'
@@ -8,7 +8,7 @@ cat <<-EOF
 	-d, --dhcps [<ip>]           enable dhcp, use dhcp server IP
 	-4, --ipv=4                  short hand for --ipv=4
 	-6, --ipv=6                  short hand for --ipv=6
-	-m, --module                 insert kernel modules
+	-m, --module [<modules>]     insert kernel modules
 	    --mpd  [6600]            open mpd port
 	    --msn  [1863]            short hand of '-s|-p 1863'
 	    --icq  [5190]            short hand of '-s|-p 5190'
@@ -23,8 +23,8 @@ EOF
 exit $?
 }
 [[ $# = 0 ]] && usage
-opt=$(getopt -o 46b:i:e:d:p:S::s:u -l block:,ext:,jabber::,icq::,mpd::,msn::,torrent:: \
-	-l int:,ipv:,dhcp:,mpd,save::,service:,usage,yahoo:: -n ${0##*/} -- "$@" || usage)
+opt=$(getopt -o 46b:i:e:d:m::p:S::s:u -l block:,ext:,jabber::,icq::,mpd::,msn::,torrent:: \
+	-l int:,ipv:,dhcp:,module::,mpd,save::,service:,usage,yahoo:: -n ${0##*/} -- "$@" || usage)
 eval set -- "$opt"
 while [[ $# > 0 ]]; do
 	case $1 in
@@ -32,7 +32,6 @@ while [[ $# > 0 ]]; do
 		-i|--int) int=$2; shift 2;;
 		-4) ip4=ipv4; shift;;
 		-6) ip6=ipv6; shift;;
-		-m|--module) module=y; shift;;
 		--mpd) mpd=${2:-6600}; shift 2;;
 		-b|--block) bck+=" $2",; shift 2;;
 		--msn) port+=" ${2:-1853}"; shift 2;;
@@ -40,10 +39,11 @@ while [[ $# > 0 ]]; do
 		--jabber) port+=" ${2:-5222}"; shift 2;;
 		--yahoo) port+=" ${2:-5050}"; shift 2;;
 		-d|--dhcps) port+=" ${2:-67:68}"; shift 2;;
+		-m|--module) kmod=y module+=" $2"; shift 2;;
 		--ipv) for ip in $2; do ip$ip=ipv$ip; done; shift 2;;
 		-S|--save) fsave=${2:-/var/lib/iptables/rules-save}; shift 2;;
 		--torrent) torrent=${2:-50550:50555}; shift 2;;
-		-s|--service) service+=" $2"; shift 2;;
+		-s|--service) srv+=" $2"; shift 2;;
 		-p|--port) port+=" $2"; shift 2;;
 		--) shift; break;;
 		-u|--usage|*) usage;;
@@ -63,9 +63,9 @@ fi
 for p in $bck; do
 	[[ -n "$(echo -- $srv | $grp $p)" ]] && srv=${srv/$p /} || srv+=" $p"
 done
-if [[ -n "$module" ]]; then
+if [[ -n "$kmod" ]]; then
 	for mod in ip_nat_{ftp,irc} ip_conntrack_{ftp,irc} iptable_{filter,mangle,raw} \
-		nf_conntrack_ipv4 iptable_nat ipt_{MASQUERADE,REDIRECT,REJECT,LOG}
+		nf_conntrack_ipv4 iptable_nat ipt_{MASQUERADE,REDIRECT,REJECT,LOG} $module
 	do modprobe $mod &>/dev/null; done
 	if [[ -n "$ip6" ]]; then
 		for mod in ip6table_{filter,mangle,raw} nf_conntrack_ipv6 ip6t_{LOG,REJECT} 
@@ -221,5 +221,5 @@ main() {
 }
 [[ -n "$ext" ]] && main "$ext"
 [[ -n "$int" ]] && ext=$int int= && main "$ext"
-unset -v awk bck ext ip4 ip6 ifc int ipt grp port sed srv
+unset -v awk bck ext ip4 ip6 ifc int ipt grp kmod module port sed srv
 # vim:fenc=utf-8:ci:pi:sts=0:sw=2:ts=2:

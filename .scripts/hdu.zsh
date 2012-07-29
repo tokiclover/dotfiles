@@ -16,7 +16,7 @@ zmodload zsh/zutil
 zparseopts -E -D -K -A opts f+: file+: o: olddate: u usage || usage
 if [[ -n ${(k)opts[-u]} ]] || [[ -n ${(k)opts[-usage]} ]] { usage }
 if [[ -z ${opts[*]} ]] { typeset -A opts }
-:	${opts[-olddate]:=${opts[-o]:-2012/05/}}
+:	${opts[-olddate]:=${opts[-o]:-2012/07/}}
 : 	${opts[-newdate]:=$(date +%Y/%m/%d\ %T)}
 opts[-file]+=:${opts[-f]}
 for file (${(pws,:,)opts[-file]}) if [[ -n "$(grep ${opts[-olddate]} ${file})" ]] {

@@ -1,16 +1,16 @@
-! $Id: $HOME/.Xresources,v 1.1 2011/10/28 -tclover Exp $
+! $Id: $HOME/.Xresources,v 1.1 2012/08/05 11:39:44 -tclover Exp $
 
 !-*-{ Global font
 *font:                -*-terminus-*-*-*-*-*-*-*-*-*-*-*-*
-!!-*- Global Fore/background color -*-!!
+!-*- Global Fore/background color -*-!
 *background:          #101010
 !-*-}
 
-!-*-{ URXVT
+!-*-{ URxvt
 !-*- General settings -*-
 URxvt*termName:       rxvt-unicode-256color
 URxvt*font:           xft:terminus:size=8:antialias=false
-URxvt*allow_bold:     True
+URxvt*allow_bold:     False
 !-*- Perl extensions -*-
 URxvt.perl-ext-common:default,clipboard,matcher,keyboard-select
 URxvt.keysym.M-u:     perl:url-select:select_next

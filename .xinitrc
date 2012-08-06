@@ -1,12 +1,12 @@
-# $Id: ~/.xinitrc, 2012/07/20 13:16:30 -tclover Exp $
+# $Id: ~/.xinitrc, 2012/08/06 11:44:30 -tclover Exp $
 eval $(gnome-keyring-daemon --components=pkcs11,secrets,ssh,gpg)
 export GNOME_KEYRING_PID
 export GNOME_KEYRING_SOCKET
 export SSH_AUTH_SOCK
 export GPG_AGENT_INFO
-dbus-launch nm-applet --sm-disable &
-dbus-launch gcm-session &
-#xcalib -gc 1.0 -b 0.0 -co 100.0 ~/.icc/sRGB_v4_ICC_preference.icc &
+dbus-launch --sh-syntax --exit-with-session nm-applet --sm-disable &
+dbus-launch --sh-syntax --exit-with-session gcm-session &
+#xcalib -gc 1.0 -b 0.0 -co 100.0 ~/.icc/sRGB_v4_ICC_preference.icc
 /usr/libexec/polkit-gnome-authentication-agent-1 &
 laditray 1>/dev/null 2>&1 &
 unclutter -idle 8 -noevents &

@@ -1,4 +1,4 @@
-# $Id: ~/.zshrc, 2012/06/20 15:40:40 -tclover Exp $
+# $Id: ~/.zshrc, 2012/08/08 11:34:53 -tclover Exp $
 if [[ -f ~/.dir_colors ]] { eval $(dircolors -b ~/.dir_colors) 
 } elif [[ -f /etc/DIR_COLORS ]] { eval $(dircolors -b /etc/DIR_COLORS) 
 } else { eval $(dircolors) }
@@ -20,7 +20,7 @@ autoload -Uz vcs_info
 zstyle ':vcs_info:*' enable git svn
 zstyle ':vcs_info:git:*' unstagedstr '*'
 zstyle ':vcs_info:*' actionformats '%a'
-zstyle ':vcs_info:*' formats       '::%s:%b%u'
+zstyle ':vcs_info:*' formats       '·%s:%b%u'
 zstyle ':vcs_info:(git|svn):*' branchformat '%b'
 
 setopt EXTENDED_GLOB

@@ -1,0 +1,48 @@
+# $Id: ~/.conkyrc.laptop, 2012/08/08 10:16:19 -tclover Exp $
+# vim:fenc=utf-8:
+# avoid flickering
+double_buffer yes
+# window
+own_window  yes
+own_window_transparent no
+own_window_type normal
+own_window_hints undecorate,sticky,skip_taskbar,skip_pager
+# borders
+draw_borders yes
+border_outer_margin 1
+# shades
+draw_shades no
+# position
+gap_x 4
+gap_y 6
+alignment bottom_left
+# behaviour
+update_interval 1
+# color
+color1 b287ba
+color2 505050
+default_color  999
+#default_shade_color 000000
+own_window_colour 151515
+default_outline_color 746d76
+use_xft yes
+xftfont mintsstrong:size=8
+override_utf8_locale yes
+# prevent window from moving
+use_spacer none
+minimum_size 1670 
+# finaly the script
+TEXT
+${color2}::\
+${color}RAM:${color1}${memperc}%${color2}::\
+${color}/:${color1}${fs_used_perc /}%${color2}::\
+${color}~:${color1}${fs_used_perc /home}%${color2}::\
+${color}/VAR:${color1}${fs_used_perc /var}%${color2}::\
+${color}/SUP:${color1}${fs_used_perc /mnt/sup}%${color2}::\
+${color}/SIC:${color1}${fs_used_perc /mnt/sic}%${color2}::\
+${color}BAT:${color1}${battery}${color2}::\
+${alignr}${color2}::\
+${color}TIME:${color1}${time %H:%M}${color2}::\
+${color}DATE:${color1}${time %d/%m/%y}${color2}::\
+${color}UPTIME:${color1}${uptime_short}${color2}::\
+${alignr}

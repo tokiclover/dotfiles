@@ -20,7 +20,7 @@ autoload -Uz vcs_info
 zstyle ':vcs_info:*' enable git svn
 zstyle ':vcs_info:git:*' unstagedstr '*'
 zstyle ':vcs_info:*' actionformats '%a'
-zstyle ':vcs_info:*' formats       '·%s:%b%u'
+zstyle ':vcs_info:*' formats       '·%s·%b%u'
 zstyle ':vcs_info:(git|svn):*' branchformat '%b'
 
 setopt EXTENDED_GLOB

@@ -1,4 +1,4 @@
-# $Id: ~/.bashrc, 2012/06/20 15:52:12 -tclover Exp $
+# $Id: ~/.bashrc, 2012/08/11 10:05:03 -tclover Exp $
 [[ $- != *i* ]] && return
 [[ -f ~/.aliasrc ]] && source ~/.aliasrc
 export FHP=$(ls -d ~/.mozilla/firefox/*.default)
@@ -28,27 +28,27 @@ BWHT="\e[47m" # background white
 
 bash_prompt() {
 	## Check PWD length
-	local PROMPT="---($USER::$(uname -n):$(tty|cut -b6-|tr '/' ':')::)---()---"
+	local PROMPT="---($USER·$(uname -n):$(tty | cut -b6-)·---()---"
 	if [[ $COLUMNS -lt $((${#PROMPT}+${#PWD}+13)) ]]; then
 		local LENGTH=$((${COLUMNS}-${#PROMPT}-16))
-		local NPWD=...${PWD:(($COLUMNS-$LENTH)):$LENGTH}
+		local NPWD=...${PWD:COLUMNS-LENGTH:LENGTH}
 	else NPWD=$PWD; fi
 	[[ -n "${NPWD%%HOME*}" ]] && NPWD=${NPWD/~/\~}
 	## And the prompt
 	case "$TERM" in
 	xterm*|rxvt*)
-    		PS1="$FCYN┌$HC$FBLE─$FBLE─($FMAG\u$FBLE::$FMAG\h:$FMAG$(tty|cut -b6-|tr '/' ':'\
-			)$FBLE::$FMAG\t$FBLE)─$HC$FBLE─$FBLE─($FMAG$NPWD$FBLE)─$HC$FBLE─$FBLK─\n$FCYN└$HC$FBLE─$FBLE─\$$RS "
-   		PS2="$FRED> $FMAG"
-         	TITLEBAR="\u::${NPWD}"
+    		PS1="$FCYN┌$HC$FBLE─$FBLE─($FMAG\$$FBLE·$FMAG\h:$FMAG$(tty | cut -b6-\
+			)$FBLE·\D{%m/%d}$FMAG·\t$FBLE)─$HC$FBLE──($FMAG$NPWD$FBLE)─$HC$FBLE─$FBLK─\n$FCYN└$HC$FBLE─$FBLE─$FGRN»$RS "
+   		PS2="$FBLE─$FGRN» $RS"
+         	TITLEBAR="\$·${NPWD}"
 		;;
 	linux*)
-    		PS1="$FCYN┌$HC$FBLE─$FBLE─($FMAG\u$FBLE::$FMAG\h:$FMAG$(tty|cut -b6-|tr '/' ':'\
-			)$FBLE::$FMAG\t$FBLE)─$HC$FBLE─$FBLE─($FMAG$NPWD$FBLE)─$HC$FBLE─$FBLK─\
-			\n$FCYN└$HC$FBLE─$FBLE─\$$RS "
-   		PS2="$FRED> $FMAG"
+    		PS1="$FCYN┌$HC$FBLE─$FBLE─($FMAG\$$FBLE·\D{%m/%d}·$FMAG\h:$FMAG$(tty | cut -b6-\
+			)$FBLE·$FMAG\t$FBLE)─$HC$FBLE─$FBLE─($FMAG$NPWD$FBLE)─$HC$FBLE─$FBLK─\
+			\n$FCYN└$HC$FBLE─$FBLE─»$RS "
+   		PS2="$FBLE─$FGRN» $RS"
 		;;
-	*) PS1="$FBLE($FMAG\u$FBLE::$FMAG\h:$(tty|cut -b6-)$FBLE::$FMAG\W$FBLE)─\$$RS ";;
+	*) PS1="$FBLE($FMAG\$$FBLE·\D{%m/%d}·$FMAG\h:$(tty | cut -b6-)$FBLE·$FMAG\W$FBLE)─»$RS ";;
     esac
 }
 PROMPT_COMMAND=bash_prompt

@@ -1,4 +1,4 @@
-# $Id: $HOME/.aliasrc, 2012/06/30 11:22:55 -tclover Exp $
+# $Id: ~/.aliasrc, 2012/08/20 13:22:27 -tclover Exp $
 
 alias ipr='~/.scripts/ipr'
 alias iru='~/.scripts/iru'
@@ -30,8 +30,8 @@ alias mo='more'
 alias le='less'
 alias gr='grep'
 alias hl='history|less'
-alias ct="tar -cvpf"
-alias xt="tar -xvpf"
+alias ct='tar -cvpf'
+alias xt='tar -xvpf'
 
 alias esync='layman -s ALL && eix-sync'
 

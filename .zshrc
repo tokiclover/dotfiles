@@ -1,7 +1,8 @@
-# $Id: ~/.zshrc, 2012/08/08 11:34:53 -tclover Exp $
+# $Id: ~/.zshrc, 2012/09/17 09:49:33 -tclover Exp $
 if [[ -f ~/.dir_colors ]] { eval $(dircolors -b ~/.dir_colors) 
 } elif [[ -f /etc/DIR_COLORS ]] { eval $(dircolors -b /etc/DIR_COLORS) 
 } else { eval $(dircolors) }
+export GTK2_RC_FILES="$HOME/.gtkrc-2.0"
 export FHP=$(print ~/.mozilla/firefox/*.default(/))
 export CDPATH='.:~:/var/src/git-src:/var/src/egit-src:/var/src/svn-src:/usr/src:/mnt'
 export ZLS_COLORS=${LS_COLORS}

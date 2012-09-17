@@ -1,7 +1,8 @@
-# $Id: ~/.bashrc, 2012/08/11 10:05:03 -tclover Exp $
+# $Id: ~/.bashrc, 2012/09/17 09:49:29 -tclover Exp $
 [[ $- != *i* ]] && return
 [[ -f ~/.aliasrc ]] && source ~/.aliasrc
 export FHP=$(ls -d ~/.mozilla/firefox/*.default)
+export GTK2_RC_FILES="$HOME/.gtkrc-2.0"
 
 ## ANSI color codes
 RS="\e[0m" # reset

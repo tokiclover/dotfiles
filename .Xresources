@@ -1,4 +1,4 @@
-! $Id: $HOME/.Xresources,v 1.1 2012/08/05 11:39:44 -tclover Exp $
+! $Id: $HOME/.Xresources,v 1.1 2012/09/26 22:10:45 -tclover Exp $
 
 !-*-{ Global font
 *font:                -*-terminus-*-*-*-*-*-*-*-*-*-*-*-*
@@ -92,8 +92,7 @@ XTerm*foreground:     #999
 
 !-*-{ Xft settings
 Xft*dpi:              96
-Xft*antialias:        True
-Xft*hinting:          Full
+Xft.lcdfilter:        lcddefault
 !-*-}
 
 !-*-{ Xpdf

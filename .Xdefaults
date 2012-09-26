@@ -92,8 +92,7 @@ XTerm*foreground:     #999
 
 !-*-{ Xft settings
 Xft*dpi:              96
-Xft*antialias:        True
-Xft*hinting:          Full
+Xft.lcdfilter:        lcddefault
 !-*-}
 
 !-*-{ Xpdf

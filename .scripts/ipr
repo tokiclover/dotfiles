@@ -115,7 +115,7 @@ pre() {
 	$ipt -A INPUT   -p tcp -j BADTCP
 	$ipt -A OUTPUT  -p tcp -j BADTCP
 	# Accept all traffic from loopback device if the IP matches any of our interfaces.
-	$ipt -A INPUT   -i $ext -s   $lbdip   -j ACCEPT
+	$ipt -A -s   $lbdip   -j ACCEPT
 	echo -n "FW: Blocking attacks to TCP/UDP port "
 	for p in $bck; do
 		echo -n "$p "
@@ -193,7 +193,7 @@ iface() {
 }
 main() {
 	local bc icmp if=$1 lbdif=lo lbdmsk lbdnet msk net
-	if [[ -n "$ip4" ]]; then icmp=icmp ipt="$(which iptables)"
+	if [[ -n "$ip4" ]]; then icmp=icmp ipt="$(which iptables) --modprobe=modprobe"
 		ip="$($ifc  $if | $grp inet' ' | head -n1 | $awk '{ print $2 }')"
 		lbdip="$($ifc  $lbdif | $grp inet' ' | $awk '{ print $2 }')"
 		lbdmsk="$($ifc  $lbdif | $grp netmask | $awk '{ print $4 }')"
@@ -211,7 +211,7 @@ main() {
 		post
 		[[ -n "$fsave" ]] && $ipt-save >$fsave
 	fi
-	if [[ -n "$ip6" ]]; then icmp=icmpv6 ipt="$(which ip6tables)"
+	if [[ -n "$ip6" ]]; then icmp=icmpv6 ipt="$(which ip6tables) --modprobe=modprobe"
 		ip="$($ifc  $if | $grp inet6 | head -n1 | $awk '{ print $2 }')"
 		lbdip="$($ifc  $lbdif | $grp inet6 | $awk '{ print $2 }')"
 		unset -v ip4 {,lbd}{bc,msk,net}

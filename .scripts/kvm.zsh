@@ -1,5 +1,5 @@
 #!/bin/zsh
-# $Id: ~/.scripts/kvm.zsh, 2012/08/06 11:44:39 -tclover Exp $
+# $Id: ~/.scripts/kvm.zsh, 2012/10/13 10:06:36 -tclover Exp $
 usage() {
   cat <<-EOF
   usage: ${(%):-%1x} [OPTIONS...]
@@ -41,7 +41,7 @@ if [[ -n $opts[-net] ]] || [[ -n $opts[-n] ]] {
 :	${opts[-gw]:=${opts[-g]:-}}
 	brctl addbr $opts[-bif] || die
 	brctl addif $opts[-bif] $opts[-net] || die
-	if [[ -n $opts[-bip] ]] [[ -n $opts[-bmsk] ]] {
+	if [[ -n $opts[-bip] ]] || [[ -n $opts[-bmsk] ]] {
 		ifconfig $opts[-bif] $opts[-bip] netmask $opts[-bmsk] up
 		route add -net $opts[-bip] netmask $opts[-bip] $opts[-bif]
 		route add default gw $opts[-gw] $opts[-bif]

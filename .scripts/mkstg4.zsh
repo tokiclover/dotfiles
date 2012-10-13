@@ -1,5 +1,5 @@
 #!/bin/zsh
-# $Id: ~/.scripts/mkstg4.zsh,v 1.0 2012/04/27 -tclover Exp $
+# $Id: ~/.scripts/mkstg4.zsh,v 1.0 2012/10/13 09:12:45 -tclover Exp $
 usage() {
   cat <<-EOF
   usage: ${(%):-%1x} [OPTIONS...]
@@ -66,7 +66,7 @@ if [[ -n ${(k)opts[-sdr]} ]] || [[ -n ${(k)opts[-q]} ]] {
 	rsync -avuR ${opts[-root]}/${opts[-sqfsdir]}/./{*,*/*,*/*/*}.sfs \
 		${opts[-dir]}/${opts[-sqfsdir]:t}-${opts[-prefix]}${opts[-estring]}
 	exclude+=(usr opt var/{db,cache/edb,lib/layman} ${opts[-sqfsdir]}/{*,*/*,*/*/*}.sfs \
-		${opts[-sqfsdir]}/{*,*/*,*/*/*}/ro)
+		${opts[-sqfsdir]}/{*,*/*,*/*/*}/rr)
 }
 for file (${exclude}) { 
 	if [[ -f ${file} ]] { opts[-opt]+=" --exclude=${file}"

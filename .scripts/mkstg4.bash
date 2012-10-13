@@ -1,5 +1,5 @@
 #!/bin/bash
-# $Id: ~/.scripts/mkstg4.bash,v 1.0 2012/05/04 -tclover Exp $
+# $Id: ~/.scripts/mkstg4.bash,v 1.0 2012/10/13 09:12:50 -tclover Exp $
 usage() {
   cat <<-EOF
   usage: ${0##*/} [OPTIONS...]
@@ -94,7 +94,7 @@ if [ -n "${opts[sdr]}" ]; then
 	rsync -avuR ${opts[root]}/${opts[sqfsdir]}/./{*,*/*,*/*/*}.sfs \
 		${opts[dir]}/${dirname}-${opts[prefix]}${opts[estring]}
 	for file in usr opt var/{db,cache/edb,lib/layman} \
-	${opts[sqfsdir]}/{*,*/*,*/*/*}.sfs ${opts[sqfsdir]}/{*,*/*,*/*/*}/ro; do
+	${opts[sqfsdir]}/{*,*/*,*/*/*}.sfs ${opts[sqfsdir]}/{*,*/*,*/*/*}/rr; do
 		if [[ -f "${file}" ]]; then opts[opt]+=" --exclude=${file}"
 		elif [[ -d "${file}" ]]; then opts[opt]+=" --exclude=${file}/*"; fi
 	done

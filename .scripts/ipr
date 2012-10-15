@@ -1,5 +1,5 @@
 #!/bin/sh
-# $Id: ~/.scripts/ipr,v 2.0 2012/07/29 12:03:35 -tclover Exp $
+# $Id: ~/.scripts/ipr,v 2.1 2012/10/15 09:36:13 -tclover Exp $
 usage() {
 cat <<-EOF
 	-b, --block '1863 ntp'       block service or port '1863 ntp'
@@ -109,13 +109,14 @@ pre() {
 	$ipt -A BADTCPl -j DROP
 	# Drop or rejetc bad tcp packets stated NEW but without a SYN packet
 	$ipt -N BADTCP
-	$ipt -A BADTCP  -p tcp --tcp-flags SYN,ACK SYN,ACK -m state --state NEW -j REJECT --reject-with tcp-reset
-	$ipt -A BADTCP  -p tcp ! --syn -m state --state NEW -j BADTCPl
+	$ipt -A BADTCP  -p tcp --tcp-flags SYN,ACK SYN,ACK -m conntrack --ctstate NEW -j REJECT --reject-with tcp-reset
+	$ipt -A BADTCP  -p tcp ! --syn -m conntrack --ctstate NEW -j BADTCPl
 	# Filter bad tcp right at the bat
 	$ipt -A INPUT   -p tcp -j BADTCP
 	$ipt -A OUTPUT  -p tcp -j BADTCP
 	# Accept all traffic from loopback device if the IP matches any of our interfaces.
-	$ipt -A -s   $lbdip   -j ACCEPT
+	$ipt -A INPUT -s   $lbdip/$lbdmsk   -j ACCEPT
+	$ipt -A OUTPUT -s   $lbdip/$lbdmsk   -j ACCEPT
 	echo -n "FW: Blocking attacks to TCP/UDP port "
 	for p in $bck; do
 		echo -n "$p "
@@ -135,14 +136,14 @@ pre() {
 	echo -n "FW: Allowing inside systems to use service: "
 	for s in $srv $port; do
 		echo -n "$s "
-		$ipt -A OUTPUT  -o $ext  -p tcp --dport $s --syn -m state --state NEW -j ACCEPT
-		$ipt -A OUTPUT  -o $ext  -p udp --dport $s       -m state --state NEW -j ACCEPT
+		$ipt -A OUTPUT  -o $ext  -p tcp --dport $s --syn -m conntrack --ctstate NEW -j ACCEPT
+		$ipt -A OUTPUT  -o $ext  -p udp --dport $s       -m conntrack --ctstate NEW -j ACCEPT
 	done
 	echo ""
 	if [ -n "$mpd" ]; then
 		echo "Opening TCP Output over $lbdip:$mpd for MPD"
-		$ipt -A INPUT  -p tcp --dport $mpd -s $lbdip --syn -m state --state NEW -j ACCEPT
-		$ipt -A OUTPUT -p tcp --dport $mpd -s $lbdip --syn -m state --state NEW -j ACCEPT
+		$ipt -A INPUT  -p tcp --dport $mpd -s $lbdip --syn -m conntrack --ctstate NEW -j ACCEPT
+		$ipt -A OUTPUT -p tcp --dport $mpd -s $lbdip --syn -m conntrack --ctstate NEW -j ACCEPT
 
 	fi
 	if [[ -n "$torrent" ]]; then
@@ -152,8 +153,8 @@ pre() {
 		$ipt -t raw -A OUTPUT     -o $ext -p udp --sport ${torrent#*:} -j NOTRACK
 		# Torrents ports
 		echo "Opening $torrent port for torrent"
-		$ipt -A INPUT -p tcp --dport $torrent -i $ext --syn -m state --state NEW -j ACCEPT
-		$ipt -A INPUT -p udp --dport $torrent -i $ext       -m state --state NEW -j ACCEPT
+		$ipt -A INPUT -p tcp --dport $torrent -i $ext --syn -m conntrack --ctstate NEW -j ACCEPT
+		$ipt -A INPUT -p udp --dport $torrent -i $ext       -m conntrack --ctstate NEW -j ACCEPT
 	fi
 }
 post() {
@@ -163,10 +164,10 @@ post() {
 		$ipt -A POSTROUTING -t nat -j ACCEPT
 		$ipt -A OUTPUT      -t nat -j ACCEPT
 	fi
-	$ipt -A INPUT   -p tcp --dport auth --syn -m state --state NEW -j ACCEPT
-	$ipt -A INPUT   -m state --state ESTABLISHED,RELATED -j ACCEPT
-	$ipt -A OUTPUT  -m state --state ESTABLISHED,RELATED -j ACCEPT
-	$ipt -A FORWARD -m state --state ESTABLISHED,RELATED -j ACCEPT
+	$ipt -A INPUT   -p tcp --dport auth --syn -m conntrack --ctstate NEW -j ACCEPT
+	$ipt -A INPUT   -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
+	$ipt -A OUTPUT  -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
+	$ipt -A FORWARD -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
 	# Block and log what me may have forgot
 	$ipt -A INPUT   -j DROPl
 	$ipt -A OUTPUT  -j REJECTl
@@ -182,14 +183,15 @@ iface() {
 		$ipt -A OUTPUT  ! -o $ext -s $msk -j DROPl
 	elif [[ -n "$ip6" ]]; then echo "ip=$ip"; fi
 	# Accept all traffic from loopback device if the IP matches any of our interfaces
-	$ipt -A INPUT   -i $lbdif -d $ip -j ACCEPT
+	$ipt -A INPUT -s $lbdip/$lbdmsk -d $ip -j ACCEPT
+	$ipt -A OUTPUT -s $lbdip/$lbdmsk -d $ip -j ACCEPT
 	# Block WAN access to internal network
 	$ipt -A INPUT   -i $ext ! -d $ip -j DROPl
 	# Block outbound ICMP (except for PING)
 	$ipt -A OUTPUT  -o $ext -p $icmp ! --$icmp-type 8 -j DROPl
 	$ipt -A FORWARD -o $ext -p $icmp ! --$icmp-type 8 -j DROPl
 	# Allow to ping out
-	$ipt -A OUTPUT  -o $ext  -p $icmp  --$icmp-type 8 -m state --state NEW -j ACCEPT
+	$ipt -A OUTPUT  -o $ext  -p $icmp  --$icmp-type 8 -m conntrack --ctstate NEW -j ACCEPT
 }
 main() {
 	local bc icmp if=$1 lbdif=lo lbdmsk lbdnet msk net

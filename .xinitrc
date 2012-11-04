@@ -1,4 +1,4 @@
-# $Id: ~/.xinitrc, 2012/09/11 08:57:53 -tclover Exp $
+# $Id: ~/.xinitrc, 2012/11/04 20:35:53 -tclover Exp $
 eval $(gnome-keyring-daemon --components=pkcs11,secrets,ssh,gpg)
 export GNOME_KEYRING_PID
 export GNOME_KEYRING_SOCKET
@@ -23,8 +23,8 @@ setxkbmap fr
 #[[ -f ~/.xcolors/sj-bright ]] && xrdb -merge ~/.xcolors/sj-bright
 urxvtd -q -o -f &
 case $(tty | cut -b9-) in
-	1) exec ck-launch-session dbus-launch --sh-syntax --exit-with-session enlightenment_start.sh;;
-	2) exec ck-launch-session dbus-launch --sh-syntax --exit-with-session lxsession             ;;
-	3) exec ck-launch-session dbus-launch --sh-syntax --exit-with-session openbox-session       ;;
+	1) exec ck-launch-session dbus-launch --sh-syntax --exit-with-session enlightenment_start;;
+	2) exec ck-launch-session dbus-launch --sh-syntax --exit-with-session lxsession          ;;
+	3) exec ck-launch-session dbus-launch --sh-syntax --exit-with-session openbox-session    ;;
 esac
 # vim:fenc=utf-8:ci:pi:sts=0:sw=4:ts=4:

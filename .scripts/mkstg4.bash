@@ -1,5 +1,5 @@
 #!/bin/bash
-# $Id: ~/.scripts/mkstg4.bash,v 1.0 2012/10/13 09:12:50 -tclover Exp $
+# $Id: ~/.scripts/mkstg4.bash,v 1.2 2012/11/06 18:25:05 -tclover Exp $
 usage() {
   cat <<-EOF
   usage: ${0##*/} [OPTIONS...]
@@ -61,27 +61,27 @@ while [[ $# > 0 ]]; do
 		-u|--usage|*) usage;;
 	esac
 done
-[[ -n ${opts[prefix]} ]] || opts[prefix]="$(uname -r | cut -c-3)"
+[[ -n ${opts[prefix]} ]] || opts[prefix]="$(uname -s)-$(uname -m)-$(uname -r | cut -d- -f1)"
 [[ -n "${opts[root]}" ]] || opts[root]=/
 [[ -n "${opts[dir]}" ]] || opts[dir]=/mnt/sup/$(uname -m)
 [[ -n "${opts[tarball]}" ]] && opts[tarball]=${opts[prefix]}.${opts[tarball]} \
-	|| opts[tarball]=${opts[prefix]}${opts[estring]}.stg4
+	|| opts[tarball]=${opts[prefix],}${opts[estring]}.stage4
 [[ -n "${opts[comp]}" ]] || opts[comp]=gzip
 opts[tarball]="${opts[dir]}/${opts[tarball]}"
 case ${opts[comp]} in
-	bzip2)	opts[tarball]+=.tbz2;;
-	xz) 	opts[tarball]+=.txz;;
-	gzip) 	opts[tarball]+=.tgz;;
-	lzma)	opts[tarball]+=.tlzma;;
-	lzip)	opts[tarball]+=.tlz;;
-	lzop)	opts[tarball]+=.tlzo;;
+	bzip2)	opts[tarball]+=.tar.bz2;;
+	xz) 	opts[tarball]+=.tar.xz;;
+	gzip) 	opts[tarball]+=.tar.gz;;
+	lzma)	opts[tarball]+=.tar.lzma;;
+	lzip)	opts[tarball]+=.tar.lz;;
+	lzop)	opts[tarball]+=.tar.lzo;;
 esac
 build() {
 echo -ne "\e[1;32m>>> building ${opts[tarball]} stage4 tarball...\e[0m$@\n"
-cd ${opts[root]} || die "invalid root directory"
+pushd ${opts[root]} || die "invalid root directory"
 for file in mnt/* media home dev proc sys tmp run boot/*.i{mg,so} bootcp/*.i{mg,so} \
-	var/{{,local/}portage,run,lock,pkg,src,bldir,.*.tgz,tmp} lib*/rc/init.d *.swp \
-	lib*/splash/cache usr/{,local/}portage ${opts[tarball]}; do
+	var/{run,lock,pkg,src,bldir,.*.tgz,tmp} lib*/rc/init.d lib*/splash/cache \
+	${opts[tarball]}; do
 	if [[ -f "${file}" ]]; then opts[opt]+=" --exclude=${file}"
 	elif [[ -d "${file}" ]]; then opts[opt]+=" --exclude=${file}/*"; fi
 done
@@ -91,12 +91,9 @@ if [ -n "${opts[sdr]}" ]; then
 	[[ -n "${opts[sysdir]}" ]] && sdr.bash -r${opts[sqfsdir]} -o0 -U -d${opts[sysdir]}
 	[[ -n "${opts[sqfsd]}" ]] && sdr.bash -r${opts[sqfsdir]} -o0  -d${opts[sqfsd]}
 	dirname=${opts[sqfsdir]##*/}
-	rsync -avuR ${opts[root]}/${opts[sqfsdir]}/./{*,*/*,*/*/*}.sfs \
-		${opts[dir]}/${dirname}-${opts[prefix]}${opts[estring]}
-	for file in usr opt var/{db,cache/edb,lib/layman} \
-	${opts[sqfsdir]}/{*,*/*,*/*/*}.sfs ${opts[sqfsdir]}/{*,*/*,*/*/*}/rr; do
-		if [[ -f "${file}" ]]; then opts[opt]+=" --exclude=${file}"
-		elif [[ -d "${file}" ]]; then opts[opt]+=" --exclude=${file}/*"; fi
+	for file in $(find ${opts[sqfsdir]} -type f -iname '*.sfs'); do
+		opts[opt]+=" --exclude=${file} --exclude=${file%.sfs}/rr"
+		rsync -avuR ${file} ${opts[dir]}/${dirname}-${opts[prefix]}${opts[estring]}
 	done
 fi
 if [ -n "${opts[boot]}" ]; then
@@ -134,4 +131,5 @@ if [[ -n "${opts[restore]}" ]]; then
 else build; fi
 rm -rf /bootcp
 unset -v dirname opts opt
+popd
 # vim:fenc=utf-8:ft=sh:ci:pi:sts=0:sw=4:ts=4:

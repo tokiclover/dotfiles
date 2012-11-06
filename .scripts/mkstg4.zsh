@@ -1,5 +1,5 @@
 #!/bin/zsh
-# $Id: ~/.scripts/mkstg4.zsh,v 1.0 2012/10/13 09:12:45 -tclover Exp $
+# $Id: ~/.scripts/mkstg4.zsh,v 1.2 2012/11/06 18:32:57 -tclover Exp $
 usage() {
   cat <<-EOF
   usage: ${(%):-%1x} [OPTIONS...]
@@ -37,40 +37,39 @@ zparseopts -E -D -K -A opts b c: e+: g q p: r: s: d: t: u cipher: comp: dir: \
 if [[ -n ${(k)opts[-u]} ]] || [[ -n ${(k)opts[-usage]} ]] { usage }
 if [[ -z ${opts[*]} ]] { typeset -A opts }
 :	${opts[-comp]:=${opts[-c]:-gzip}}
-: 	${opts[-prefix]:=${opts[-p]:-$(uname -r | cut -c-3)}}
+: 	${opts[-prefix]:=${opts[-p]:-$(uname -s)-$(uname -m)-$(uname -r | cut -d- -f1)}}
 :	${opts[-root]:=${opts[-r]:-/}}
 :	${opts[-dir]:=${opts[-d]:-/mnt/sup/$(uname -m)}}
-: 	${opts[-tarball]:=${opts[-t]:-stg4}}
+: 	${opts[-tarball]:=${opts[-t]:-stage4}}
 :	${opts[-estring]:-${opts[-E]}}
-opts[-tarball]=${opts[-dir]}/${opts[-prefix]}${opts[-estring]}.${opts[-tarball]}
+opts[-tarball]=${opts[-dir]}/${opts[-prefix]:l}${opts[-estring]}.${opts[-tarball]}
 case ${opts[-comp]} in
-	bzip2)	opts[-tarball]+=.tbz2;;
-	xz) 	opts[-tarball]+=.txz;;
-	gzip) 	opts[-tarball]+=.tgz;;
-	lzma)	opts[-tarball]+=.tlzma;;
-	lzip)	opts[-tarball]+=.tlz;;
-	lzop)	opts[-tarball]+=.tlzo;;
+	bzip2)	opts[-tarball]+=.tar.bz2;;
+	xz) 	opts[-tarball]+=.tar.xz;;
+	gzip) 	opts[-tarball]+=.tar.gz;;
+	lzma)	opts[-tarball]+=.tar.lzma;;
+	lzip)	opts[-tarball]+=.tar.lz;;
+	lzop)	opts[-tarball]+=.tar.lzo;;
 esac
 setopt NULL_GLOB
 build() {
 print -P "%F{green}>>> building ${opts[-tarball]} stage4 tarball...%f"
-cd ${opts[-root]} || die "invalid root directory"
-exclude+=(mnt/* media home/* dev proc sys tmp run boot/*.i{mg,so} bootcp/*.i{mg,so} \
-	var/{{,local/}portage,run,lock,pkg,src,blddir,tmp,*.tgz} lib*/rc/init.d/* *.swp \
-	lib*/splash/cache usr/{,local/}portage ${(pws,:,)opts[-exclude]} ${opts[-tarball]})
+pushd ${opts[-root]} || die "invalid root directory"
+for file (mnt/* media home/* dev proc sys tmp run boot/*.i{mg,so} bootcp/*.i{mg,so} \
+	var/{run,lock,pkg,src,bdir,tmp,*.tgz} lib*/rc/init.d/* lib*/splash/cache \
+	${(pws,:,)opts[-exclude]} ${opts[-tarball]}) {
+	if [[ -f ${file} ]] { opts[-opt]+=" --exclude=${file}"
+	} elif [[ -d ${file} ]] { opts[-opt]+=" --exclude=${file}/*" }
+}
 if [[ -n ${(k)opts[-sdr]} ]] || [[ -n ${(k)opts[-q]} ]] {
-	which sdr &> /dev/null || die "there's no sdr script in PATH"
+	which sdr &>/dev/null || die "there's no sdr script in PATH"
 :	${opts[-sqfsdir]:=sqfsd}
 	if [[ -n ${opts[-sysdir]} ]] { sdr.zsh -r${opts[-sqfsdir]} -o0 -U -d${opts[-sysdir]} }
 	if [[ -n ${opts[-sqfsd]} ]] { sdr.zsh -r${opts[-sqfsdir]} -o0  -d${opts[-sqfsd]} }
-	rsync -avuR ${opts[-root]}/${opts[-sqfsdir]}/./{*,*/*,*/*/*}.sfs \
-		${opts[-dir]}/${opts[-sqfsdir]:t}-${opts[-prefix]}${opts[-estring]}
-	exclude+=(usr opt var/{db,cache/edb,lib/layman} ${opts[-sqfsdir]}/{*,*/*,*/*/*}.sfs \
-		${opts[-sqfsdir]}/{*,*/*,*/*/*}/rr)
-}
-for file (${exclude}) { 
-	if [[ -f ${file} ]] { opts[-opt]+=" --exclude=${file}"
-	} elif [[ -d ${file} ]] { opts[-opt]+=" --exclude=${file}/*" }
+	for file (${opts[-sqfsdir]}/**/*.sfs) {
+		opts[-opt]+=" --exclude=${file} --exclude=${file%.sfs}/rr"
+		rsync -avuR ${file} ${opts[-dir]}/${dirname}-${opts[-prefix]}${opts[-estring]}
+	}
 }
 if [[ -n ${(k)opts[-boot]} ]] || [[ -n ${(k)opts[-b]} ]] {
 	mount /boot
@@ -90,13 +89,13 @@ if [[ -n ${(k)opts[-gpg]} ]] || [[ -n ${(k)opts[-g]} ]] {
 tar ${=opts[-opt]} || die "failed to backup"
 if [[ -n ${opts[-split]} ]] || [[ -n ${opts[-s]} ]] {
 :	${opts[-s]:=${opts[-split]}}
-	split --bytes=${opts[-s]} ${opts[-tarball]} ${opts[-tarball]}.
+	split --bytes=${opts[-s]} ${opts[-tarball]}, ${opts[-tarball]}.
 }
-print -P "%F{green}>>> successfuly built ${opts[-tarball]} stage4 tarball%f"
+print -P "%F{green}>>> successfuly built ${opts[-tarball],} stage4 tarball%f"
 }
 if [[ -n ${(k)opts[-restore]} ]] || [[ -n ${(k)opts[-R]} ]] {
 	opts[-opt]="--extract --verbose --preserve --directory ${opts[-root]}"
-	print -P "%F{green}>>> restoring ${opts[-tarball]} stage4 tarball...%f"
+	print -P "%F{green}>>> restoring ${opts[-tarball],} stage4 tarball...%f"
 :	${opts[-restore]:-${opts[-R]:-${opts[-dir]}}}
 	if [[ -n ${(k)opts[-sdr]} ]] || [[ -n ${(k)opts[-q]} ]] { rsync -avuR \
 		${opts[-dir]}/./${opts[-sqfsdir]:t}-${opts[-prefix]}${opts[-estring]} ${opts[-root]}/
@@ -112,4 +111,5 @@ if [[ -n ${(k)opts[-restore]} ]] || [[ -n ${(k)opts[-R]} ]] {
 } else { build }
 rm -rf /bootcp
 unset -v opts exclude
+popd
 # vim:fenc=utf-8:ci:pi:sts=0:sw=4:ts=4:

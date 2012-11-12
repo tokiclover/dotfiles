@@ -1,4 +1,4 @@
-# $Id: ~/.aliasrc, 2012/08/20 13:22:27 -tclover Exp $
+# $Id: ~/.aliasrc, 2012/11/12 13:31:48 -tclover Exp $
 
 alias ipr='~/.scripts/ipr'
 alias iru='~/.scripts/iru'
@@ -46,6 +46,21 @@ alias eqg='equery g'
 alias eqc='equery c'
 alias eqk='equery k'
 alias eqm='equery m'
+
+alias qa=qatom
+alias qc=qcache
+alias qck=qcheck
+alias qf=qfile
+alias qg=qgrep
+alias ql=qlist
+alias qlg=qlop
+alias qp=qpkg
+alias qm=qmerge
+alias qs=qsearch
+alias qz=qsize
+alias qbz=qtbz2
+alias qu=quse
+alias qx=qxpack
 
 #alias bs='bscan --mode=1-bit --page=Letter --comp=lzw'
 #alias bl='bscan --mode=1-bit --page=Legal --comp=lzw'

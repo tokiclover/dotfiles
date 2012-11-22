@@ -1,12 +1,12 @@
-# $Id: ~/.zshrc, 2012/09/17 09:49:33 -tclover Exp $
+# $Id: ~/.zshrc, 2012/11/22 09:43:29 -tclover Exp $
 if [[ -f ~/.dir_colors ]] { eval $(dircolors -b ~/.dir_colors) 
 } elif [[ -f /etc/DIR_COLORS ]] { eval $(dircolors -b /etc/DIR_COLORS) 
 } else { eval $(dircolors) }
-export GTK2_RC_FILES="$HOME/.gtkrc-2.0"
-export FHP=$(print ~/.mozilla/firefox/*.default(/))
+export GTK2_RC_FILES=$HOME/.gtkrc-2.0
+export FHP=$(print $HOME/.mozilla/firefox/*.default(/))
 export CDPATH='.:~:/var/src/git-src:/var/src/egit-src:/var/src/svn-src:/usr/src:/mnt'
 export ZLS_COLORS=${LS_COLORS}
-export ZSH=~/.oh-my-zsh
+export ZSH=$HOME/.oh-my-zsh
 # Load all of the config files in ~/.oh-my-zsh that end in .zsh
 # TIP: Add files you don't want in git to .gitignore
 for config_file ($ZSH/lib/*.zsh) source $config_file

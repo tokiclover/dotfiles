@@ -1,9 +1,9 @@
-# $Id: ~/.zprofile, 2012/08/08 11:36:24 -tclover Exp $
-if [[ -e /etc/profile.env ]] { source /etc/profile.env }
+# $Id: ~/.zprofile, 2012/11/22 09:43:57 -tclover Exp $
 export EDITOR=${EDITOR:-/bin/nano}
 export PAGER=${PAGER:-/usr/bin/less}
 export ECORE_IMF_MODULE="xim"
 export XMODIFIERS="@im=none"
+export ZDOTDIR=$HOME
 # 077 would be more secure, but 022 is generally quite realistic
 umask 022
 # set path

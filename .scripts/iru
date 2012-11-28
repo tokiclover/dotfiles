@@ -3,8 +3,10 @@
 for iface in eth0 wlan0 $@; do
 	ipv4=$(ifconfig $iface | grep 'inet ' | head -n1 | awk '{ print $2 }')
 	if [ -n "$ipv4" ]; then 
-		~/.scripts/ipr -e$iface && /etc/init.d/iptables restart
+		~/.scripts/ipr -4 -e$iface && /etc/init.d/iptables restart
 		~/.scripts/ipb.zsh && /etc/init.d/ipset restart
+	else
+		ifconfig $iface down 1>/dev/null 2>&1
 	fi
 	unset ipv4
 done

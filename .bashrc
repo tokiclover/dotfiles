@@ -1,9 +1,13 @@
-# $Id: ~/.bashrc, 2012/11/22 10:19:03 -tclover Exp $
+# $Id: ~/.bashrc, 2012/12/13 09:56:01 -tclover Exp $
 [[ $- != *i* ]] && return
 [[ -f ~/.aliasrc ]] && source ~/.aliasrc
-export CDPATH='.:~:/var/src/git-src:/var/src/egit-src:/var/src/svn-src:/usr/src:/mnt'
 export FHP=$(ls -d ~/.mozilla/firefox/*.default)
+export CDPATH='.:~:/var/src/git-src:/var/src/egit-src:/var/src/svn-src:/usr/src:/mnt'
 export GTK2_RC_FILES="$HOME/.gtkrc-2.0"
+export ECORE_IMF_MODULE="xim"
+export XMODIFIERS="@im=none"
+export XDG_CONFIG_HOME=$HOME/.config
+export XMODIFIERS="@im=none"
 
 ## ANSI color codes
 RS="\e[0m" # reset

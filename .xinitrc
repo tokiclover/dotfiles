@@ -1,8 +1,8 @@
 # $Id: ~/.xinitrc, 2012/11/22 09:48:07 -tclover Exp $
-#dbus-launch --sh-syntax --exit-with-session nm-applet --sm-disable &
-#dbus-launch --sh-syntax --exit-with-session gcm-session &
+dbus-launch --sh-syntax --exit-with-session nm-applet --sm-disable &
+dbus-launch --sh-syntax --exit-with-session gcm-session &
 #xcalib -gc 1.0 -b 0.0 -co 100.0 ~/.icc/sRGB_v4_ICC_preference.icc
-#/usr/libexec/polkit-gnome-authentication-agent-1 &
+/usr/libexec/polkit-gnome-authentication-agent-1 &
 ladi-system-tray 1>/dev/null 2>&1 &
 unclutter -idle 8 -noevents &
 [[ -f ~/.Xmodmap ]] && xmodmap ~/.Xmodmap

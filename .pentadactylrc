@@ -8,19 +8,19 @@ set titlestring="Aurora"
 "set visualbell=true
 set nextpattern='\bnext\b',^>$,'^(>>|»)$','^(>|»)','(>|»)$','\bmore\b'
 
-noremap <C-o> O
-noremap O :tabopen 
+map -builtin  <C-o> O
+map -builtin  O :tabopen 
 map <C-S-o> :winopen 
 map <C-d> :tabdetach
 map <M-c> :xsel -ib
 map <M-v> :xsel -ob
-noremap . gT
-noremap p gt
-noremap nB :tbt Navigation Toolbar<CR>
-noremap < :tabmove! -1<Enter>
-noremap > :tabmove! +1<Enter>
-"noremap ] :twitter 
-"noremap } :share 
+map -builtin . gT
+map -builtin p gt
+map -builtin nB :tbt Navigation Toolbar<CR>
+map -builtin < :tabmove! -1<Enter>
+map -builtin > :tabmove! +1<Enter>
+"map -builtin ] :twitter 
+"map -builtin } :share 
 map j 10<C-e>
 map k 10<C-y>
 " when ldrized
@@ -60,21 +60,21 @@ highlight Hint font-family: cure; font-size: 10px; font-weight: normal; color: l
 highlight HintElem background-color: pink; color: black;
 highlight HintActive background-color: hotpink; color: whighlightte;
 
-highlight StatusLine color: CornflowerBlue; background: #151515; font-weight: normal !important; font-size: 10pt; font-family: cure !important;
+highlight StatusLine color: CornflowerBlue; background: #080808; font-weight: normal !important; font-size: 10pt; font-family: cure !important;
 highlight StatusLineBroken color: black; background: #ff5b62; font-weight: normal !important; font-size: 10pt; font-family: cure !important; 
-highlight StatusLineExtended color: black; background: #151515; font-weight: normal !important; font-size: 10pt; font-family: cure !important;
-highlight StatusLineSecure color: black; background: #4382c4; font-weight: normal !important; font-size: 10pt; font-family: cure !important;
+highlight StatusLineExtended color: black; background: #080808; font-weight: normal !important; font-size: 10pt; font-family: cure !important;
+highlight StatusLineSecure color: black; background: #080808; font-weight: normal !important; font-size: 10pt; font-family: cure !important;
 
-highlight Normal color: #f1c719; background: #101010; font-size: 10pt; font-family: cure !important;
-highlight CmdLine color: #b3930f; background: #101010; font-size: 10pt;  font-family: cure !important;
-highlight InfoMsg color: #3ca034; background: #101010; font-size: 10pt; font-family: cure !important;
-highlight ModeMsg color: #3ed421; background: #101010; font-size: 10pt; font-family: cure !important;
-highlight MoreMsg color: #3ed421; background: #101010; font-size: 10pt; font-family: cure !important;
-highlight LineNr color: #286f8a; background: #101010; font-size: 10pt; font-family: cure !important;
-highlight Question color: #4382c4; background:#101010; font-size: 10pt; font-family: cure !important;
-highlight WarningMsg color: #a2363a; background:#101010; font-size: 10pt; font-family: cure !important;
-highlight ErrorMsg color: #ff5b62; background: #101010; font-size: 10pt; font-family: cure !important;
-highlight NonText background: #101010;
+highlight Normal color: #f1c719; background: #080808; font-size: 10pt; font-family: cure !important;
+highlight CmdLine color: #b3930f; background: #080808; font-size: 10pt;  font-family: cure !important;
+highlight InfoMsg color: #3ca034; background: #080808; font-size: 10pt; font-family: cure !important;
+highlight ModeMsg color: #3ed421; background: #080808; font-size: 10pt; font-family: cure !important;
+highlight MoreMsg color: #3ed421; background: #080808; font-size: 10pt; font-family: cure !important;
+highlight LineNr color: #286f8a; background: #080808; font-size: 10pt; font-family: cure !important;
+highlight Question color: #4382c4; background:#080808; font-size: 10pt; font-family: cure !important;
+highlight WarningMsg color: #a2363a; background:#080808; font-size: 10pt; font-family: cure !important;
+highlight ErrorMsg color: #ff5b62; background: #080808; font-size: 10pt; font-family: cure !important;
+highlight NonText background: #080808;
 highlight Null color: #4382c4;
 highlight Tag color: #4382c4;
 
@@ -103,12 +103,12 @@ background-image:none !important;
 font-weight: normal !important;
 font-family: 'cure' !important; 
 }
-.tabbrowser-tab[selected=false] { background: #101010 !important; }
+.tabbrowser-tab[selected=false] { background: #080808 !important; }
 .tabbrowser-tab[selected=true] > .tab-text { color: #b287ba !important; }
 .tabbrowser-tab[selected=true] { background: #151515 !important; }
-.tabbrowser-strip { background: #101010 !important; }
+.tabbrowser-strip { background: #080808 !important; }
 
-#content tab:not([selected]) { background-color: #101010 !important; }
+#content tab:not([selected]) { background-color: #080808 !important; }
 
 EOM
 
@@ -155,4 +155,4 @@ padding-top: 2px !important;
 EOM
 
 style -name scrollbar scrollbar { visibility: collapse !important; }
-style -name blank about:blank body { background-color: #101010 !important; }
+style -name blank about:blank body { background-color: #080808 !important; }

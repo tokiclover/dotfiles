@@ -1,12 +1,11 @@
 #!/bin/zsh
-# $Id: ~/.scripts/mkstg4.zsh,v 1.2 2012/11/06 18:32:57 -tclover Exp $
+# $Id: ~/.scripts/mkstg4.zsh,v 1.3 2013/01/07 13:08:56 -tclover Exp $
 usage() {
   cat <<-EOF
   usage: ${(%):-%1x} [OPTIONS...]
   -b|-boot               whether to backup /boot to /bootcp
   -c|-comp               compression command to use, default is 'gzip'
   -e|-exclude <files>    files/dirs to exclude from the tarball archive
-  -E|-estring d          append an extra 'd' string after \${prefix}
   -g|-gpg                encrypt and/or sign the final tarball[.gpg]
      -cipher <aes>       cipher to use when encypting the tarball archive
      -encrypt            encrypt, may be combined with -symmetric/-sign
@@ -33,7 +32,7 @@ alias die='die "%F{yellow}%1x:%U${(%):-%I}%u:%f" $@'
 zmodload zsh/zutil
 zparseopts -E -D -K -A opts b c: e+: g q p: r: s: d: t: u cipher: comp: dir: \
 	exclude+: gpg sdr recipient: root: R:: restore:: split: sqfsdir: sqfsd+: \
-	encrypt sign symmetric sysdir+: tarball: usage E: estring: || usage
+	encrypt sign symmetric sysdir+: tarball: usage || usage
 if [[ -n ${(k)opts[-u]} ]] || [[ -n ${(k)opts[-usage]} ]] { usage }
 if [[ -z ${opts[*]} ]] { typeset -A opts }
 :	${opts[-comp]:=${opts[-c]:-gzip}}
@@ -41,8 +40,7 @@ if [[ -z ${opts[*]} ]] { typeset -A opts }
 :	${opts[-root]:=${opts[-r]:-/}}
 :	${opts[-dir]:=${opts[-d]:-/mnt/sup/$(uname -m)}}
 : 	${opts[-tarball]:=${opts[-t]:-stage4}}
-:	${opts[-estring]:-${opts[-E]}}
-opts[-tarball]=${opts[-dir]}/${opts[-prefix]:l}${opts[-estring]}.${opts[-tarball]}
+opts[-tarball]=${opts[-dir]}/${opts[-prefix]:l}.${opts[-tarball]}
 case ${opts[-comp]} in
 	bzip2)	opts[-tarball]+=.tar.bz2;;
 	xz) 	opts[-tarball]+=.tar.xz;;
@@ -67,8 +65,9 @@ if [[ -n ${(k)opts[-sdr]} ]] || [[ -n ${(k)opts[-q]} ]] {
 	if [[ -n ${opts[-sysdir]} ]] { sdr.zsh -r${opts[-sqfsdir]} -o0 -U -d${opts[-sysdir]} }
 	if [[ -n ${opts[-sqfsd]} ]] { sdr.zsh -r${opts[-sqfsdir]} -o0  -d${opts[-sqfsd]} }
 	for file (${opts[-sqfsdir]}/**/*.sfs) {
-		opts[-opt]+=" --exclude=${file} --exclude=${file%.sfs}/rr"
-		rsync -avuR ${file} ${opts[-dir]}/${dirname}-${opts[-prefix]}${opts[-estring]}
+		opts[-opt]+=" --exclude=${file} --exclude=${file%.sfs}/rr/*"
+		opts[-opt]+=" --exclude=${${file%.sfs}#${opts[-sqfsdir]}/}"
+		rsync -avuR ${file} ${opts[-dir]}/${opts[-sqfsdir]:t}-${${opts[-prefix]}#*-}
 	}
 }
 if [[ -n ${(k)opts[-boot]} ]] || [[ -n ${(k)opts[-b]} ]] {
@@ -98,7 +97,7 @@ if [[ -n ${(k)opts[-restore]} ]] || [[ -n ${(k)opts[-R]} ]] {
 	print -P "%F{green}>>> restoring ${opts[-tarball],} stage4 tarball...%f"
 :	${opts[-restore]:-${opts[-R]:-${opts[-dir]}}}
 	if [[ -n ${(k)opts[-sdr]} ]] || [[ -n ${(k)opts[-q]} ]] { rsync -avuR \
-		${opts[-dir]}/./${opts[-sqfsdir]:t}-${opts[-prefix]}${opts[-estring]} ${opts[-root]}/
+		${opts[-dir]}/./${opts[-sqfsdir]:t}-${opts[-prefix]} ${opts[-root]}/
 	}
 	if [[ -n ${(k)opts[-gpg]} ]] || [[ -n ${(k)opts[-g]} ]] { 
 		opts[-gpg]="gpg --decrypt ${opts[-tarball]}.gpg |"

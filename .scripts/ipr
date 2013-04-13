@@ -1,5 +1,5 @@
 #!/bin/sh
-# $Id: ~/.scripts/ipr,v 2.1 2012/10/15 09:36:13 -tclover Exp $
+# $Id: ~/.scripts/ipr,v 2.1 2012/11/12 13:57:17 -tclover Exp $
 usage() {
 cat <<-EOF
 	-b, --block '1863 ntp'       block service or port '1863 ntp'

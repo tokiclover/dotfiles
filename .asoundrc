@@ -1,4 +1,4 @@
-# $Id: $HOME/.asoundrc,v 1.1 2013/03/16 -tclover Exp $
+# $Id: $HOME/.asoundrc,v 1.2 2013/01/10 11:47:33 -tclover Exp $
 #
 ## HW
 pcm.hda { type hw; card Intel; device 1 }
@@ -55,6 +55,23 @@ pcm.plugeq {
 		}
 	}
 	]
+}
+## DMIX
+ctl.dmixer { type hw; card Intel }
+pcm.dmixer {
+	type dmix
+	ipc_key 1048
+	slave {
+		pcm hda
+		period_time 0
+		period_size 1024
+		buffer_size 4096
+		rate 44100
+	}
+	bindings {
+		0 0
+		1 1
+	}
 }
 ## EQUALIZER
 ctl.equal { type equal }

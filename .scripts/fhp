@@ -1,13 +1,22 @@
 #!/bin/sh
-# $Id: ~/.scripts/fhp,v 1.0 2012/10/20 08:41:58 -tclover Exp $
+# $Id: ~/.scripts/fhp,v 2.0 2013/04/27 09:45:10 -tclover Exp $
 # a script to put firefox profile to tmpfs, the following line should be put in 
 # ~/.*shrc or ~/.*profile: `export FHP=$(ls -d ~/.mozilla/firefox/*.default)'
 # and something like... in a crontab job: */30 * * * * $USER ~/.scripts/fhp.bash
-die() {  echo "* $@"; exit 1; }
+die() {
+	local _ret=$?
+	echo "* $@"
+	exit $_ret
+}
 [[ -z $FHP ]] && die "FHP profile env string is empty."
 [[ -z $(sudo mount -t tmpfs | grep -F $FHP) ]] &&
-	sudo mount fhp "$FHP" -t tmpfs -o nodev,noexec,uid=$UID,gid=$GID,size=128m ||
-	die "failed to mount fhp"
+	if [[ "$1" = "-z" ]]; then
+			mount -t ext4 -o acl,user_xattr /dev/zram3 "$FHP" || die
+			chmod $UID:$GID -R $FHP
+		else
+			sudo mount fhp "$FHP" -t tmpfs -o nodev,noexec,uid=$UID,gid=$GID,size=128m ||
+			die "failed to mount fhp"
+	fi
 cd "${FHP%/*}"
 if [[ -f "$FHP"/.unpacked ]]; then
 	tar --exclude $FHP/.unpacked -czpf ${FHP##*/}.tmp.tgz ${FHP##*/}/ ||

@@ -1,4 +1,4 @@
-# $Id: ~/.xinitrc, 2012/11/22 09:48:07 -tclover Exp $
+# $Id: ~/.xinitrc, 2013/04/30 15:32:37 -tclover Exp $
 dbus-launch --sh-syntax --exit-with-session nm-applet --sm-disable &
 dbus-launch --sh-syntax --exit-with-session gcm-session &
 #xcalib -gc 1.0 -b 0.0 -co 100.0 ~/.icc/sRGB_v4_ICC_preference.icc
@@ -18,8 +18,11 @@ setxkbmap fr
 #[[ -f ~/.xcolors/sj-bright ]] && xrdb -merge ~/.xcolors/sj-bright
 urxvtd -q -o -f &
 case $(tty | cut -b9-) in
-	1) exec ck-launch-session dbus-launch --sh-syntax --exit-with-session enlightenment_start;;
-	2) exec ck-launch-session dbus-launch --sh-syntax --exit-with-session lxsession          ;;
-	3) exec ck-launch-session dbus-launch --sh-syntax --exit-with-session openbox-session    ;;
+	1) exec ck-launch-session dbus-launch --sh-syntax --exit-with-session enlightenment_start
+		;;
+	2) exec ck-launch-session dbus-launch --sh-syntax --exit-with-session lxsession
+		;;
+	3) exec ck-launch-session dbus-launch --sh-syntax --exit-with-session openbox-session
+		;;
 esac
 # vim:fenc=utf-8:ci:pi:sts=0:sw=4:ts=4:

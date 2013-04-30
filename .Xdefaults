@@ -1,4 +1,4 @@
-! $Id: $HOME/.Xdefaults,v 1.1 2011/10/28 -tclover Exp $
+! $Id: ~/.Xdefaults,v 1.1 2013/04/30 15:17:41 -tclover Exp $
 
 !-*-{ Global font
 *font:                -*-terminus-*-*-*-*-*-*-*-*-*-*-*-*
@@ -14,7 +14,7 @@ URxvt*allow_bold:     True
 !-*- Perl extensions -*-
 URxvt.perl-ext-common:default,clipboard,matcher,keyboard-select
 URxvt.keysym.M-u:     perl:url-select:select_next
-URxvt.urlLauncher:    /usr/bin/firefox
+URxvt.url-launcher:    /usr/bin/firefox
 URxvt.underlineURLs:  True
 URxvt.matcher.button: 1 
 URxvt.keysym.M-Escape:perl:keyboard-select:activate

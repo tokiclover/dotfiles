@@ -1,4 +1,4 @@
-! $Id: $HOME/.Xresources,v 1.1 2012/09/26 22:10:45 -tclover Exp $
+! $Id: ~/.Xresources,v 1.1 2012/09/26 22:10:45 -tclover Exp $
 
 !-*-{ Global font
 *font:                -*-terminus-*-*-*-*-*-*-*-*-*-*-*-*
@@ -14,7 +14,7 @@ URxvt*allow_bold:     False
 !-*- Perl extensions -*-
 URxvt.perl-ext-common:default,clipboard,matcher,keyboard-select
 URxvt.keysym.M-u:     perl:url-select:select_next
-URxvt.urlLauncher:    /usr/bin/firefox
+URxvt.url-launcher:    /usr/bin/firefox
 URxvt.underlineURLs:  True
 URxvt.matcher.button: 1 
 URxvt.keysym.M-Escape:perl:keyboard-select:activate

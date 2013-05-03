@@ -1,7 +1,6 @@
-# $Id: ~/.bashrc, 2012/12/13 09:56:01 -tclover Exp $
+# $Id: ~/.bashrc, 2013/05/03 09:32:41 -tclover Exp $
 [[ $- != *i* ]] && return
 [[ -f ~/.aliasrc ]] && source ~/.aliasrc
-export FHP=$(ls -d ~/.mozilla/firefox/*.default)
 export CDPATH='.:~:/var/src/git-src:/var/src/egit-src:/var/src/svn-src:/usr/src:/mnt'
 export GTK2_RC_FILES="$HOME/.gtkrc-2.0"
 export ECORE_IMF_MODULE="xim"

@@ -1,28 +1,54 @@
-#!/bin/sh
-# $Id: ~/.scripts/fhp,v 2.0 2013/04/27 09:45:10 -tclover Exp $
-# a script to put firefox profile to tmpfs, the following line should be put in 
-# ~/.*shrc or ~/.*profile: `export FHP=$(ls -d ~/.mozilla/firefox/*.default)'
-# and something like... in a crontab job: */30 * * * * $USER ~/.scripts/fhp.bash
+# $Id: ~/.scripts/fhp,v 1.2 2013/04/27 09:59:26 -tclover Exp $
+
+# A handy script to put firefox profile to tmpfs or zram device.
+# An environment variable is required in ~/.zshrc or whatever:
+# `export FHP=$(print ~/.mozilla/firefox/*.default(/))'
+# and maybe something like: */30 * * * * $USER ~/.oh-my-zsh/functions/fhp.zsh
+
+# @ENV_VARIABLE: ZFHP
+# @DESCRIPTION: Zram block device to use for firefox profile
+# @EXAMPLE: ZFHP=/dev/zram2
+
+# @FUNCTION: die
+# @DESCRIPTION: hlper function
+# @USAGE: <string>
 die() {
 	local _ret=$?
 	echo "* $@"
 	exit $_ret
 }
-[[ -z $FHP ]] && die "FHP profile env string is empty."
-[[ -z $(sudo mount -t tmpfs | grep -F $FHP) ]] &&
-	if [[ "$1" = "-z" ]]; then
-			mount -t ext4 -o acl,user_xattr /dev/zram3 "$FHP" || die
-			chmod $UID:$GID -R $FHP
+
+# @ENV_VARIABLE: FHP
+# @DESCRIPTION: Firefox Home Profile (~/.mozilla/firefox/*.default)
+
+# @FUNCTION: fhp
+# @DESCRIPTION: put firefox profile to tmpfs by default, or use zam instead
+fhp() {
+:	${FHP:=$(ls -d ~/.mozilla/firefox/*.default)}
+	local _d="${FHP%/*}" _p="${FHP##*/}"
+
+	[[ -z "$FHP" ]] && die "no profile found"
+	if [[ -z "$(mount | grep -F $FHP)" ]]; then
+		if [[ -n "$ZFHP" ]]; then
+			sudo mount -t ext4 -o acl,user_xattr $ZFHP "$FHP" ||
+			die "failed to mount zram/ext4 fhp"
+			sudo chown $UID:$GID -R "$FHP"
 		else
 			sudo mount fhp "$FHP" -t tmpfs -o nodev,noexec,uid=$UID,gid=$GID,size=128m ||
-			die "failed to mount fhp"
+			die "failed to mount tmpfs fhp"
+		fi
 	fi
-cd "${FHP%/*}"
-if [[ -f "$FHP"/.unpacked ]]; then
-	tar --exclude $FHP/.unpacked -czpf ${FHP##*/}.tmp.tgz ${FHP##*/}/ ||
-		die "failed to pack the profie."
-	mv ${FHP##*/}.tgz ${FHP##*/}.old.tgz || die "failed to override .old profile."
-	mv ${FHP##*/}.tmp.tgz ${FHP##*/}.tgz || die "failed to move the profile."
-else tar xpf ${FHP##*/}.tgz &>/dev/null || tar xpf ${FHP##*/}.old.tgz &>/dev/null 
-	[[ $? ]] && touch "$FHP"/.unpacked || echo "failed to unpack the tarball."; fi
+	pushd -q "$_d"
+	if [[ -f "$FHP"/.unpacked ]]; then
+		tar --exclude $_p/.unpacked -czpf $_p.tmp.tgz $_p &>/dev/null ||
+		die "failed to pack the profie"
+		mv $_p.tgz $_p.old.tgz || die "failed to override .old profile"
+		mv $_p.tmp.tgz $_p.tgz || die "failed to move the profile"
+	else
+		tar xzpf $_p.tgz &>/dev/null || tar xzpf $_p.old.tgz &>/dev/null &&
+		touch $FHP/.unpacked || echo "failed to unpack the profile"
+	fi
+	popd -q
+}
+
 # vim:fenc=utf-8:ft=sh:ci:pi:sts=0:sw=2:ts=2:

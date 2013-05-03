@@ -2,10 +2,10 @@
 [[ $- != *i* ]] && return
 [[ -f ~/.aliasrc ]] && source ~/.aliasrc
 export CDPATH='.:~:/var/src/git-src:/var/src/egit-src:/var/src/svn-src:/usr/src:/mnt'
-export GTK2_RC_FILES="$HOME/.gtkrc-2.0"
+export GTK2_RC_FILES="~/.gtkrc-2.0"
 export ECORE_IMF_MODULE="xim"
 export XMODIFIERS="@im=none"
-export XDG_CONFIG_HOME=$HOME/.config
+export XDG_CONFIG_HOME=~/.config
 export XMODIFIERS="@im=none"
 
 ## ANSI color codes
@@ -62,7 +62,7 @@ bash_prompt
 if [[ -f /etc/bash_completion ]] && ! shopt -oq posix; then
 	source /etc/bash_completion; fi
 
-for scr in $(ls ~/.scripts/*.bash &>/dev/null); do
+for scr in $(ls ~/.scripts/{fhp,*.bash}); do
 	alias $(basename ${src/.bash/})='~/.scripts/'${scr##*/}
 done
 # vim:fenc=utf-8:ci:pi:sts=0:sw=2:ts=2:

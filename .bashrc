@@ -1,12 +1,6 @@
 # $Id: ~/.bashrc, 2013/05/03 09:32:41 -tclover Exp $
 [[ $- != *i* ]] && return
 [[ -f ~/.aliasrc ]] && source ~/.aliasrc
-export CDPATH='.:~:/var/src/git-src:/var/src/egit-src:/var/src/svn-src:/usr/src:/mnt'
-export GTK2_RC_FILES="~/.gtkrc-2.0"
-export ECORE_IMF_MODULE="xim"
-export XMODIFIERS="@im=none"
-export XDG_CONFIG_HOME=~/.config
-export XMODIFIERS="@im=none"
 
 ## ANSI color codes
 RS="\e[0m" # reset

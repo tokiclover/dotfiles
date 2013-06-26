@@ -1,4 +1,4 @@
-# $Id: ~/.zshrc, 2012/12/13 09:52:31 -tclover Exp $
+# $Id: ~/.zshrc, 2013/06/26 08:01:25 -tclover Exp $
 if [[ -f ~/.dir_colors ]] { eval $(dircolors -b ~/.dir_colors) 
 } elif [[ -f /etc/DIR_COLORS ]] { eval $(dircolors -b /etc/DIR_COLORS) 
 } else { eval $(dircolors) }

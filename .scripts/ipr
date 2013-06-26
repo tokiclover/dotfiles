@@ -1,5 +1,5 @@
 #!/bin/sh
-# $Id: ~/.scripts/ipr,v 2.1 2012/11/12 13:57:17 -tclover Exp $
+# $Id: ~/.scripts/ipr,v 2.1 2013/06/26 08:11:10 -tclover Exp $
 usage() {
 cat <<-EOF
 	-b, --block '1863 ntp'       block service or port '1863 ntp'
@@ -196,12 +196,12 @@ iface() {
 main() {
 	local bc icmp if=$1 lbdif=lo lbdmsk lbdnet msk net
 	if [[ -n "$ip4" ]]; then icmp=icmp ipt="$(which iptables) --modprobe=modprobe"
-		ip="$($ifc  $if | $grp inet' ' | head -n1 | $awk '{ print $2 }')"
-		lbdip="$($ifc  $lbdif | $grp inet' ' | $awk '{ print $2 }')"
-		lbdmsk="$($ifc  $lbdif | $grp netmask | $awk '{ print $4 }')"
+		ip="$($ifc  $if | $grp 'inet addr:' | $awk '{print $2}' | cut -d: -f2)"
+		lbdip="$($ifc  $lbdif | $grp 'inet addr:' | $awk '{print $2}' | cut -d: -f2)"
+		lbdmsk="$($ifc  $lbdif | $grp Mask: | $awk '{print $4}' | cut -d: -f2)"
 		lbdnet="$lbdip/$lbdmsk"
-		bc="$($ifc  $ext | $grp broadcast' ' | $awk '{ print $4 }')"
-		msk="$($ifc $ext | $grp netmask' ' | $awk '{ print $6 }')"
+		bc="$($ifc  $ext | $grp Bcast: | $awk '{print $3}' | cut -d: -f2)"
+		msk="$($ifc $ext | $grp Mask: | $awk '{print $4}' | cut -d: -f2)"
 		net="$ip/$msk"
 		echo "ip=$ip bc=$bc msk=$msk net=$net"
 		$ipt -F; $ipt -X; pre; iface
@@ -214,8 +214,9 @@ main() {
 		[[ -n "$fsave" ]] && $ipt-save >$fsave
 	fi
 	if [[ -n "$ip6" ]]; then icmp=icmpv6 ipt="$(which ip6tables) --modprobe=modprobe"
-		ip="$($ifc  $if | $grp inet6 | head -n1 | $awk '{ print $2 }')"
-		lbdip="$($ifc  $lbdif | $grp inet6 | $awk '{ print $2 }')"
+		ip="$($ifc  $if | $grp 'inet6 addr:' | $awk '{print $3}')"
+		lbdip="$($ifc  $lbdif | $grp inet6 | $awk '{print $3}')"
+		echo "ip6=$ip lbdip6=$lbdip"
 		unset -v ip4 {,lbd}{bc,msk,net}
 		$ipt -F; $ipt -X; pre; iface; post
 		[[ -n "$fsave" ]] && $ipt-save >${fsave/ipt/ip6t}

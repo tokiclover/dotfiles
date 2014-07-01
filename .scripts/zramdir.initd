@@ -12,6 +12,8 @@ depend() {
 }
 
 start() {
+	local IFS="$IFS:"
+	
 	[ -z "$(mount | grep ${zramroot})" ] ||
 	eend "$?" "Failure: no suitable zram root found"
 	
@@ -31,6 +33,8 @@ start() {
 }
 
 stop() {
+	local IFS="$IFS:"
+	
 	for dir in ${comp_dir}; do
 		cmp "${dir}" "${zramroot}"
 	done

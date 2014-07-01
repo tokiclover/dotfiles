@@ -27,7 +27,7 @@ another _dotfiles_ repository
 * mkstg4: a stage4 maker scripts with squashed (system and/or local) directories support;
 * soundon.user: an oss4 user soundon script;
 * term'*': terminal colors display scripts;
-* vtmps.initd: an init svc which can put several directories (var/{log,run,lock}..) into tmpfs.
+* zramdir.initd: an init svc which can put several directories (var/{log,run,lock}..) into zram backed fs.
 
 [my-zsh]: https://github.com/tokiclover/oh-my-zsh
 [oh-my-zsh]: https://github.com/robbyrussell/oh-my-zsh

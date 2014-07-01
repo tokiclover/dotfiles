@@ -1,5 +1,6 @@
 #!/bin/zsh
-# $Id: ~/.scripts/cfg-bup.zsh,v 1.0 2012/05/19 17:44:53 -tclover Exp $
+# $Id: ~/.scripts/cbu.zsh,v 1.0 2014/07/01 22:44:53 -tclover Exp $
+
 usage() {
   cat <<-EOF
   usage: ${(%):-%1x} -s|-r [<date>]
@@ -12,16 +13,24 @@ usage() {
 EOF
 exit 0
 }
-error() { print -P "%B%F{red}*%b%f $@"; }
-die()   { error $@; exit 1; }
+
+error() { print -P "%B%F{red}*%b%f $@" }
+die() {
+	error $@
+	exit 1
+}
 alias die='die "%F{yellow}%1x:%U${(%):-%I}%u:%f" $@'
+
+setopt NULL_GLOB EXTENDED_GLOB
 zmodload zsh/zutil
-zparseopts -E -D -K -A opts d: date: f+: file+: s save r:: restore:: R: root:	u usage || usage
+zparseopts -E -D -K -A opts d: date: f+: file+: s save \
+	r:: restore:: R: root: u usage || usage
+
 if [[ -n ${(k)opts[-u]} ]] || [[ -n ${(k)opts[-usage]} ]] { usage }
 if [[ -z ${opts[*]} ]] { typeset -A opts }
 :	${opts[-root]:=${opts[-R]:-~/.cfg}}
 opts[-file]+=:/etc/make.conf:/etc/fstab:/etc/portage:/var/lib/portage:${opts[-d]}
-setopt NULL_GLOB EXTENDED_GLOB
+
 if [[ -n ${(k)opts[-s]} ]] || [[ -n ${(k)opts[-save]} ]] {
 :	${opts[-date]:=${opts[-D]:-$(date +%Y%m%d%H%M)}}
 	for dir (${(pws,:,)opts[-file]} ${(pws,:,)opts[-f]}) { 
@@ -29,12 +38,16 @@ if [[ -n ${(k)opts[-s]} ]] || [[ -n ${(k)opts[-save]} ]] {
 		cp -ar ${dir} ${opts[-root]}/${dir}:${opts[-date]}
 	}
 }
+
 if [[ -n ${(k)opts[-r]} ]] || [[ -n ${(k)opts[-restore]} ]] {
 	for dir (${(pws,:,)opts[-file]} ${(pws,:,)opts[-f]}) { 
 		if [[ ! -e ${opts[-root]}/${dir}:${opts[-date]}* ]] { 
 			opts[-date]=$(ls -d ${opts[-root]}/${dir}:* | tail -n1)
-		}; cp -ar ${opts[-root]}/${dir}:${opts[-date]}* ${dir}
+		}
+		cp -ar ${opts[-root]}/${dir}:${opts[-date]}* ${dir}
 	}
 }
+
 unset opts
+
 # vim:fenc=utf-8:ft=zsh:ci:pi:sts=0:sw=4:ts=4:

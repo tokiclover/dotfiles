@@ -7,7 +7,7 @@ conf_file="/etc/conf.d/${SVCNAME}"
 description="a handy script to ease iptable/ipset management"
 
 start() {
-	local ipv4 IFS="$IFS:"
+	local ipv4 IFS="$IFS,"
 	
 	for iface in $IFACE; do
 		ipv4=$(ifconfig $iface | grep 'inet ' | head -n1 | awk '{ print $2 }')

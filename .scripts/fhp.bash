@@ -1,4 +1,5 @@
-# $Id: ~/.scripts/fhp,v 1.3 2014/06/31 09:59:26 -tclover Exp $
+#!/bin/bash
+# $Id: ~/.scripts/fhp.bash,v 1.3 2014/07/01 22:00:26 -tclover Exp $
 
 # A handy script to put firefox profile to tmpfs or zram device.
 # A frst environment variable is required in ~/.bashrc or whatever:
@@ -22,33 +23,40 @@
 # @DESCRIPTION: tmpfs directory to use instead of zram fs backed fs
 # @EXEMPLE: TMPFS=/tmp/.private/$USER
 
-# @FUNCTION: die
-# @DESCRIPTION: hlper function
-# @USAGE: <string>
-die() {
-	local _ret=$?
-	echo "* $@"
-	exit $_ret
-}
+# @ENV_VARIABLE: FHP_INIT
+# @DESCRIPTION: an env variable to avoid wasting extra cpu cycles
 
 # @ENV_VARIABLE: FHP
 # @DESCRIPTION: Firefox Home Profile (~/.mozilla/firefox/*.default)
 
 # @FUNCTION: fhp
 # @DESCRIPTION: put firefox profile to tmpfs by default, or use zam instead
-fhp() {
+fhp_init() {
 :	${FHP:=$(ls -d ~/.mozilla/firefox/*.default)}
-	local _d="${FHP%/*}" _p="${FHP##*/}"
+	local _m=/.private/"$USER"
 
-	[[ -z "$FHP" ]] && die "no profile found"
+	[[ -z $FHP ]] && die "no profile found"
 
-	if [[ -n "$TMPFS" ]]; then
-		sudo mount --bind $FHP "$TMPFS" ||
-		die "failed to mount zram/ext4 fhp"
-	elif [[ -n "$ZRAMFS" ]]; then
-		sudo mount --bind "$FHP" "$ZRAMFS"||
-		die "failed to mount tmpfs fhp"
+	if [[ -n "$ZRAMFS" ]]; then
+		_m="$ZRAMFS$_m"
+	elif [[ -n "$TMPFS" ]]; then
+		_m="$TMPFS$_m"
+	else
+		die "neither ZRAMFS nor TMPFS env variable is set"
 	fi
+
+	if [[ ! -d "$_m" ]] {
+		sudo mkdir -p "$_m" &&
+		sudo chown $UID:$GID -R ${_m%/*}
+		chmod 0700 ${_m%/*}
+	fi
+	sudo mount --bind "$FHP" "$_m" || die "Failed to mount $_m"
+
+	export FHP_INIT=1
+}
+
+fhp_update() {
+	local _d="${FHP%/*}" _p="${FHP##*/}"
 
 	pushd "$_d"
 	if [[ -f "$FHP"/.unpacked ]]; then
@@ -62,5 +70,8 @@ fhp() {
 	fi
 	popd
 }
+
+[[ -n "$FHP_INIT" ]] || fhp_init
+fhp_update
 
 # vim:fenc=utf-8:ft=sh:ci:pi:sts=0:sw=2:ts=2:

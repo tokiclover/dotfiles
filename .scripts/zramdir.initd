@@ -1,0 +1,54 @@
+#!/sbin/runscript
+# Copyright 1999-2014 Gentoo Foundation
+# Distributed under the terms of the 2-clause BSD or GPL-2 license
+# $Header: /etc/init.d/zramdir,v 3.0 2014/06/31 13:05:23 -tclover Exp $
+
+conf_file="/etc/conf.d/${SVCNAME}"
+description="use zram and optional tarball archive for directories /var/{log,...}"
+
+depend() {
+        need localmount
+        before bootmisc acpid
+}
+
+start() {
+	[ -z "$(mount | grep ${zramroot})" ] ||
+	eend "$?" "Failure: no suitable zram root found"
+	
+	for dir in ${comp_dir}; do
+		chk ${dir}
+	done
+	
+	for dir in ${comp_dir} ${uncomp_dir}; do
+		mkdir -p ${zramroot}${dir}
+		mount --bind ${dir} ${zramroot}${dir}
+	
+		if [[ -f ${dir}.tar.gz ]]; then
+			tar -xzpf ${dir}.tar.gz -C ${zramroot}
+		fi
+	done
+
+}
+
+stop() {
+	for dir in ${comp_dir}; do
+		cmp "${dir}" "${zramroot}"
+	done
+}
+
+chk() {
+	if [[ -f ${1}.tar.gz ]]; then
+		return 0
+	elif [[ -d "${1}" ]]; then 
+		cmp "${1}" "/"
+		eend "$?" "Failed to compress ${1}"
+	else
+		mkdir -p ${1}
+	fi
+}
+
+cmp() {
+	tar -czpf .${1}.tar.gz -C ${2}
+}
+
+# vim:fenc=utf-8:ft=gentoo-init-d:ci:pi:sts=0:sw=4:ts=4:

@@ -1,5 +1,6 @@
 #!/bin/sh
-# $Id: ~/.scripts/ipr,v 2.1 2013/06/26 08:11:10 -tclover Exp $
+# $Id: ~/.scripts/ipr,v 2.2 2014/07/01 23:11:10 -tclover Exp $
+
 usage() {
 cat <<-EOF
 	-b, --block '1863 ntp'       block service or port '1863 ntp'
@@ -22,10 +23,13 @@ cat <<-EOF
 EOF
 exit $?
 }
+
 [[ $# = 0 ]] && usage
+
 opt=$(getopt -o 46b:i:e:d:m::p:S::s:u -l block:,ext:,jabber::,icq::,mpd::,msn::,torrent:: \
 	-l int:,ipv:,dhcp:,module::,mpd,save::,service:,usage,yahoo:: -n ${0##*/} -- "$@" || usage)
 eval set -- "$opt"
+
 while [[ $# > 0 ]]; do
 	case $1 in
 		-e|--ext) ext=$2; shift 2;;
@@ -49,10 +53,13 @@ while [[ $# > 0 ]]; do
 		-u|--usage|*) usage;;
 	esac
 done
-export LC_ALL="en_US.utf8"
+
+[ -n "$(echo $LC_ALL) | grep utf8)" ] || export LC_ALL="en_US.utf8"
+
 awk="$(which awk)"
 ifc="$(which ifconfig)"
 grp="$(which grep)"
+
 bck+=" 0:1 13 98 111 123 137:139 161:162 445 517:518 520 1214 1999 2049 3049 4329"
 bck+=" 6346 3128 8000 8008 8080 12345 65535 98 512:515 1080 6000:6009 6112 1427 9000"
 srv+=" git domain ssh svn http http-alt https ftp ftp-data ftps mail pop3 pop3s ipp"
@@ -63,6 +70,7 @@ fi
 for p in $bck; do
 	[[ -n "$(echo -- $srv | $grp $p)" ]] && srv=${srv/$p /} || srv+=" $p"
 done
+
 if [[ -n "$kmod" ]]; then
 	for mod in ip_nat_{ftp,irc} ip_conntrack_{ftp,irc} iptable_{filter,mangle,raw} \
 		nf_conntrack_ipv4 iptable_nat ipt_{MASQUERADE,REDIRECT,REJECT,LOG} $module
@@ -72,6 +80,7 @@ if [[ -n "$kmod" ]]; then
 		do modprobe $mod &>/dev/null; done
 	fi
 fi
+
 if [[ -n "$ip4" ]]; then
 	echo 1 >/proc/sys/net/ipv4/tcp_syncookies
 	echo 1 >/proc/sys/net/ipv4/icmp_echo_ignore_broadcasts
@@ -82,6 +91,7 @@ if [[ -n "$ip4" ]]; then
 	done
 	echo 1 >/proc/sys/net/ipv4/ip_forward
 fi
+
 for iv in $ip4 $ip6; do
 	# Disable IP source routing and ICMP redirects
 	for filter in /proc/sys/net/$iv/conf/*/accept_source_route; do 
@@ -91,6 +101,7 @@ for iv in $ip4 $ip6; do
 		echo 0 >$filter
 	done
 done
+
 pre() {
 	# Deny then accept: this keeps holes from opening up while we close ports and such
 	$ipt -P INPUT      DROP
@@ -117,6 +128,7 @@ pre() {
 	# Accept all traffic from loopback device if the IP matches any of our interfaces.
 	$ipt -A INPUT -s   $lbdip/$lbdmsk   -j ACCEPT
 	$ipt -A OUTPUT -s   $lbdip/$lbdmsk   -j ACCEPT
+	
 	echo -n "FW: Blocking attacks to TCP/UDP port "
 	for p in $bck; do
 		echo -n "$p "
@@ -127,12 +139,14 @@ pre() {
 		done
 	done
 	echo ""
+	
 	if [[ -n "$dhcps" ]]; then 
 		[[ -n "$ip4" ]] &&
 			$ipt -A INPUT -p udp -s $dhcps --sport 67:68         --dport 67:68         -j ACCEPT
 		[[ -n "$ip6" ]] &&
 			$ipt -A INPUT -p udp -s $dhcps --sport dhcpv6-server --dport dhcpv6-server -j ACCEPT
 	fi
+	
 	echo -n "FW: Allowing inside systems to use service: "
 	for s in $srv $port; do
 		echo -n "$s "
@@ -140,12 +154,14 @@ pre() {
 		$ipt -A OUTPUT  -o $ext  -p udp --dport $s       -m conntrack --ctstate NEW -j ACCEPT
 	done
 	echo ""
+	
 	if [ -n "$mpd" ]; then
 		echo "Opening TCP Output over $lbdip:$mpd for MPD"
 		$ipt -A INPUT  -p tcp --dport $mpd -s $lbdip --syn -m conntrack --ctstate NEW -j ACCEPT
 		$ipt -A OUTPUT -p tcp --dport $mpd -s $lbdip --syn -m conntrack --ctstate NEW -j ACCEPT
 
 	fi
+	
 	if [[ -n "$torrent" ]]; then
 		# turning off DHT tracking for torrent
 		echo "FW: disabling tracking on ${torrent#*:}-udp-port PREROUTING and OUTPUT"
@@ -157,6 +173,7 @@ pre() {
 		$ipt -A INPUT -p udp --dport $torrent -i $ext       -m conntrack --ctstate NEW -j ACCEPT
 	fi
 }
+
 post() {
 	if [[ -n "$ip4" ]]; then
 		# NAT I/O
@@ -164,6 +181,7 @@ post() {
 		$ipt -A POSTROUTING -t nat -j ACCEPT
 		$ipt -A OUTPUT      -t nat -j ACCEPT
 	fi
+
 	$ipt -A INPUT   -p tcp --dport auth --syn -m conntrack --ctstate NEW -j ACCEPT
 	$ipt -A INPUT   -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
 	$ipt -A OUTPUT  -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
@@ -173,6 +191,7 @@ post() {
 	$ipt -A OUTPUT  -j REJECTl
 	$ipt -A FORWARD -j DROPl
 }
+
 iface() {	
 	if [[ -n "$ip4" ]]; then
 		# Blocking Broadcasts
@@ -222,7 +241,10 @@ main() {
 		[[ -n "$fsave" ]] && $ipt-save >${fsave/ipt/ip6t}
 	fi
 }
+
 [[ -n "$ext" ]] && main "$ext"
 [[ -n "$int" ]] && ext=$int int= && main "$ext"
+
 unset -v awk bck ext ip4 ip6 ifc int ipt grp kmod module port sed srv
+
 # vim:fenc=utf-8:ci:pi:sts=0:sw=2:ts=2:

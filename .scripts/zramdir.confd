@@ -1,0 +1,13 @@
+# $Header: /etc/conf.d/zramdr, 2014/06/31 13:05:19 -tclover Exp $
+
+# zram root directory or mount point
+zramroot=/zram
+
+# compressed/restored directories when starting/stoping service
+# to keep fs consistencies
+comp_dir=/var/log
+
+# contrary to the previous one, fs does not keep consistency upon restart
+uncomp_dir=
+
+# vim:fenc=utf-8:ft=gentoo-conf-d:ci:pi:sts=0:sw=4:ts=4:

@@ -6,3 +6,6 @@ ips=/root/.scripts/ips.zsh
 
 # enable ips[et] script
 IPSET=true
+
+# interface
+IFACE=eth0,wlan0

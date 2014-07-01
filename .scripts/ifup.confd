@@ -2,7 +2,7 @@
 
 # path to default command
 ipr=/root/.scripts/ipr
-ips=/root/.scripts/ips
+ips=/root/.scripts/ips.zsh
 
 # enable ips[et] script
 IPSET=true

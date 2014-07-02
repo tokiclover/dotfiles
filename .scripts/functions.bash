@@ -3,13 +3,13 @@
 # @FUNCTION: die
 # @DESCRIPTION: hlper function
 # @USAGE: <string>
-die() {
+function die() {
 	local _ret=$?
 	echo "* $@"
 	exit $_ret
 }
 
-# ANSI color codes for FUNC bash_prompt
+# ANSI color codes for bash_prompt function
 RS="\e[0m" # reset
 HC="\e[1m" # hicolor
 UL="\e[4m" # underline
@@ -33,20 +33,23 @@ BCYN="\e[46m" # background cyan
 BWHT="\e[47m" # background white
 
 # @FUNCTION: bash_prompt
-# @DESCRIPTION: self-explanation
-bash_prompt() {
+# @DESCRIPTION: bash prompt function
+function bash_prompt() {
 	## Check PWD length
 	local PROMPT="---($USER·$(uname -n):$(tty | cut -b6-)·---()---"
 	if [[ $COLUMNS -lt $((${#PROMPT}+${#PWD}+13)) ]]; then
 		local LENGTH=$((${COLUMNS}-${#PROMPT}-16))
 		local NPWD=...${PWD:COLUMNS-LENGTH:LENGTH}
-	else NPWD=$PWD; fi
+	else
+		NPWD=$PWD
+	fi
 	[[ -n "${NPWD%%HOME*}" ]] && NPWD=${NPWD/~/\~}
 	## And the prompt
 	case "$TERM" in
 	xterm*|rxvt*)
     		PS1="$FCYN┌$HC$FBLE─$FBLE─($FMAG\$$FBLE·$FMAG\h:$FMAG$(tty | cut -b6-\
-			)$FBLE·\D{%m/%d}$FMAG·\t$FBLE)─$HC$FBLE──($FMAG$NPWD$FBLE)─$HC$FBLE─$FBLK─\n$FCYN└$HC$FBLE─$FBLE─$FGRN»$RS "
+			)$FBLE·\D{%m/%d}$FMAG·\t$FBLE)─$HC$FBLE──($FMAG$NPWD$FBLE)─\
+			$HC$FBLE─$FBLK─\n$FCYN└$HC$FBLE─$FBLE─$FGRN»$RS "
    		PS2="$FBLE─$FGRN» $RS"
          	TITLEBAR="\$·${NPWD}"
 		;;
@@ -56,9 +59,12 @@ bash_prompt() {
 			\n$FCYN└$HC$FBLE─$FBLE─»$RS "
    		PS2="$FBLE─$FGRN» $RS"
 		;;
-	*) PS1="$FBLE($FMAG\$$FBLE·\D{%m/%d}·$FMAG\h:$(tty | cut -b6-)$FBLE·$FMAG\W$FBLE)─»$RS ";;
+	*) PS1="$FBLE($FMAG\$$FBLE·\D{%m/%d}·$FMAG\h:$(tty | cut -b6-)$FBLE·$FMAG\W$FBLE)─»$RS "
+		;;
     esac
 }
+# @ENV_VARIABLE: PROMPT_COMMAND
+# @DESCRIPTION: bash prompt command
 PROMPT_COMMAND=bash_prompt
 
 # vim:fenc=utf-8:ft=zsh:ci:pi:sts=0:sw=2:ts=2:

@@ -60,13 +60,12 @@ fhp_update() {
 
 	pushd "$_d"
 	if [[ -f "$FHP"/.unpacked ]]; then
-		tar -X $_p/.unpacked -czpf $_p.tmp.tgz $_p ||
-		die "failed to pack the profie"
 		mv $_p.tgz $_p.old.tgz || die "failed to override .old profile"
-		mv $_p.tmp.tgz $_p.tgz || die "failed to move the profile"
+		tar -X $_p/.unpacked -czpf $_p.tgz $_p ||
+		die "failed to pack the profie"
 	else
 		tar xzpf $_p.tgz || tar xzpf $_p.old.tgz &&
-		touch $FHP/.unpacked || echo "failed to unpack the profile"
+		touch $FHP/.unpacked || die "failed to unpack the profile"
 	fi
 	popd
 }

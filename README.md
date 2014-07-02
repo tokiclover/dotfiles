@@ -1,4 +1,4 @@
-`$Id: dotfiles/README.textile, 2012/06/25 18:11:51 -tclover Exp $`
+`$Id: dotfiles/README.textile, 2014/07/02 18:11:51 -tclover Exp $`
 
 ---
 
@@ -15,9 +15,10 @@ another _dotfiles_ repository
 
 # .scripts: extra info
 
-* cfg-bup is a simple script to back up/restore cfg files or directories;
-* fhp: is a simple script which put firefox profile into tmpfs, 
-	a zsh version is in ~/.oh-my-zsh/functions/fhp;
+* cbu: is a simple script to back up/restore cfg files or directories;
+* fhp: is a simple script which put firefox profile into tmpfs/zram backed FS (dep: functions.$shell);
+* functions.$shell: functions for bash and zsh, almost only die() helper;
+* hda: is a simple script to enable snd-hda power management (PM);
 * hdu: is a simple script which ease updating '$Header:...$' or '$Id:...$' update;
 * ipb: is a script which can be used to retrieve IP block lists to be added to iptables rules;
 * ipr: is script to generate ip[6]tables net rules;

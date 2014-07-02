@@ -29,7 +29,7 @@ zparseopts -E -D -K -A opts d: date: f+: file+: s save \
 if [[ -n ${(k)opts[-u]} ]] || [[ -n ${(k)opts[-usage]} ]] { usage }
 if [[ -z ${opts[*]} ]] { typeset -A opts }
 :	${opts[-root]:=${opts[-R]:-~/.cfg}}
-opts[-file]+=:/etc/make.conf:/etc/fstab:/etc/portage:/var/lib/portage:${opts[-d]}
+opts[-file]+=:/etc/fstab:/etc/portage:/var/lib/portage:${opts[-d]}
 
 if [[ -n ${(k)opts[-s]} ]] || [[ -n ${(k)opts[-save]} ]] {
 :	${opts[-date]:=${opts[-D]:-$(date +%Y%m%d%H%M)}}

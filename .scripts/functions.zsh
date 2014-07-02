@@ -3,7 +3,7 @@
 # @FUNCTION: die
 # @DESCRIPTION: hlper function
 # @USAGE: <string>
-die() {
+function die() {
   local _ret=$?
   print -P " %F{red}*%f $@"
   exit $_ret

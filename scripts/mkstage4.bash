@@ -1,5 +1,5 @@
 #!/bin/bash
-# $Id: ~/.scripts/mkstg4.bash,v 1.3 2013/01/07 12:55:37 -tclover Exp $
+# $Id: ~/scripts/mkstage4.bash,v 1.3 2014/07/07 12:55:37 -tclover Exp $
 usage() {
   cat <<-EOF
   usage: ${0##*/} [OPTIONS...]

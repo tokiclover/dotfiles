@@ -1,5 +1,5 @@
 #!/bin/zsh
-# $Id: ~/.scripts/ips.zsh,v 2.0 2014/07/07 10:56:24 -tclover Exp $
+# $Id: ~/.scripts/ips.zsh,v 2.0 2014/07/07 12:56:24 -tclover Exp $
 usage() {
   cat <<-EOF
   usage: ${(%):-%1x} [-f|-file <file>] [-t|-target <url>] [OPTIONS]
@@ -48,15 +48,15 @@ if [[ -n ${(k)opts[-o]} ]] || [[ -n ${(k)opts[-logger]} ]] {
 	LOG=true
 	facility=${opts[-logger]:-${opts[-l]:-cron}}
 }
-if [[ -n ${(k)opts[-r]} ]] || [[ -n ${(k)opts[-raw]} ]] { raw=true }
-if [[ -n ${(k)opts[-a]} ]] || [[ -n ${(k)opts[-archive]} ]] { archive=true }
+if [[ -n ${(k)opts[-r]} ]] || [[ -n ${(k)opts[-raw]} ]] { RAW=true }
+if [[ -n ${(k)opts[-a]} ]] || [[ -n ${(k)opts[-archive]} ]] { ARCHIVE=true }
 if [[ -n ${(k)opts[-dshield]} ]] {
 	opts[-target]=http://feeds.dshield.org/block.txt
 	opts[-gpg]=${opts[-target]}.asc
 }
 if [[ -n ${(k)opts[-ipdeny]} ]] {
 	opts[-target]=http://www.ipdeny.com/ipblocks/data/countries/all-zones.tar.gz
-	archive=true raw=true
+	ARCHIVE=true RAW=true
 }
 : 	${opts[-datadir]:=${opts[-d]:-/var/lib/ipset}}
 :	${opts[-xtr]:=${opts[-x]:-~/scripts/xtr}}
@@ -76,20 +76,20 @@ get_time() {
 }
 
 get_file() {
-	wget -qNP ${opts[-datadir]} $1 || die "ips: wget failed to get ${1}"
+	wget -qNP ${opts[-datadir]} $1 || die "wget failed to get ${1}"
 }
 
 get_sign() {
-	[[ -e $gpgfile ]] || die "ips: $gpgfile not found"
+	[[ -e $gpgfile ]] || die "$gpgfile not found"
 	gpg --verify $gpgfile $datafile ||
-	die "ips: gpg failed to verify $datafile file"
+	die "gpg failed to verify $datafile file"
 }
 
 ipb() {
-	ipb=${opts[-file]%.*}-ips
-	tmp=${opts[-file]%.*}-tmp
+	ipb=${datafile%.*}-ips
+	tmp=${datafile%.*}-tmp
 	ipset create $tmp ${=opts[-params]}
-	if [[ $raw ]] {
+	if [[ $RAW ]] {
 		while read line; do
 			ipset add $tmp ${=line}
 		done <$datafile
@@ -101,9 +101,9 @@ ipb() {
 		}
 	}
 	ipset create -exist $ips ${=opts[-params]}
-	ipset swap $tmp ${opts[-ipset]}
+	ipset swap $tmp $ipb
 	ipset destroy $tmp
-	info "ips: ${opts[-ipset]} updated"
+	info "$ipb IPSet updated"
 }
 
 if [[ -n ${(k)opts[-gpg]} ]] || [[ -n ${(k)opts[-g]} ]] {
@@ -129,19 +129,19 @@ if [[ -n ${(k)opts[-target]} ]] || [[ -n ${(k)opts[-t]} ]] {
 } elif [[ -n ${(k)opts[-file]} ]] || [[ -n ${(k)opts[-f]} ]] {
 :	${opts[-file]:=${opts[-f]}}
 	datafile=${opts[-file]}
-	[[ -e $datafile ]] || die "ips: no $datafile file provided"
+	[[ -e $datafile ]] || die "no $datafile file provided"
 	oldtime=$(get_time)
-	[[ $GPG ]] && [[ -z $gpgfile ]] && gpgfile=$datafile.asc
-} else { die "ips: -t|-f should be passed with a url|file" }
+	$GPG && [[ -z $gpgfile ]] && gpgfile=$datafile.asc
+} else { die "-t|-f should be passed with a url|file" }
 
 $GPG && get_sign
 
 newtime=$(get_time)
 if [[ $newtime != $oldtime ]] {
-	if [[ $archive ]] {
-		[[ -x ${opts[-xtr]} ]] || die "ips: xtr script not found"
+	if [[ $ARCHIVE ]] {
+		[[ -x ${opts[-xtr]} ]] || die "xtr script not found"
 		tmpdir=$(mktemp -d ips-XXXXXX)
-		pushd -q $tmpdir || die "ips: failed to make a $tmpdir"
+		pushd -q $tmpdir || die "failed to make a $tmpdir"
 		$xtr $datafile || die "xtr: failed to deflate $datafile"
 		for file ((*/)#) {
 			datafile=${opts[-datadir]}/${file:t}

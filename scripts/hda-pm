@@ -1,5 +1,5 @@
 #!/bin/sh
-# $Id: ~/.scripts/hda,v 1.0 2012/11/28 14:15:58 -tclover Exp $
+# $Id: ~/scripts/hda-pm,v 1.0 2012/11/28 14:15:58 -tclover Exp $
 echo 1 >/sys/kernel/debug/tracing/events/hda/enable
 echo 1 >/sys/module/snd_hda_intel/parameters/power_save
 echo 1 >/sys/module/snd_hda_hdmi/parameters/power_save

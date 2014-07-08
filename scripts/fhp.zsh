@@ -1,5 +1,5 @@
 #!/bin/zsh
-# $Id: ~/.oh-my-zsh/functions/fhp.zsh,v 1.3 2014/06/31 21:09:26 -tclover Exp $
+# $Id: ~/scripts/fhp.zsh,v 1.3 2014/07/07 21:09:26 -tclover Exp $
 #
 # A handy script to put firefox profile to tmpfs or zram device.
 # A frst environment variable is required in ~/.zshrc or whatever:

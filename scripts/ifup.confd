@@ -1,0 +1,11 @@
+# $id: /etc/conf.d/ifup, 2014/07/07 -tclover $
+
+# path to default command
+ipr=/root/scripts/ipr
+ips=/root/scripts/ips.zsh
+
+# enable ips[et] script
+IPSET=true
+
+# interface
+IFACE=eth0,wlan0

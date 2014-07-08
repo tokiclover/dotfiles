@@ -1,0 +1,13 @@
+#!/bin/sh
+# $Id: ~/scripts/lbd, 2014/07/07 10:56:24 -tclover Exp $
+for i in $(seq ${2:-16} ${3:-32}); do
+  case $1 in
+   -d|--del) rm -f /dev/loop$i;;
+   -a|--add)
+	   if [ ! -f /dev/lopp$i ]; then
+	   	   mknod -m0660 /dev/loop$i b 7 $i 
+	   	   chown root:disk /dev/loop$i
+	   fi;;
+  esac
+done
+# vim:fenc=utf-8:ci:pi:sts=0:sw=4:ts=4:

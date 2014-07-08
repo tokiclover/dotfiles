@@ -1,0 +1,46 @@
+#!/bin/sh
+# $Id: $HOME/scripts/xtr,v 2014/07/07 22:00:26 -tclover Exp $
+
+# @SCRIPT: xtr
+# @DESCRIPTION: eXTRact archives or tarball archives
+# @USAGE: [-c<comp_opt>] [-g<gpg_opt>] <file> <file> <...>
+
+for arg in "$@"; do
+	case "${arg##*.}" in
+		*.gpg) gpg=gpg;;
+		-c*) c_opt="${arg#*-c}"
+		     continue;;
+		-g*) g_opt="${arg#*-g}"
+		     continue;;
+	esac
+	case "$arg" in
+		*.tbz*2*|*.tar.bz*2*) cmp="tar -xvjf";;
+		*.txz*|*.tar.xz*) cmp="tar -xvJf";;
+		*.tgz*|*.tar.gz*) cmp="tar -xvzf";;
+		*.tar*|*.cbt*) cmp="tar -xvf";;
+		*.zip*|*.cbz) cmp=unzip;;
+		*.rar*|*.cbr) cmp="unrar x";;
+		*.arj*) cmp=unarj;;
+		*.ace*) cmp="unace x";;
+		*.bz*2*) cmp=bunzip2;;
+		*.lzo*) cmp="lzop -d";;
+		*.lz4*) cmp="lz4 -d";;
+		*.lz*)  cmp="lzip -d";;
+		*.xz*) cmp=unxz;;
+		*.gz*) cmp=gunzip;;
+		*.7z*) cmp="7z x";;
+		*.Z*) cmp=uncompress;;
+		*) echo "xtr: unrecongnized $arg argument"
+		   echo "usage: xtr -c<comp_opt> <file> <file> <...>"
+		   exit 1;;
+	esac
+	if [ -n "$gpg" ]; then
+		$gpg -d "$arg" $g_opt | $cmp $opt $c_opt -
+	else
+		$cmp $c_opt "$arg"
+	fi
+done
+
+unset cmp gpg arg c_opt g_opt
+
+# vim:fenc=utf-8:ft=zsh:ci:pi:sts=0:sw=2:ts=2:

@@ -1,4 +1,5 @@
 #!/bin/bash
+# $Id: ~/scripts/term256colors.bash, 2014/07/07 -tclover $
 
 # Original: http://frexx.de/xterm-256-notes/
 #           http://frexx.de/xterm-256-notes/data/colortable16.sh

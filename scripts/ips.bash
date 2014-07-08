@@ -1,5 +1,5 @@
 #!/bin/bash
-# $Id: ~/.scripts/ips.bash , 2012/07/27 01:56:21 -tclover Exp $
+# $Id: ~/scripts/ips.bash , 2014/07/07 01:56:21 -tclover Exp $
 usage() {
   cat <<-EOF
   usage: ${0##*/} [OPTIONS...]

@@ -1,5 +1,5 @@
 #!/bin/bash
-# $Id: ~/.scripts/fhp.bash,v 1.3 2014/07/01 22:00:26 -tclover Exp $
+# $Id: ~/scripts/fhp.bash,v 1.3 2014/07/07 22:00:26 -tclover Exp $
 
 # A handy script to put firefox profile to tmpfs or zram device.
 # A frst environment variable is required in ~/.bashrc or whatever:

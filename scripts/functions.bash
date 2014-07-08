@@ -1,4 +1,4 @@
-# $Id: $HOME/.scripts/functions.bash,v 2014/07/01 09:59:26 -tclover Exp $
+# $Id: $HOME/scripts/functions.bash,v 2014/07/07 09:59:26 -tclover Exp $
 
 # @FUNCTION: die
 # @DESCRIPTION: hlper function

@@ -1,9 +1,16 @@
 #!/bin/sh
-# $Id: $HOME/scripts/xtr,v 2014/07/07 22:00:26 -tclover Exp $
+# $Id: $HOME/scripts/xtr,v 2014/07/07 14:00:26 -tclover Exp $
 
 # @SCRIPT: xtr
 # @DESCRIPTION: eXTRact archives or tarball archives
 # @USAGE: [-c<comp_opt>] [-g<gpg_opt>] <file> <file> <...>
+
+usage () {
+   echo "usage: xtr -c<comp_opt> <file> <file> <...>"
+   exit
+}
+
+[ $# == 0 ] && usage
 
 for arg in "$@"; do
 	case "${arg##*.}" in
@@ -12,6 +19,7 @@ for arg in "$@"; do
 		     continue;;
 		-g*) g_opt="${arg#*-g}"
 		     continue;;
+		-u|--usage) usage;;
 	esac
 	case "$arg" in
 		*.tbz*2*|*.tar.bz*2*) cmp="tar -xvjf";;
@@ -31,7 +39,6 @@ for arg in "$@"; do
 		*.7z*) cmp="7z x";;
 		*.Z*) cmp=uncompress;;
 		*) echo "xtr: unrecongnized $arg argument"
-		   echo "usage: xtr -c<comp_opt> <file> <file> <...>"
 		   exit 1;;
 	esac
 	if [ -n "$gpg" ]; then

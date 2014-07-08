@@ -1,5 +1,5 @@
 #!/bin/zsh
-# $Id: ~/.scripts/ips.zsh,v 2.0 2014/07/07 12:56:24 -tclover Exp $
+# $Id: ~/.scripts/ips.zsh,v 2.0 2014/07/07 13:56:24 -tclover Exp $
 usage() {
   cat <<-EOF
   usage: ${(%):-%1x} [-f|-file <file>] [-t|-target <url>] [OPTIONS]
@@ -87,7 +87,7 @@ get_sign() {
 
 ipb() {
 	ipb=${datafile%.*}-ips
-	tmp=${datafile%.*}-tmp
+	tmp=$(mktemp ${ipb:t}-tmp-XXXXXX)
 	ipset create $tmp ${=opts[-params]}
 	if [[ $RAW ]] {
 		while read line; do
@@ -150,7 +150,9 @@ if [[ $newtime != $oldtime ]] {
 			newtime=$(get_time)
 			[[ $newtime != $oldtime ]] && ipb
 		}
-		ipb
+		popd -q
+	}
+	ipb
 }
 
 unset -v archive datafile facility opts net ip ipb tmp tmpdir \

@@ -1,5 +1,5 @@
 #!/bin/zsh
-# $Id: ~/.scripts/hdu.zsh,v 1.1 2014/07/01 22:00:55 -tclover Exp $
+# $Id: ~/scripts/hdu.zsh,v 1.1 2014/07/07 22:00:55 -tclover Exp $
 usage() {
   cat <<-EOF
   usage: ${(%):-%1x} [options] <files>

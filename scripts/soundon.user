@@ -1,8 +1,10 @@
 #!/bin/sh
-# $ID: /usr/lib/oss/soundon.user, 2012/07/27 12:57:40 -tclover Exp $
-modprobe -a oss_{cmi878x,hdaudio}
-/usr/sbin/ossdetect -diu
-/usr/sbin/ossdevlinks 
+# $ID: ~/scripts/soundon.user, 2014/07/07 12:57:40 -tclover Exp $
+if ! grep oss /proc/modules >/dev/null 2>&1; then
+	modprobe -a oss_{cmi878x,hdaudio}
+fi
+ossdetect -diu
+ossdevlinks 
 # Remapping ossdevlinks links
 if [ -d /dev/oss/oss_cmi878x ]; then
 	ln -sf /dev/oss/oss_cmi878x0/pcm1 /dev/dsp
@@ -12,7 +14,7 @@ if [ -d /dev/oss/oss_cmi878x ]; then
 	ln -sf /dev/oss/oss_cmi878x0/pcm1 /dev/dsp_multich
 	ln -sf /dev/oss/oss_cmi878x0/pcm1 /dev/dsp_out
 	vmixctl attach /dev/oss/oss_cmi878x0/pcm1 /dev/oss/oss_cmi878x0/pcm1
-else
+elif [ -d /dev/oss/oss_hdaudio0 ]; then
 	ln -sf /dev/oss/oss_hdaudio0/pcm0 /dev/dsp
 	ln -sf /dev/oss/oss_hdaudio0/pcmin0 /dev/dsp_in
 #	ln -sf /dev/oss/oss_hdaudio0/spdout0 /dev/dsp
@@ -21,6 +23,6 @@ else
 	ln -sf /dev/oss/oss_hdaudio0/spdout0 /dev/dsp_mmap
 	ln -sf /dev/oss/oss_hdaudio0/spdout0 /dev/dsp_multich
 	ln -sf /dev/oss/oss_hdaudio0/spdout0 /dev/dsp_out
-#	vmixctl attach /dev/oss/oss_hdaudio0/pcm0 /dev/oss/oss_hdaudio0/pcmin0
+	vmixctl attach /dev/oss/oss_hdaudio0/pcm0 /dev/oss/oss_hdaudio0/pcmin0
 fi
 # vim:fenc=utf-8:ft=sh:ci:pi:sts=0:sw=2:ts=2:

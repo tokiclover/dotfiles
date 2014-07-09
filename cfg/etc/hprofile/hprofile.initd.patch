@@ -1,0 +1,38 @@
+--- /etc/init.d/hprofile	2012-07-04 02:01:29.861618809 +0200
++++ /etc/init.d/hprofile	2012-07-04 02:03:49.713870416 +0200
+@@ -2,24 +2,26 @@
+ # Copyright 1999-2002 Gentoo Technologies, Inc.
+ # Distributed under the terms of the GNU General Public License, v2 or later
+ 
+-
+ depend() {
+-	before modules
++	after modules
+ }
+ 
+ start() {
+-	profile=$(/usr/local/sbin/hpdet boot)
+-	ebegin "Selecting hardware profile ${profile}"
+-	/usr/local/sbin/hprofile boot
++	local vga=$(/usr/sbin/hpdet vga)
++	local pwr=$(/usr/sbin/hpdet disk)
++	ebegin "Selecting hardware profile vga.$vga and power.$pwr"
++	/usr/sbin/hprofile vga 
++	/usr/sbin/hprofile power
+ 	eend $?
+ }
+ 
+ stop() {
+-	profile=$(/usr/local/sbin/hprofile -c boot)
+-	ebegin "Stopping hardware profile ${profile}"
+-	/usr/local/sbin/hprofile -s boot
++	local vga=$(/usr/sbin/hprofile -c vga)
++	local pwr=$(/usr/sbin/hprofile -c disk)
++	ebegin "Stopwrping hardware profile vga.$vga and power.$pwr"
++	/usr/sbin/hprofile -s vga
++	/usr/sbin/hprofile -s power
+ 	eend $?
+ }
+ 
+-
+ # vim:ts=4

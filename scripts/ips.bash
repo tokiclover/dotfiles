@@ -1,5 +1,5 @@
 #!/bin/bash
-# $Id: ~/scripts/ips.bash, 2.0 2014/07/07 12:56:21 -tclover Exp $
+# $Id: ~/scripts/ips.bash, 2.0 2014/07/07 13:56:21 -tclover Exp $
 usage() {
   cat <<-EOF
   usage: ${0##*/}  [-f|-file <file>] [-t|-target <url>] [OPTIONS]
@@ -26,7 +26,7 @@ exit $?
 
 error() { 
 	echo -ne "\e[1;31m ips: \e[0m$@\n"
-	$LOG && logger -p $facility.err "$@"
+	$LOG && logger -p $facility.err "ips: $@"
 }
 
 die() {

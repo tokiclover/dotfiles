@@ -1,5 +1,5 @@
 #!/bin/zsh
-# $Id: ~/.scripts/ips.zsh,v 2.0 2014/07/07 13:56:24 -tclover Exp $
+# $Id: ~/.scripts/ips.zsh,v 2.0 2014/07/07 14:56:24 -tclover Exp $
 usage() {
   cat <<-EOF
   usage: ${(%):-%1x} [-f|-file <file>] [-t|-target <url>] [OPTIONS]
@@ -18,8 +18,8 @@ usage() {
   -u, -usage             print this help/usage and exit
 
    default:             :...two implemented use cases...:
-  -ipdeny               use http://ipdeny.com/../all-zones.tar.gz url
-  -dshield              use http://feeds.dshield.org/block.txt url
+  -ipdeny               use http://ipdeny.com/../all-zones.tar.gz
+  -dshield              use https://www.dshield.org/block.txt
 EOF
 exit $?
 }

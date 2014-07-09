@@ -1,0 +1,10 @@
+#!/bin/sh
+if [ -e "/sys/class/power_supply/ADP1/online" ]; then
+	status=$(cat /sys/class/power_supply/ADP1/online)
+	case "$status" in
+		1) profile="adp";;
+		0) profile="bat";;
+	esac
+fi
+
+echo "${profile:-adp}"

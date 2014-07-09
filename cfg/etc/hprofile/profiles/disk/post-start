@@ -1,0 +1,12 @@
+#!/bin/sh
+for dev in $(ls -d /sys/devices/pci*/*/ata*/host*/target*/*/block/sd[a-z]); do
+    echo cfq  >/sys/block/${dev##*/}/queue/scheduler
+    echo 0    >/sys/block/${dev##*/}/queue/iosched/slice_idle
+    echo 64   >/sys/block/${dev##*/}/queue/iosched/quantum
+    # more opitmizations with ncq
+    echo 1024 >/sys/block/${dev##*/}/queue/nr_requests
+    echo 2    >/sys/block/${dev##*/}/device/queue_depth
+done
+for dev in $(ls -d /sys/devices/pci*/*/usb*/*/*/host*/target*/*/block/sd[a-z]); do
+	echo noop  >/sys/block/${dev##*/}/queue/scheduler
+done

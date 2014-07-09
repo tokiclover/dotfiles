@@ -1,0 +1,14 @@
+Section "Monitor"
+	Identifier  "Default"
+EndSection
+
+Section "Device"
+	Identifier  "FGLRX"
+	Driver      "fglrx"
+EndSection
+
+Section "Screen"
+	Identifier "FGLRX"
+	Device     "FGLRX"
+	Monitor    "Default"
+EndSection

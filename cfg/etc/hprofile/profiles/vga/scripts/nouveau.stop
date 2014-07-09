@@ -1,0 +1,12 @@
+#!/bin/sh
+echo "Stopping nouveau vga profile"
+echo 0 >/sys/class/vtconsole/vtcon1/bind
+if ! rmmod nouveau; then
+	ret=$?
+	echo "failed to remove nouveau module"
+	exit $?
+fi
+/etc/init.d/consolefont restart
+rmmod ttm
+rmmod drm_kms_helper
+rmmod dri

@@ -1,5 +1,5 @@
 #!/bin/bash
-# $Id: ~/scripts/ips.bash, 2.0 2014/07/07 11:56:21 -tclover Exp $
+# $Id: ~/scripts/ips.bash, 2.0 2014/07/07 12:56:21 -tclover Exp $
 usage() {
   cat <<-EOF
   usage: ${0##*/}  [-f|-file <file>] [-t|-target <url>] [OPTIONS]
@@ -18,8 +18,8 @@ usage() {
   -u, --usage             print this help/usage and exit
 
     default:              :...two implemented use cases...:
-  --ipdeny                use http://ipdeny.com/../all-zones.tar.gz url
-  --dshield               use http://feeds.dshield.org/block.txt url
+  --ipdeny                use http://ipdeny.com/../all-zones.tar.gz
+  --dshield               use https://www.dshield.org/block.txt
 EOF
 exit $?
 }
@@ -67,7 +67,6 @@ while [[ $# > 0 ]]; do
 done
 [[ -n "${opts[datadir]}" ]] || opts[datadir]="/var/lib/ipset"
 [[ -n "${opts[params]}" ]] || opts[params]="hash:ip --netmask 24 --hashsize 64"
-[[ -n "${opts[xtr]}" ]] || opts[xtrr]="~/scripts/xtr"
 
 mkdir -p -m 0750 ${opts[datadir]} 
 for module in $(find /lib/modules/$(uname -r) -name \
@@ -98,8 +97,9 @@ ipb() {
 		done <$datafile
 	else
 		net=($(sed -rne 's/(^([0-9]{1,3}\.){3}[0-9]{1,3}).*$/\1/p' $datafile))
-		for ip in ${net[*]}; do
-			ipset add $tmp $ip
+		ip=${#net[*]}
+		while [[ $((--ip)) -ge 0 ]]; do
+			ipset add $tmp ${net[ip]}
 		done
 	fi
 	ipset create -exist $ips ${opts[params]}
@@ -139,7 +139,8 @@ $GPG && get_sign
 newtime=$(get_time)
 if [[ $newtime != $oldtime ]]; then
 	if $ARCHIVE; then
-		[[ -x ${opts[xtr]} ]] || die "xtr script not found"
+		[[ -n "${opts[xtr]}" ]] || opts[xtrr]="~/scripts/xtr"
+		[[ -x "${opts[xtr]}" ]] || die "xtr script not found"
 		tmpdir=$(mktemp -d ips-XXXXXX)
 		pushd $tmpdir || die "failed to make a $tmpdir"
 		$xtr $datafile || die "xtr: failed to deflate $datafile"

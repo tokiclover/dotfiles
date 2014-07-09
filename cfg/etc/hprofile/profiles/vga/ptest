@@ -1,0 +1,25 @@
+if [  ! -e /sys/kernel/debug/vgaswitcheroo/switch ]; then
+    [ -z "$(lsmod | grep -i radeon)" ] && modprobe radeon && sleep 3
+    [ -z "$(lsmod | grep -i i915)" ] && modprobe i915 && sleep 3
+fi
+if [ $(grep DIS:+ /sys/kernel/debug/vgaswitcheroo/switch) ]; then
+	echo "radeon"
+	exit
+fi
+if [ $(grep IGD:+ /sys/kernel/debug/vgaswitcheroo/switch) ]; then
+	echo "intel"
+	exit
+fi
+for drv in nouveau nvidia radeon fglrx; do
+    if [ -n "$(lspci -k | grep 'Kernel driver in use: '$drv)" ]; then
+    	echo "$drv"
+    	exit
+    fi
+done
+for drv in i9{6,1}5; do
+    if [ -n "$(lspci -k | grep 'Kernel driver in use: '$drv)" ]; then
+    	echo "intel"
+    	exit
+    fi
+done
+echo "invalid"

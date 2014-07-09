@@ -1,0 +1,16 @@
+Section "Monitor"
+    Identifier  "Default"
+EndSection
+
+Section "Device"
+    Option      "EXAVsync"  "True"
+    Option      "GLXVBlank" "True"
+    Identifier  "NOUVEAU"
+    Driver      "nouveau"
+EndSection
+
+Section "Screen"
+    Identifier "NOUVEAU"
+    Device     "NOUVEAU"
+    Monitor    "Default"
+EndSection

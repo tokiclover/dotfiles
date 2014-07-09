@@ -1,0 +1,18 @@
+# see t#905440 +bidi +cjk
+media-fonts/baekmuk-fonts
+media-fonts/font-misc-meltho
+media-fonts/ja-ipafonts
+media-fonts/khmer
+media-fonts/lklug
+media-fonts/lohit-fonts
+media-fonts/pothana2k
+media-fonts/sil-abyssinica
+media-fonts/sil-arabicfonts
+media-fonts/sil-nuosu
+media-fonts/sil-padauk
+media-fonts/thaifonts-scalable
+media-fonts/tibetan-machine-font
+media-fonts/ttf-mph2b-damase
+
+media-fonts/intlfonts
+media-fonts/terminus

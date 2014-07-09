@@ -1,0 +1,11 @@
+#!/bin/sh
+echo "Starting radeon vga profile"
+echo DIS >/sys/kernel/debug/vgaswitcheroo/switch &&
+echo OFF >/sys/kernel/debug/vgaswitcheroo/switch ||
+exit $?
+echo low >/sys/class/drm/card0/device/power_profile
+[ "$(eselect opengl show)" != "xorg-x11" ] && eselect opengl set xorg-x11
+[ "$(eselect xvmc show)" != "xorg-x11" ] && eselect xvmc set xorg-x11
+#echo dynpm >/sys/class/drm/card0/device/power_method
+echo profile >/sys/class/drm/card0/device/power_method
+# echo auto|low|mid >/sys/class/drm/card0/device/power_profile

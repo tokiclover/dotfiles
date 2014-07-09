@@ -1,0 +1,19 @@
+Section "Monitor"
+	Identifier   "Default"
+EndSection
+
+Section "Device"
+	Option      "AccelMethod" "EXA"
+	Option      "ClockGating" "On"
+	Option      "ForceLowPowerMode" "On"
+	Option      "VGAAccess" "On"
+	Identifier  "RADEON"
+	Driver      "radeon"
+	Option	    "MonitorLayout" "LVDS, AUTO"
+EndSection
+
+Section "Screen"
+	Identifier "RADEON"
+	Device     "RADEON"
+	Monitor    "Default"
+EndSection

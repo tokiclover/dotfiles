@@ -1,0 +1,17 @@
+#!/bin/sh
+hprofile disk.adp
+for d in $(ls -d /sys/devices/system/cpu/cpu[0-9]*); do
+	echo ondemand >$d/cpufreq/scaling_governor
+done
+echo 200 >/sys/devices/system/cpu/cpufreq/ondemand/sampling_down_factor
+echo 1   >/sys/devices/system/cpu/sched_mc_power_savings
+echo powersave >/sys/module/pcie_aspm/parameters/policy
+for d in $(ls -d /sys/class/scsi_host/host[0-9]*); do
+	[ "$(cat $d/proc_name)" = "ahci" ] &&
+		echo min_power >$d/link_power_management_policy
+done
+[ -e /run/openrc/started/alsasound ] &&
+	echo 0 >/sys/module/snd_hda_intel/parameters/power_save
+#iwpriv wlan0 set_power 6
+xbacklight -set 20
+xset dpms 0 0 300

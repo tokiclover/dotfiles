@@ -1,0 +1,16 @@
+Section "Monitor"
+    Identifier "Default"
+EndSection
+
+Section "Device"
+    Option     "AddARGBGLXVisuals"  "on"
+    Option     "NoLogo"
+    Identifier "nVidia"
+    Driver     "nvidia"
+EndSection
+
+Section "Screen"
+    Identifier "nVidia"
+    Device     "nVidia"
+    Monitor    "Default"
+EndSection

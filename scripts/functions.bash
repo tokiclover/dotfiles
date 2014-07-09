@@ -4,7 +4,7 @@
 # @DESCRIPTION: hlper function, print error message to stdout
 # @USAGE: <string>
 error() { 
-	echo -ne "\e[1;31m ips: \e[0m$@\n"
+	echo -ne "${0##*/}: \e[1;31m \e[0m$@\n"
 	$LOG && logger -p $facility.err "${0##*/}: $@"
 }
 
@@ -21,7 +21,7 @@ function die() {
 # @DESCRIPTION: hlper function, print info message to stdout
 # @USAGE: <string>
 function info() { 
-	echo -ne " \e[1;32m ips: \e[0m$@\n"
+	echo -ne "${0##*/}: \e[1;32m \e[0m$@\n"
 	$LOG && logger -p $facility.info "${0##*/}: $@"
 }
 

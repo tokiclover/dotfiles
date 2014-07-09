@@ -1,56 +1,62 @@
 #!/bin/sh
-# $Id: ~/scripts/ipr,v 2.2 2014/07/07 13:11:10 -tclover Exp $
+# $Id: ~/scripts/ipr,v 2.3 2014/07/07 15:11:10 -tclover Exp $
 
 usage() {
 cat <<-EOF
-	-b, --block '1863 ntp'       block service or port '1863 ntp'
-	-i, --int=eth0               use internal interface
-	-e, --ext=wlan0              use external interface
-	-d, --dhcps [<ip>]           enable dhcp, use dhcp server IP
+	usage: ${0##*/} -ewlan0 [-ieth0] -4 [OPTIONS]
+
+	-b, --block 1863,ntp         block service or port 1863,ntp
+	-i, --int=eth0               use eth0 internal interface
+	-e, --ext=wlan0              use wlan0 external interface
+	-d, --dhcp [<server_ip>]     enable dhcp, use dhcp server IP
 	-4, --ipv=4                  short hand for --ipv=4
 	-6, --ipv=6                  short hand for --ipv=6
-	-m, --module [<modules>]     insert kernel modules
-	    --mpd  [6600]            open mpd port
-	    --msn  [1863]            short hand of '-s|-p 1863'
-	    --icq  [5190]            short hand of '-s|-p 5190'
-	    --jabber [5222]          short hand of '-s|-p 5222'
-	    --yahoo  [5050]          short hand of '-s|-p 5050'
+	-m, --module [<modules>]     insert kernel coma separated list of kernel modules
+	    --mpd  [6600]            allow in/outbound from loop back device src for mpd
+	    --msn  [1863]            short hand of '-s 1863'
+	    --icq  [5190]            short hand of '-s 5190'
+	    --jabber [5222]          short hand of '-s 5222'
+	    --yahoo  [5050]          short hand of '-s 5050'
 	    --torrent [50550:50555]  enable torrent traffic on those ports   
-	-p, --port 14541             *open* or allow inbound/outbound on port 14541
-	-s, --service git            allow inbound/outbound for git service
-	-S, --save [rules-save]      save ip[6]tables rules to file
-	-u, --usage                  print this help and exit
+	-s, --srv pop3,pop3s         allow in/outbound for named services or ports
+	-S, --save [ipt-rules]       save ip[6]tables rules to file, default to ipt-rules
+	-I, --ipset [<IPBlock>]      enable IPSet set, default to adding IPBlock
+	-?, -u, --usage              print this help and exit
 EOF
 exit $?
 }
 
 [[ $# = 0 ]] && usage
 
-opt=$(getopt -o 46b:i:e:d:m::p:S::s:u -l block:,ext:,jabber::,icq::,mpd::,msn::,torrent:: \
-	-l int:,ipv:,dhcp:,module::,mpd,save::,service:,usage,yahoo:: -n ${0##*/} -- "$@" || usage)
+opt=$(getopt -o ?46I::b:i:e:d:m::S::s:u -l block:,ext:,jabber::,icq::,ipset:: \
+	-l mpd::,msn::,torrent::,int:,ipv:,dhcp:,module::,mpd,save::,srv: \
+	-l usage,yahoo:: -n ${0##*/} -- "$@" || usage)
 eval set -- "$opt"
 
 while [[ $# > 0 ]]; do
 	case $1 in
 		-e|--ext) ext=$2; shift 2;;
 		-i|--int) int=$2; shift 2;;
-		-4) ip4=ipv4; shift;;
-		-6) ip6=ipv6; shift;;
+		-4) ipv4=true ipv+=" ipv4"; shift;;
+		-6) ipv6=true ipv+=" ipv6"; shift;;
 		--mpd) mpd=${2:-6600}; shift 2;;
-		-b|--block) bck+=" $2",; shift 2;;
-		--msn) port+=" ${2:-1853}"; shift 2;;
-		--icq) port+=" ${2:-5190}"; shift 2;;
-		--jabber) port+=" ${2:-5222}"; shift 2;;
-		--yahoo) port+=" ${2:-5050}"; shift 2;;
-		-d|--dhcps) port+=" ${2:-67:68}"; shift 2;;
+		-b|--block) bck+=,$2,; shift 2;;
+		-I|--ipset) ipb+=,${2:-IPBlock}; shift 2;;
+		--msn) srv+=,${2:-1853}; shift 2;;
+		--icq) srv+=,${2:-5190}; shift 2;;
+		--jabber) srv+=,${2:-5222}; shift 2;;
+		--yahoo) srv+=,${2:-5050}; shift 2;;
+		-d|--dhcp) dhcp=true dsr=${2}; shift 2;;
 		-m|--module) kmod=y module+=" $2"; shift 2;;
-		--ipv) for ip in $2; do ip$ip=ipv$ip; done; shift 2;;
-		-S|--save) fsave=${2:-/var/lib/iptables/rules-save}; shift 2;;
+		--ipv)
+			for i in ${2/,/ }; do 
+				ipv$i=true ipv=+" ipv$i"
+			done; shift 2;;
+		-S|--save) save=${2:-/var/lib/iptables/ipt-rules}; shift 2;;
 		--torrent) torrent=${2:-50550:50555}; shift 2;;
-		-s|--service) srv+=" $2"; shift 2;;
-		-p|--port) port+=" $2"; shift 2;;
+		-s|--srv) srv+=,$2; shift 2;;
 		--) shift; break;;
-		-u|--usage|*) usage;;
+		-?|-u|--usage|*) usage;;
 	esac
 done
 
@@ -60,28 +66,25 @@ awk="$(which awk)"
 ifc="$(which ifconfig)"
 grp="$(which grep)"
 
-bck+=" 0:1 13 98 111 123 137:139 161:162 445 517:518 520 1214 1999 2049 3049 4329"
-bck+=" 6346 3128 8000 8008 8080 12345 65535 98 512:515 1080 6000:6009 6112 1427 9000"
-srv+=" git domain ssh svn http http-alt https ftp ftp-data ftps mail pop3 pop3s ipp"
-srv+=" imap2 imap3 imaps time rsync ircd ircs hkp telnets"
-if [[ -n "$dhcps" ]] || [[ -n "$(echo -- $port | grep 67:68)" ]]; then
-	[[ -n "$ip6" ]] && srv+=" dhcpv6-client"
-fi
-for p in $bck; do
-	[[ -n "$(echo -- $srv | $grp $p)" ]] && srv=${srv/$p /} || srv+=" $p"
+bck+=,0:1,13,98,111,123,137:139,161:162,445,517:518,520,1214,1999,2049,3049,4329
+bck+=,6346,3128,8000,8008,8080,12345,65535,98,512:515,1080,6000:6009,6112,1427,9000
+srv+=,git,domain,ssh,http,http-alt,https,ftp,ftp-data,ftps,ipp,imap2,imap3,imaps,mail
+srv+=,time,rsync,ircd,ircs,hkp,telnets
+for i in $bck; do
+	[[ -n "$(echo -- $srv | $grp $i)" ]] && srv=${srv/,$p/} || srv+=,$p
 done
 
 if [[ -n "$kmod" ]]; then
 	for mod in ip_nat_{ftp,irc} ip_conntrack_{ftp,irc} iptable_{filter,mangle,raw} \
 		nf_conntrack_ipv4 iptable_nat ipt_{MASQUERADE,REDIRECT,REJECT,LOG} $module
 	do modprobe $mod &>/dev/null; done
-	if [[ -n "$ip6" ]]; then
+	if $ipv6; then
 		for mod in ip6table_{filter,mangle,raw} nf_conntrack_ipv6 ip6t_{LOG,REJECT} 
 		do modprobe $mod &>/dev/null; done
 	fi
 fi
 
-if [[ -n "$ip4" ]]; then
+if $ipv4; then
 	echo 1 >/proc/sys/net/ipv4/tcp_syncookies
 	echo 1 >/proc/sys/net/ipv4/icmp_echo_ignore_broadcasts
 	echo 1 >/proc/sys/net/ipv4/ip_dynaddr
@@ -92,12 +95,12 @@ if [[ -n "$ip4" ]]; then
 	echo 1 >/proc/sys/net/ipv4/ip_forward
 fi
 
-for iv in $ip4 $ip6; do
+for v in $ipv; do
 	# Disable IP source routing and ICMP redirects
-	for filter in /proc/sys/net/$iv/conf/*/accept_source_route; do 
+	for filter in /proc/sys/net/$v/conf/*/accept_source_route; do 
 		echo 0 >$filter
 	done
-	for filter in /proc/sys/net/$iv/conf/*/accept_redirects; do 
+	for filter in /proc/sys/net/$v/conf/*/accept_redirects; do 
 		echo 0 >$filter
 	done
 done
@@ -125,10 +128,13 @@ pre() {
 	# Filter bad tcp right at the bat
 	$ipt -A INPUT   -p tcp -j BADTCP
 	$ipt -A OUTPUT  -p tcp -j BADTCP
+	# Add IPSet sets while at it if enabled
+	for b in $(sed 's/,/ /g' $ipb); do
+		$ipt -I INPUT -m set --set $b src -j DROPl
+	done
 	# Accept all traffic from loopback device if the IP matches any of our interfaces.
-	$ipt -A INPUT -s   $lbdip/$lbdmsk   -j ACCEPT
-	$ipt -A OUTPUT -s   $lbdip/$lbdmsk   -j ACCEPT
-	
+	$ipt -A INPUT -s   $lbdip${ipv4:+/$lbdmsk}   -j ACCEPT
+	$ipt -A OUTPUT -s   $lbdip${ipv4:+/$lbdmsk}   -j ACCEPT
 	echo -n "FW: Blocking attacks to TCP/UDP port "
 	for p in $bck; do
 		echo -n "$p "
@@ -140,16 +146,16 @@ pre() {
 	done
 	echo ""
 	
-	if [[ -n "$dhcps" ]]; then 
-		[[ -n "$ip4" ]] &&
-			$ipt -A INPUT -p udp -s $dhcps --sport 67:68         --dport 67:68         -j ACCEPT
-		[[ -n "$ip6" ]] &&
-			$ipt -A INPUT -p udp -s $dhcps --sport dhcpv6-server --dport dhcpv6-server -j ACCEPT
+	if $dhcp; then 
+		$ipv4 &&
+			$ipt -A INPUT -p udp ${dsr:+-s $dsr} --sport 67:68         --dport 67:68         -j ACCEPT
+		$ipv6 &&
+			$ipt -A INPUT -p udp ${dsr:+-s $dsr} --sport dhcpv6-server --dport dhcpv6-server -j ACCEPT
 	fi
 	
 	echo -n "FW: Allowing inside systems to use service: "
-	for s in $srv $port; do
-		echo -n "$s "
+	for s in $(sed 's/,/ /g' $srv); do
+		echo -n "fw: $s"
 		$ipt -A OUTPUT  -o $ext  -p tcp --dport $s --syn -m conntrack --ctstate NEW -j ACCEPT
 		$ipt -A OUTPUT  -o $ext  -p udp --dport $s       -m conntrack --ctstate NEW -j ACCEPT
 	done
@@ -175,7 +181,7 @@ pre() {
 }
 
 post() {
-	if [[ -n "$ip4" ]]; then
+	if $ipv4; then
 		# NAT I/O
 		$ipt -A PREROUTING  -t nat -j ACCEPT
 		$ipt -A POSTROUTING -t nat -j ACCEPT
@@ -193,14 +199,14 @@ post() {
 }
 
 iface() {	
-	if [[ -n "$ip4" ]]; then
+	if $ipv4; then
 		# Blocking Broadcasts
 		$ipt -A INPUT   -i $ext -d   $msk -j DROPl
 		$ipt -A OUTPUT  -o $ext -d   $msk -j DROPl
 		$ipt -A FORWARD -o $ext -d   $msk -j DROPl
 		# An additional Egress check
 		$ipt -A OUTPUT  ! -o $ext -s $msk -j DROPl
-	elif [[ -n "$ip6" ]]; then echo "ip=$ip"; fi
+	fi
 	# Accept all traffic from loopback device if the IP matches any of our interfaces
 	$ipt -A INPUT -s $lbdip/$lbdmsk -d $ip -j ACCEPT
 	$ipt -A OUTPUT -s $lbdip/$lbdmsk -d $ip -j ACCEPT
@@ -213,8 +219,9 @@ iface() {
 	$ipt -A OUTPUT  -o $ext  -p $icmp  --$icmp-type 8 -m conntrack --ctstate NEW -j ACCEPT
 }
 main() {
-	local bc icmp if=$1 lbdif=lo lbdmsk lbdnet msk net
-	if [[ -n "$ip4" ]]; then icmp=icmp ipt="$(which iptables) --modprobe=modprobe"
+	local bc icmp if=$1 lbdif=lo lbdmsk lbdnet msk net ip icmp ipt
+	if $ipv4; then
+		icmp=icmp ipt="$(which iptables) --modprobe=modprobe"
 		ip="$($ifc  $if | $grp 'inet addr:' | $awk '{print $2}' | cut -d: -f2)"
 		lbdip="$($ifc  $lbdif | $grp 'inet addr:' | $awk '{print $2}' | cut -d: -f2)"
 		lbdmsk="$($ifc  $lbdif | $grp Mask: | $awk '{print $4}' | cut -d: -f2)"
@@ -230,21 +237,22 @@ main() {
 			$ipt -A OUTPUT   -o $int -s $msk -j ACCEPT
 		fi
 		post
-		[[ -n "$fsave" ]] && $ipt-save >$fsave
+		[[ -n "$save" ]] && $ipt-save >$save
 	fi
-	if [[ -n "$ip6" ]]; then icmp=icmpv6 ipt="$(which ip6tables) --modprobe=modprobe"
+	if $ipv6; then
+		icmp=icmpv6 ipt="$(which ip6tables) --modprobe=modprobe"
 		ip="$($ifc  $if | $grp 'inet6 addr:' | $awk '{print $3}')"
 		lbdip="$($ifc  $lbdif | $grp inet6 | $awk '{print $3}')"
-		echo "ip6=$ip lbdip6=$lbdip"
-		unset -v ip4 {,lbd}{bc,msk,net}
+		echo "ip=$ip lbdip=$lbdip"
+		unset -v ipv4 {,lbd}{bc,msk,net}
 		$ipt -F; $ipt -X; pre; iface; post
-		[[ -n "$fsave" ]] && $ipt-save >${fsave/ipt/ip6t}
+		[[ -n "$fsave" ]] && $ipt-save >${save/ipt/ip6t}
 	fi
 }
 
 [[ -n "$ext" ]] && main "$ext"
 [[ -n "$int" ]] && ext=$int int= && main "$ext"
 
-unset -v awk bck ext ip4 ip6 ifc int ipt grp kmod module port sed srv
+unset -v awk bck dhcp dsr ext i ipv ipv4 ipv6 ifc int ipt grp kmod module sed srv
 
 # vim:fenc=utf-8:ci:pi:sts=0:sw=2:ts=2:

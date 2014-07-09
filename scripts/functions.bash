@@ -1,4 +1,4 @@
-# $Id: $HOME/scripts/functions.bash,v 2014/07/07 09:59:26 -tclover Exp $
+# $Id: $HOME/scripts/functions.bash,v 2014/07/07 10:59:26 -tclover Exp $
 
 # @FUNCTION: die
 # @DESCRIPTION: hlper function
@@ -10,58 +10,46 @@ function die() {
 }
 
 # ANSI color codes for bash_prompt function
-RS="\e[0m" # reset
-HC="\e[1m" # hicolor
-UL="\e[4m" # underline
-BL="\e[5m" # blink
-INV="\e[7m" # inverse background and foreground
-FBLK="\e[30m" # foreground black
-FRED="\e[31m" # foreground red
-FGRN="\e[32m" # foreground green
-FYEL="\e[33m" # foreground yellow
-FBLE="\e[34m" # foreground blue
-FMAG="\e[35m" # foreground magenta
-FCYN="\e[36m" # foreground cyan
-FWHT="\e[37m" # foreground white
-BBLK="\e[40m" # background black
-BRED="\e[41m" # background red
-BGRN="\e[42m" # background green
-BYEL="\e[43m" # background yellow
-BBLE="\e[44m" # background blue
-BMAG="\e[45m" # background magenta
-BCYN="\e[46m" # background cyan
-BWHT="\e[47m" # background white
+declare -A bg fg bfg
+bfg=([reset]="\e[0m" [hicolor]="\e[1m" [underline]="\e[4m" [blink]="\e[5m" [inverse]="\e[7m")
+fg=([black]="\e[30m" [red]="\e[31m" [green]="\e[32m" [yellow]="\e[33m" [blue]="\e[34m" \
+	[magenta]="\e[35m" [cyan]="\e[36m" [white]="\e[37m")
+bg=([black]="\e[40m" [red]="\e[41m" [green]="\e[42m" [yellow]="\e[43m" [blue]="\e[44m" \
+	[magenta]="\e[45m" [cyan]="\e[46m" [white]="\e[47m")
 
 # @FUNCTION: bash_prompt
 # @DESCRIPTION: bash prompt function
 function bash_prompt() {
-	## Check PWD length
-	local PROMPT="---($USER·$(uname -n):$(tty | cut -b6-)·---()---"
+	# Check PWD length
+	local PROMPT COLUMNS LENGTH NPWD
+	PROMPT="---($USER·$(uname -n):$(tty | cut -b6-)·---()---"
 	if [[ $COLUMNS -lt $((${#PROMPT}+${#PWD}+13)) ]]; then
-		local LENGTH=$((${COLUMNS}-${#PROMPT}-16))
-		local NPWD=...${PWD:COLUMNS-LENGTH:LENGTH}
+		LENGTH=$((${COLUMNS}-${#PROMPT}-16))
+		NPWD=...${PWD:COLUMNS-LENGTH:LENGTH}
 	else
-		NPWD=$PWD
+		NPWD="$PWD"
 	fi
 	[[ -n "${NPWD%%HOME*}" ]] && NPWD=${NPWD/~/\~}
-	## And the prompt
+	# And the prompt
 	case "$TERM" in
 	xterm*|rxvt*)
-    		PS1="$FCYN┌$HC$FBLE─$FBLE─($FMAG\$$FBLE·$FMAG\h:$FMAG$(tty | cut -b6-\
-			)$FBLE·\D{%m/%d}$FMAG·\t$FBLE)─$HC$FBLE──($FMAG$NPWD$FBLE)─\
-			$HC$FBLE─$FBLK─\n$FCYN└$HC$FBLE─$FBLE─$FGRN»$RS "
-   		PS2="$FBLE─$FGRN» $RS"
-         	TITLEBAR="\$·${NPWD}"
+		PS1="${fg[cyan]}┌${fbg[hicolor]}${fg[blue]}──(${fg[magenta]}\$${fg[blue]}·${fg[magenta]}\h:$(\
+		tty | cut -b6-)${fg[blue]}·\D{%m/%d}${fg[magenta]}·\t${fg[blue]})─${fbg[hicolor]}${fg[blue]}──\
+		(${fg[magenta]}$NPWD${fg[blue]})─${fbg[hiclor]}${fg[blue]}─${fg[black]}─\
+		\n${fg[cyan]}└${fbg[hicolor]}${fg[blue]}──${fg[green]}»${fbg[reset]} "
+   		PS2="${fg[blue]}─${fg[green]}» ${fbg[reset]}"
+        TITLEBAR="\$·${NPWD}"
 		;;
 	linux*)
-    		PS1="$FCYN┌$HC$FBLE─$FBLE─($FMAG\$$FBLE·\D{%m/%d}·$FMAG\h:$FMAG$(tty | cut -b6-\
-			)$FBLE·$FMAG\t$FBLE)─$HC$FBLE─$FBLE─($FMAG$NPWD$FBLE)─$HC$FBLE─$FBLK─\
-			\n$FCYN└$HC$FBLE─$FBLE─»$RS "
-   		PS2="$FBLE─$FGRN» $RS"
+		PS1="${fg[cyan]}┌${bfg[hicolor]}${fg[blue]}──(${fg[magenta]\$${fg[blue]}·\D{%m/%d}·${fg[magenta]}\h:$(\
+		tty | cut -b6-)$[fg[blue]}·${fg[magenta]}\t${fg[blue]})─${fbg[hicolor]}${fg[blue]}──(${fg[magenta]$NPWD${fg[blue]})\
+		─${fbg[hicolor]}${fg[blue]}─${fg[black]}─\n${fg[cyan]}└${fbg[hicolor]}${fg[blue]}──»${fbg[reset]} "
+		PS2="${fg[blue]}─${fg[green]}» ${fbg[reset]}"
 		;;
-	*) PS1="$FBLE($FMAG\$$FBLE·\D{%m/%d}·$FMAG\h:$(tty | cut -b6-)$FBLE·$FMAG\W$FBLE)─»$RS "
+	*) PS1="${fg[blue]}(${fg[magenta]}\$${fg[blue]}·\D{%m/%d}·${fg[magenta]}\h:$(\
+	tty | cut -b6-)${fg[blue]}·${fg[magenta]}\W${fg[blue]})─»${fbg[reset]} "
 		;;
-    esac
+	esac
 }
 # @ENV_VARIABLE: PROMPT_COMMAND
 # @DESCRIPTION: bash prompt command

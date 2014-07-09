@@ -1,0 +1,8 @@
+#!/bin/sh
+echo "Starting nvidia vga profile"
+if ! modprobe nvidia; then
+	ret=$?
+	echo "failed to load nvidia module"
+	exit $?
+fi
+[ "$(eselect opengl show)" != "nvidia" ] && eselect opengl set nvidia

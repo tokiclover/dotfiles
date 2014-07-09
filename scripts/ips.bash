@@ -25,7 +25,7 @@ exit $?
 }
 
 error() { 
-	echo -ne "\e[1;31m ips: \e[0m$@\n"
+	echo -ne "ips: \e[1;31m \e[0m$@\n"
 	$LOG && logger -p $facility.err "ips: $@"
 }
 
@@ -36,7 +36,7 @@ die() {
 }
 
 info() { 
-	echo -ne " \e[1;32m ips: \e[0m$@\n"
+	echo -ne "ips: \e[1;32m \e[0m$@\n"
 	$LOG && logger -p $facility.info "ips: $@"
 }
 

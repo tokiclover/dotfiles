@@ -1,0 +1,2 @@
+#!/bin/sh
+hdparm -q -S120 -B210 -M230 /dev/sd[a-z]

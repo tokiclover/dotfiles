@@ -1,0 +1,8 @@
+#!/bin/sh
+echo "Starting nouveau profile."
+if ! modprobe nouveau; then
+	ret=$?
+	echo "failed to load nouveau module"
+	exit $ret
+fi
+[ "$(eselect opengl show)" != "xorg-x11" ] && eselect opengl set xorg-x11

@@ -1,0 +1,4 @@
+#!/bin/sh
+[ "${1}" == "intel" ] || [ "${1}" == "radeon" ] &&
+    echo ON >/sys/kernel/debug/vgaswitcheroo/switch
+echo "Finished Stopping profile ${1} and moving back xorg.conf"

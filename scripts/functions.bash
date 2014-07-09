@@ -1,12 +1,28 @@
-# $Id: $HOME/scripts/functions.bash,v 2014/07/07 10:59:26 -tclover Exp $
+# $Id: $HOME/scripts/functions.bash,v 2014/07/07 11:59:26 -tclover Exp $
 
 # @FUNCTION: die
-# @DESCRIPTION: hlper function
+# @DESCRIPTION: hlper function, print error message to stdout
+# @USAGE: <string>
+error() { 
+	echo -ne "\e[1;31m ips: \e[0m$@\n"
+	$LOG && logger -p $facility.err "${0##*/}: $@"
+}
+
+# @FUNCTION: die
+# @DESCRIPTION: hlper function, print message and exit
 # @USAGE: <string>
 function die() {
-	local _ret=$?
-	echo "* $@"
-	exit $_ret
+	local ret=$?
+	error "$@"
+	exit $ret
+}
+
+# @FUNCTION: into
+# @DESCRIPTION: hlper function, print info message to stdout
+# @USAGE: <string>
+function info() { 
+	echo -ne " \e[1;32m ips: \e[0m$@\n"
+	$LOG && logger -p $facility.info "${0##*/}: $@"
 }
 
 # ANSI color codes for bash_prompt function

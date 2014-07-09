@@ -1,0 +1,7 @@
+#!/bin/sh
+echo "Stopping nvidia vga profile"
+if ! rmmod nvidia; then
+	ret=$?
+	echo "failed to remove nvidia module"
+	exit $?
+fi

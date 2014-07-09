@@ -1,0 +1,3 @@
+#!/bin/sh
+echo 1 >/sys/class/rfkill/rfkill0/state
+echo 1 >/sys/class/rfkill/rfkill2/state

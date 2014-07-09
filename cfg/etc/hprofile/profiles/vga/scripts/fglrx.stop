@@ -1,0 +1,7 @@
+#!/bin/sh
+echo "Stopping nvidia profile."
+if ! rmmod fglrx; then
+	ret=$?
+	echo "failed to remove fglrx module"
+	exit $ret
+fi

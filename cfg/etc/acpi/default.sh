@@ -1,5 +1,5 @@
 #!/bin/sh
-# $Id: /etc/acpi/default.sh, 2014/07/07 13:22:59 -tclover Exp $
+# $Id: /etc/acpi/default.sh, 2014/07/07 14:22:59 -tclover Exp $
 
 set $*
 group=${1%%/*}
@@ -8,8 +8,8 @@ device=$2
 id=$3
 value=$4
 
-/etc/init.d/alsasound status >/dev/null 2>&1 && alsa=true
-/etc/init.d/oss status >/dev/null 2>&1 && oss=true
+[ -e /run/openrc/started/alsasound ] && alsa=true
+[ -e /run/openrc/started/oss ] && oss=true
 amixer="amixer -q set Master"
 ossmix="ossmix -- vmix0-outvol"
 

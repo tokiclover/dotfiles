@@ -1,0 +1,9 @@
+#!/bin/sh
+echo "Starting fglrx profile."
+if ! modprobe fglrx; then
+	ret=$?
+	echo "failed to load fglrx module"
+	exit $ret
+fi
+[ "$(eselect opengl show)" != "ati" ] && eselect opengl set ati
+[ "$(eselect xvmc show)" != "ati" ] && eselect xvmc set ati

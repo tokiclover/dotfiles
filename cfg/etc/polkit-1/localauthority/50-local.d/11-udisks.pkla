@@ -1,0 +1,4 @@
+[udisks full access]
+Identity=unix-group:users
+Action=org.freedesktop.udisks.drive-eject;org.freedesktop.udisks.filesystem-mount
+ResultAny=yes

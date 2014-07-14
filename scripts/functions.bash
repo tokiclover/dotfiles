@@ -40,13 +40,14 @@ function mktmp() {
 		 	*) tmp="$1"; shift;;
 		esac
 	done
-	[[ -n "$tmp" ]] && TMP+=/"$tmp"-XXXXXX || die "no $tmp TEMPLATE provided"
+	[[ -n "$tmp" ]] && TMP+=/"$tmp"-XXXXXX ||
+	die "mktmp: no $tmp TEMPLATE provided"
 	if [[ "$type" == "dir" ]]; then
 		mkdir -p ${mode:+-m$mode} "$TMP" ||
-		die "failed to make $TMP"
+		die "mktmp: failed to make $TMP"
 	else
 		mkdir -p ${TMP%*/} &&
-		echo >"$TMP" || die "failed to make $TMP"
+		echo >"$TMP" || die "mktmp: failed to make $TMP"
 		[[ -n "$mode" ]] && chmod $mode "$TMP"
 	fi
 	[[ -n "$owner" ]] && chown "$owner" "$TMP"

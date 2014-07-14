@@ -1,9 +1,9 @@
-# $Id: $HOME/scripts/functions.bash,v 2014/07/07 11:59:26 -tclover Exp $
+# $Id: $HOME/scripts/functions.bash,v 2014/07/07 12:59:26 -tclover Exp $
 
 # @FUNCTION: die
 # @DESCRIPTION: hlper function, print error message to stdout
 # @USAGE: <string>
-error() { 
+function error() { 
 	echo -ne "${0##*/}: \e[1;31m \e[0m$@\n"
 	$LOG && logger -p $facility.err "${0##*/}: $@"
 }
@@ -23,6 +23,35 @@ function die() {
 function info() { 
 	echo -ne "${0##*/}: \e[1;32m \e[0m$@\n"
 	$LOG && logger -p $facility.info "${0##*/}: $@"
+}
+
+# @FUNCTION: mktmp
+# @DESCRIPTION: make tmp dir or file in ${TMPDIR:-/tmp}
+# @ARG: -d|-f [-m <mode>] [-o <owner[:group]>] [-g <group>] TEMPLATE
+function mktmp() {
+	local type mode owner group tmp TMP=${TMPDIR:-/tmp}
+	while [[ $# > 1 ]]; do
+		case $1 in
+			-d) type=dir; shift;;
+			-f) type=file; shift;;
+			-m) mode=$2; shift 2;;
+			-o) owner="$2"; shitf 2;;
+			-g) group=$2; shift 2;;
+		 	*) tmp="$1"; shift;;
+		esac
+	done
+	[[ -n "$tmp" ]] && TMP+=/"$tmp"-XXXXXX || die "no $tmp TEMPLATE provided"
+	if [[ "$type" == "dir" ]]; then
+		mkdir -p ${mode:+-m$mode} "$TMP" ||
+		die "failed to make $TMP"
+	else
+		mkdir -p ${TMP%*/} &&
+		echo >"$TMP" || die "failed to make $TMP"
+		[[ -n "$mode" ]] && chmod $mode "$TMP"
+	fi
+	[[ -n "$owner" ]] && chown "$owner" "$TMP"
+	[[ -n "$group" ]] && chgrp "$group" "$TMP"
+	echo "$TMP"
 }
 
 # ANSI color codes for bash_prompt function

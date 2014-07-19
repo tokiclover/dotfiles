@@ -7,12 +7,12 @@ if [[ -f /etc/bash_completion ]] && ! shopt -oq posix; then
 	source /etc/bash_completion
 fi
 
-if [[ -f ~/scripts/functions.bash ]]; then
-	source ~/scripts/functions.bash
+if [[ -f ~/scripts/functions-bash ]]; then
+	source ~/scripts/functions-bash
 fi
 
 for scr in $(ls ~/scripts/*.bash); do
-	alias $(basename ${src/.bash/})='~/scripts/'${scr##*/}
+	alias $(basename ${scr/%.bash})='~/scripts/'${scr##*/}
 done
 
 [[ -n "$PROMPT_COMMAND" ]] && $PROMPT_COMMAND

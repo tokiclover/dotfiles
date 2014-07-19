@@ -39,8 +39,8 @@ for plugin ($plugins)
 	} elif [[ -f $ZSH/plugins/$plugin/$plugin.plugin.zsh ]] {
 		source $ZSH/plugins/$plugin/$plugin.plugin.zsh }
 
-if [[ -f ~/scripts/functions.zsh ]] {
-	source ~/scripts/functions.zsh
+if [[ -f ~/scripts/functions-zsh ]] {
+	source ~/scripts/functions-zsh
 }
 for scr (~/scripts/*.zsh) alias ${${scr:t}%.zsh}='~/scripts/'${scr:t}
 

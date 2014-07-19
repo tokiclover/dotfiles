@@ -1,4 +1,4 @@
-# $Id: $HOME/scripts/functions.zsh,v 2014/07/07 11:59:26 -tclover Exp $
+# $Id: $HOME/scripts/functions.zsh,v 2014/07/15 11:59:26 -tclover Exp $
 
 # @FUNCTION: error
 # @DESCRIPTION: hlper function, print message to stdout

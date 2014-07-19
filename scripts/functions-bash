@@ -1,4 +1,4 @@
-# $Id: $HOME/scripts/functions.bash,v 2014/07/07 12:59:26 -tclover Exp $
+# $Id: $HOME/scripts/functions.bash,v 2014/07/15 12:59:26 -tclover Exp $
 
 # @FUNCTION: die
 # @DESCRIPTION: hlper function, print error message to stdout
@@ -32,11 +32,11 @@ function mktmp() {
 	local type mode owner group tmp TMP=${TMPDIR:-/tmp}
 	while [[ $# > 1 ]]; do
 		case $1 in
-			-d) type=dir; shift;;
-			-f) type=file; shift;;
-			-m) mode=$2; shift 2;;
+			-d) type="dir"; shift;;
+			-f) type="file"; shift;;
+			-m) mode="$2"; shift 2;;
 			-o) owner="$2"; shitf 2;;
-			-g) group=$2; shift 2;;
+			-g) group="$2"; shift 2;;
 		 	*) tmp="$1"; shift;;
 		esac
 	done
@@ -46,7 +46,7 @@ function mktmp() {
 		mkdir -p ${mode:+-m$mode} "$TMP" ||
 		die "mktmp: failed to make $TMP"
 	else
-		mkdir -p ${TMP%*/} &&
+		mkdir -p ${TMP%/*} &&
 		echo >"$TMP" || die "mktmp: failed to make $TMP"
 		[[ -n "$mode" ]] && chmod $mode "$TMP"
 	fi
@@ -68,7 +68,7 @@ bg=([black]="\e[40m" [red]="\e[41m" [green]="\e[42m" [yellow]="\e[43m" [blue]="\
 function bash_prompt() {
 	# Check PWD length
 	local PROMPT COLUMNS LENGTH NPWD
-	PROMPT="---($USER·$(uname -n):$(tty | cut -b6-)·---()---"
+	PROMPT="---($USER$(uname -n):$(tty | cut -b6-)---()---"
 	if [[ $COLUMNS -lt $((${#PROMPT}+${#PWD}+13)) ]]; then
 		LENGTH=$((${COLUMNS}-${#PROMPT}-16))
 		NPWD=...${PWD:COLUMNS-LENGTH:LENGTH}
@@ -79,21 +79,20 @@ function bash_prompt() {
 	# And the prompt
 	case "$TERM" in
 	xterm*|rxvt*)
-		PS1="${fg[cyan]}┌${fbg[hicolor]}${fg[blue]}──(${fg[magenta]}\$${fg[blue]}·${fg[magenta]}\h:$(\
-		tty | cut -b6-)${fg[blue]}·\D{%m/%d}${fg[magenta]}·\t${fg[blue]})─${fbg[hicolor]}${fg[blue]}──\
-		(${fg[magenta]}$NPWD${fg[blue]})─${fbg[hiclor]}${fg[blue]}─${fg[black]}─\
-		\n${fg[cyan]}└${fbg[hicolor]}${fg[blue]}──${fg[green]}»${fbg[reset]} "
-   		PS2="${fg[blue]}─${fg[green]}» ${fbg[reset]}"
-        TITLEBAR="\$·${NPWD}"
+		PS1="${fg[cyan]}┌${fbg[hicolor]}${fg[blue]}(${fg[magenta]}\$${fg[blue]}${fg[magenta]}\h:$(\
+		tty | cut -b6-)${fg[blue]}\D{%m/%d}${fg[magenta]}\t${fg[blue]})${fbg[hicolor]}${fg[blue]}\
+		(${fg[magenta]}$NPWD${fg[blue]})${fbg[hiclor]}${fg[blue]}${fg[black]}\
+		\n${fg[cyan]}${fbg[hicolor]}${fg[blue]}${fg[green]}${fbg[reset]} "
+   		PS2="${fg[blue]}${fg[green]} ${fbg[reset]}"
+        TITLEBAR="\$${NPWD}"
 		;;
 	linux*)
-		PS1="${fg[cyan]}┌${bfg[hicolor]}${fg[blue]}──(${fg[magenta]\$${fg[blue]}·\D{%m/%d}·${fg[magenta]}\h:$(\
-		tty | cut -b6-)$[fg[blue]}·${fg[magenta]}\t${fg[blue]})─${fbg[hicolor]}${fg[blue]}──(${fg[magenta]$NPWD${fg[blue]})\
-		─${fbg[hicolor]}${fg[blue]}─${fg[black]}─\n${fg[cyan]}└${fbg[hicolor]}${fg[blue]}──»${fbg[reset]} "
-		PS2="${fg[blue]}─${fg[green]}» ${fbg[reset]}"
+		PS1="${fg[cyan]}┌${bfg[hicolor]}${fg[blue]}(${fg[magenta]\$${fg[blue]}\D{%m/%d}${fg[magenta]}\h:$(\
+		tty | cut -b6-)$[fg[blue]}${fg[magenta]}\t${fg[blue]})${fbg[hicolor]}${fg[blue]}(${fg[magenta]$NPWD${fg[blue]})${fbg[hicolor]}${fg[blue]}${fg[black]}\n${fg[cyan]}${fbg[hicolor]}${fg[blue]}${fbg[reset]} "
+		PS2="${fg[blue]}${fg[green]}${fbg[reset]}"
 		;;
-	*) PS1="${fg[blue]}(${fg[magenta]}\$${fg[blue]}·\D{%m/%d}·${fg[magenta]}\h:$(\
-	tty | cut -b6-)${fg[blue]}·${fg[magenta]}\W${fg[blue]})─»${fbg[reset]} "
+	*) PS1="${fg[blue]}(${fg[magenta]}\$${fg[blue]}\D{%m/%d}${fg[magenta]}\h:$(tty | \
+		cut -b6-)${fg[blue]}${fg[magenta]}${fg[blue]})${fbg[reset]} "
 		;;
 	esac
 }

@@ -5,7 +5,7 @@
  
  start() {
 -	local vga=$(/usr/sbin/hpdet vga)
--	local pwr=$(/usr/sbin/hpdet disk)
+-	local pwr=$(/usr/sbin/hpdet power)
 -	ebegin "Selecting hardware profile vga.$vga and power.$pwr"
 -	/usr/sbin/hprofile vga 
 -	/usr/sbin/hprofile pwr
@@ -17,7 +17,7 @@
  
  stop() {
 -	local vga=$(/usr/sbin/hpdet vga)
--	local pwr=$(/usr/sbin/hpdet disk)
+-	local pwr=$(/usr/sbin/hpdet power)
 -	ebegin "Selecting hardware profile vga.$vga and power.$pwr"
 -	/usr/sbin/hprofile vga 
 -	/usr/sbin/hprofile pwr

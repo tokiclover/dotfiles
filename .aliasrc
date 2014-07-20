@@ -1,8 +1,8 @@
-# $Id: ~/.aliasrc, 2012/11/12 13:31:48 -tclover Exp $
+# $Id: ~/.aliasrc, 2014/07/15 13:31:48 -tclover Exp $
 
-alias ipr='~/.scripts/ipr'
-alias iru='~/.scripts/iru'
-alias lbd='~/.scripts/lbd'
+alias ipr='~/scripts/ipr'
+alias iru='~/scripts/iru'
+alias lbd='~/scripts/lbd'
 
 alias pu='pushd'
 alias po='popd'
@@ -70,4 +70,4 @@ alias qx=qxpack
 #alias CL='bscan --mode=color --shades=32 --page=Legal --comp=lzw'
 #alias bt='bscan --mode=color --shades=truecolor --page=Letter --comp=lzw' 
 
-# vim:fenc=utf-8:ci:pi:sts=0:sw=4:ts=4:
+# vim:fenc=utf-8:ci:pi:sts=0:sw=2:ts=2:

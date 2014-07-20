@@ -179,28 +179,10 @@ doipr() {
 		$ipt -A INPUT -p udp --dport $torrent -i $ext       -m conntrack --ctstate NEW -j ACCEPT
 	fi
 
-	if [ -n "$ipv4" ]; then
-		# NAT I/O
-		$ipt -A PREROUTING  -t nat -j ACCEPT
-		$ipt -A POSTROUTING -t nat -j ACCEPT
-		$ipt -A OUTPUT      -t nat -j ACCEPT
-
-		# Blocking Broadcasts
-		$ipt -A INPUT   -i $ext -d   $msk -j drop
-		$ipt -A OUTPUT  -o $ext -d   $msk -j drop
-		$ipt -A FORWARD -o $ext -d   $msk -j drop
-		# An additional Egress check
-		$ipt -A OUTPUT  ! -o $ext -s $msk -j drop
-	fi
-
 	$ipt -A INPUT   -p tcp --dport auth --syn -m conntrack --ctstate NEW -j ACCEPT
 	$ipt -A INPUT   -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
 	$ipt -A OUTPUT  -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
 	$ipt -A FORWARD -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
-	# Block and log what me may have forgot
-	$ipt -A INPUT   -j drop
-	$ipt -A OUTPUT  -j reject
-	$ipt -A FORWARD -j drop
 
 	# Accept all traffic from loopback device if the IP matches any of our interfaces
 	$ipt -A INPUT -s $lbdip/$lbdmsk -d $ip -j ACCEPT
@@ -218,6 +200,24 @@ doipr() {
 		$ipt -A FORWARD  -o $int -s $msk -j ACCEPT
 		$ipt -A OUTPUT   -o $int -s $msk -j ACCEPT
 	fi
+
+	if [ -n "$ipv4" ]; then
+		# NAT I/O
+		$ipt -A PREROUTING  -t nat -j ACCEPT
+		$ipt -A POSTROUTING -t nat -j ACCEPT
+		$ipt -A OUTPUT      -t nat -j ACCEPT
+
+		# Blocking Broadcasts
+		$ipt -A INPUT   -i $ext -d   $msk -j drop
+		$ipt -A OUTPUT  -o $ext -d   $msk -j drop
+		$ipt -A FORWARD -o $ext -d   $msk -j drop
+		# An additional Egress check
+		$ipt -A OUTPUT  ! -o $ext -s $msk -j drop
+	fi
+	# Block and log what me may have forgot
+	$ipt -A INPUT   -j drop
+	$ipt -A OUTPUT  -j reject
+	$ipt -A FORWARD -j drop
 }
 
 doif() {

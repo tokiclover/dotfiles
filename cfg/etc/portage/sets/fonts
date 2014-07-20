@@ -12,7 +12,7 @@ media-fonts/sil-nuosu
 media-fonts/sil-padauk
 media-fonts/thaifonts-scalable
 media-fonts/tibetan-machine-font
-media-fonts/ttf-mph2b-damase
+#media-fonts/ttf-mph2b-damase
 
 media-fonts/bitstream-cyberbit
 media-fonts/droid
@@ -21,5 +21,8 @@ media-fonts/lklug
 media-fonts/lohit-fonts
 media-fonts/intlfonts
 media-fonts/sil-padauk
-media-fonts/terminus
-media-fonts/tibetan-machine-font (Tibetan)
+media-fonts/terminus-font
+media-fonts/tibetan-machine-font
+
+media-fonts/dejavu
+

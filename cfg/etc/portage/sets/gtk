@@ -1,7 +1,11 @@
 lxde-base/lxappearance
 lxde-base/lxpanel
-lxde-base/lxpolkit
+gnome-extra/polkit-gnome
 lxde-base/lxrandr
 lxde-base/lxsession
 x11-misc/pcmanfm
 x11-wm/openbox
+app-editors/gvim
+x11-misc/openbox-menu
+x11-misc/obconf
+app-text/evince

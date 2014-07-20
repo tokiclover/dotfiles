@@ -1,4 +1,5 @@
 # $Id: ~/.xinitrc, 2015/07/15 15:32:37 -tclover Exp $
+
 dbus-launch --sh-syntax --exit-with-session nm-applet --sm-disable &
 dbus-launch --sh-syntax --exit-with-session gcm-session &
 eval $(gnome-keyring-daemon --daemonize --components=pkcs11,secrets,ssh,gpg)
@@ -7,11 +8,8 @@ echo GNOME_KEYRING_CONTROL=$GNOME_KEYRING_CONTROL >>/tmp/.private/$USER/keyring/
 echo SSH_AUTH_SOCK=$SSH_AUTH_SOCK >>/tmp/.private/$USER/keyring/env
 echo GPG_AGENT_INFO=$GPG_AGENT_INFO >>/tmp/.private/$USER/keyring/env
 export GNOME_KEYRING_PID GNOME_KEYRING_CONTROL SSH_AUTH_SOCK GPG_AGENT_INFO
-#xcalib -gc 1.0 -b 0.0 -co 100.0 ~/.icc/sRGB_v4_ICC_preference.icc
 /usr/libexec/polkit-gnome-authentication-agent-1 &
-ladi-system-tray 1>/dev/null 2>&1 &
-unclutter -idle 8 -noevents &
-[[ -f ~/.Xmodmap ]] && xmodmap ~/.Xmodmap
+
 xset s off
 xset fp+ /usr/share/fonts/TTF-FD/
 xset fp+ /usr/share/fonts/artwiz-latin1
@@ -19,11 +17,18 @@ xset fp+ /usr/share/fonts/artwiz-aleczapka-en
 xset fp+ /usr/share/fonts/terminus
 xset fp rehash
 xrdb -load ~/.Xresources
-setxkbmap fr 
 setbacklight -set 20
+setxkbmap -model dell -layout fr -variant oss,bepo \
+	-option altwin:meta_win,keypad:future,compose:102-altgr,terminate:ctrl_alt_bksp
 #xrdb -merge ~/.Xdefaults
 #[[ -f ~/.xcolors/sj-bright ]] && xrdb -merge ~/.xcolors/sj-bright
+[[ -f ~/.Xmodmap ]] && xmodmap ~/.Xmodmap
+
+#xcalib -gc 1.0 -b 0.0 -co 100.0 ~/.icc/sRGB_v4_ICC_preference.icc
+unclutter -idle 8 -noevents &
+ladi-system-tray 1>/dev/null 2>&1 &
 urxvtd -q -o -f &
+
 case $(tty | cut -b9-) in
 	1) exec ck-launch-session dbus-launch --sh-syntax --exit-with-session enlightenment_start
 		;;
@@ -32,4 +37,5 @@ case $(tty | cut -b9-) in
 	3) exec ck-launch-session dbus-launch --sh-syntax --exit-with-session openbox-session
 		;;
 esac
+
 # vim:fenc=utf-8:ci:pi:sts=0:sw=4:ts=4:

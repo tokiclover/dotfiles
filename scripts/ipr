@@ -1,5 +1,5 @@
 #!/bin/sh
-# $Id: ~/scripts/ipr,v 2.3 2014/07/07 15:11:10 -tclover Exp $
+# $Id: ~/scripts/ipr,v 2.3 2014/07/15 15:11:10 -tclover Exp $
 
 usage() {
 cat <<-EOF
@@ -21,7 +21,7 @@ cat <<-EOF
 	-s, --srv pop3,pop3s         allow in/outbound for named services or ports
 	-S, --save [ipt-rules]       save ip[6]tables rules to file, default to ipt-rules
 	-I, --ipset [<IPBlock>]      enable IPSet set, default to adding IPBlock
-	-?, -u, --usage              print this help and exit
+	-?, -h, --help               print this help and exit
 EOF
 exit $?
 }
@@ -56,7 +56,7 @@ while [[ $# > 0 ]]; do
 		--torrent) torrent=${2:-50550:50555}; shift 2;;
 		-s|--srv) srv+=,$2; shift 2;;
 		--) shift; break;;
-		-?|-u|--usage|*) usage;;
+		-?|-h|--help|*) usage;;
 	esac
 done
 
@@ -69,22 +69,22 @@ grp="$(which grep)"
 bck+=,0:1,13,98,111,123,137:139,161:162,445,517:518,520,1214,1999,2049,3049,4329
 bck+=,6346,3128,8000,8008,8080,12345,65535,98,512:515,1080,6000:6009,6112,1427,9000
 srv+=,git,domain,ssh,http,http-alt,https,ftp,ftp-data,ftps,ipp,imap2,imap3,imaps,mail
-srv+=,time,rsync,ircd,ircs,hkp,telnets
+srv+=,time,rsync,ircd,ircs,hkp,telnets,ftp,ftp-data
 for i in $bck; do
-	[[ -n "$(echo -- $srv | $grp $i)" ]] && srv=${srv/,$p/} || srv+=,$p
+	[[ -n "$(echo -- $srv | $grp $i)" ]] && srv=${srv/,$i/} || srv+=,$i
 done
 
 if [[ -n "$kmod" ]]; then
 	for mod in ip_nat_{ftp,irc} ip_conntrack_{ftp,irc} iptable_{filter,mangle,raw} \
 		nf_conntrack_ipv4 iptable_nat ipt_{MASQUERADE,REDIRECT,REJECT,LOG} $module
-	do modprobe $mod &>/dev/null; done
-	if $ipv6; then
+	do modprobe $mod; done
+	if [ -n "$ipv6" ]; then
 		for mod in ip6table_{filter,mangle,raw} nf_conntrack_ipv6 ip6t_{LOG,REJECT} 
-		do modprobe $mod &>/dev/null; done
+		do modprobe $mod; done
 	fi
 fi
 
-if $ipv4; then
+if [ -n "$ipv4" ]; then
 	echo 1 >/proc/sys/net/ipv4/tcp_syncookies
 	echo 1 >/proc/sys/net/ipv4/icmp_echo_ignore_broadcasts
 	echo 1 >/proc/sys/net/ipv4/ip_dynaddr
@@ -105,57 +105,57 @@ for v in $ipv; do
 	done
 done
 
-pre() {
+doipr() {
 	# Deny then accept: this keeps holes from opening up while we close ports and such
 	$ipt -P INPUT      DROP
 	$ipt -P OUTPUT     DROP
 	$ipt -P FORWARD    DROP
-	# Create a few custom chains that will log dropped packets
-	$ipt -N DROPl   2>/dev/null
-	$ipt -A DROPl   -j LOG --log-prefix 'IPT-Dl:'
-	$ipt -A DROPl   -j DROP
-	$ipt -N REJECTl 2>/dev/null
-	$ipt -A REJECTl -j LOG --log-prefix 'IPT-Rl:'
-	$ipt -A REJECTl -j REJECT
-	# Log and drop bad tcp packets stated NEW without a SYN packet after being called by BADTCP filter
-	$ipt -N BADTCPl 2>/dev/null
-	$ipt -A BADTCPl -j LOG --log-prefix 'IPT-BTl:'
-	$ipt -A BADTCPl -j DROP
+	# Create a few custom chains that will log dropped/rejected packets
+	$ipt -N drop
+	$ipt -A drop   -j LOG --log-prefix 'IPT-drop: '
+	$ipt -A drop   -j DROP
+	$ipt -N reject
+	$ipt -A reject -j LOG --log-prefix 'IPT-reject: '
+	$ipt -A reject -j REJECT
+	# Log and drop bad tcp packets stated NEW without a SYN packet after being called by badtcp filter
+	$ipt -N badtcp
+	$ipt -A badtcp -j LOG --log-prefix 'IPT-badtcp: '
+	$ipt -A badtcp -j DROP
 	# Drop or rejetc bad tcp packets stated NEW but without a SYN packet
-	$ipt -N BADTCP
-	$ipt -A BADTCP  -p tcp --tcp-flags SYN,ACK SYN,ACK -m conntrack --ctstate NEW -j REJECT --reject-with tcp-reset
-	$ipt -A BADTCP  -p tcp ! --syn -m conntrack --ctstate NEW -j BADTCPl
+	$ipt -A badtcp  -p tcp --tcp-flags SYN,ACK SYN,ACK -m conntrack --ctstate NEW -j REJECT --reject-with tcp-reset
+	$ipt -A badtcp  -p tcp ! --syn -m conntrack --ctstate NEW -j badtcp
 	# Filter bad tcp right at the bat
-	$ipt -A INPUT   -p tcp -j BADTCP
-	$ipt -A OUTPUT  -p tcp -j BADTCP
+	$ipt -A INPUT   -p tcp -j badtcp
+	$ipt -A OUTPUT  -p tcp -j badtcp
 	# Add IPSet sets while at it if enabled
-	for b in $(sed 's/,/ /g' $ipb); do
-		$ipt -I INPUT -m set --set $b src -j DROPl
+	for b in $ipb; do
+		$ipt -I INPUT -m set --set $b src -j drop
 	done
+
 	# Accept all traffic from loopback device if the IP matches any of our interfaces.
 	$ipt -A INPUT -s   $lbdip${ipv4:+/$lbdmsk}   -j ACCEPT
 	$ipt -A OUTPUT -s   $lbdip${ipv4:+/$lbdmsk}   -j ACCEPT
-	echo -n "FW: Blocking attacks to TCP/UDP port "
-	for p in $bck; do
+	echo -n "ipr: Blocking trafic to TCP/UDP port "
+	for p in $(echo "$bck" | sed 's/,/ /g'); do
 		echo -n "$p "
 		for type in tcp udp; do
-			$ipt -A INPUT   -p $type --dport $p  -j DROPl
-			$ipt -A OUTPUT  -p $type --dport $p  -j DROPl
-			$ipt -A FORWARD -p $type --dport $p  -j DROPl
+			$ipt -A INPUT   -p $type --dport $p  -j drop
+			$ipt -A OUTPUT  -p $type --dport $p  -j drop
+			$ipt -A FORWARD -p $type --dport $p  -j drop
 		done
 	done
 	echo ""
 	
-	if $dhcp; then 
-		$ipv4 &&
+	if [ -n "$dhcp" ]; then 
+		[ -n "$ipv4" ] &&
 			$ipt -A INPUT -p udp ${dsr:+-s $dsr} --sport 67:68         --dport 67:68         -j ACCEPT
-		$ipv6 &&
+		[ -n "$ipv6" ] &&
 			$ipt -A INPUT -p udp ${dsr:+-s $dsr} --sport dhcpv6-server --dport dhcpv6-server -j ACCEPT
 	fi
 	
-	echo -n "FW: Allowing inside systems to use service: "
-	for s in $(sed 's/,/ /g' $srv); do
-		echo -n "fw: $s"
+	echo -n "ipr: Allowing inside systems to use service: "
+	for s in $(echo "$srv" | sed 's/,/ /g'); do
+		echo -n "$s "
 		$ipt -A OUTPUT  -o $ext  -p tcp --dport $s --syn -m conntrack --ctstate NEW -j ACCEPT
 		$ipt -A OUTPUT  -o $ext  -p udp --dport $s       -m conntrack --ctstate NEW -j ACCEPT
 	done
@@ -170,7 +170,7 @@ pre() {
 	
 	if [[ -n "$torrent" ]]; then
 		# turning off DHT tracking for torrent
-		echo "FW: disabling tracking on ${torrent#*:}-udp-port PREROUTING and OUTPUT"
+		echo "ipr: disabling tracking on ${torrent#*:}-udp-port PREROUTING and OUTPUT"
 		$ipt -t raw -A PREROUTING -i $ext -p udp --dport ${torrent#*:} -j NOTRACK
 		$ipt -t raw -A OUTPUT     -o $ext -p udp --sport ${torrent#*:} -j NOTRACK
 		# Torrents ports
@@ -178,14 +178,19 @@ pre() {
 		$ipt -A INPUT -p tcp --dport $torrent -i $ext --syn -m conntrack --ctstate NEW -j ACCEPT
 		$ipt -A INPUT -p udp --dport $torrent -i $ext       -m conntrack --ctstate NEW -j ACCEPT
 	fi
-}
 
-post() {
-	if $ipv4; then
+	if [ -n "$ipv4" ]; then
 		# NAT I/O
 		$ipt -A PREROUTING  -t nat -j ACCEPT
 		$ipt -A POSTROUTING -t nat -j ACCEPT
 		$ipt -A OUTPUT      -t nat -j ACCEPT
+
+		# Blocking Broadcasts
+		$ipt -A INPUT   -i $ext -d   $msk -j drop
+		$ipt -A OUTPUT  -o $ext -d   $msk -j drop
+		$ipt -A FORWARD -o $ext -d   $msk -j drop
+		# An additional Egress check
+		$ipt -A OUTPUT  ! -o $ext -s $msk -j drop
 	fi
 
 	$ipt -A INPUT   -p tcp --dport auth --syn -m conntrack --ctstate NEW -j ACCEPT
@@ -193,66 +198,64 @@ post() {
 	$ipt -A OUTPUT  -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
 	$ipt -A FORWARD -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
 	# Block and log what me may have forgot
-	$ipt -A INPUT   -j DROPl
-	$ipt -A OUTPUT  -j REJECTl
-	$ipt -A FORWARD -j DROPl
-}
+	$ipt -A INPUT   -j drop
+	$ipt -A OUTPUT  -j reject
+	$ipt -A FORWARD -j drop
 
-iface() {	
-	if $ipv4; then
-		# Blocking Broadcasts
-		$ipt -A INPUT   -i $ext -d   $msk -j DROPl
-		$ipt -A OUTPUT  -o $ext -d   $msk -j DROPl
-		$ipt -A FORWARD -o $ext -d   $msk -j DROPl
-		# An additional Egress check
-		$ipt -A OUTPUT  ! -o $ext -s $msk -j DROPl
-	fi
 	# Accept all traffic from loopback device if the IP matches any of our interfaces
 	$ipt -A INPUT -s $lbdip/$lbdmsk -d $ip -j ACCEPT
 	$ipt -A OUTPUT -s $lbdip/$lbdmsk -d $ip -j ACCEPT
 	# Block WAN access to internal network
-	$ipt -A INPUT   -i $ext ! -d $ip -j DROPl
+	$ipt -A INPUT   -i $ext ! -d $ip -j drop
 	# Block outbound ICMP (except for PING)
-	$ipt -A OUTPUT  -o $ext -p $icmp ! --$icmp-type 8 -j DROPl
-	$ipt -A FORWARD -o $ext -p $icmp ! --$icmp-type 8 -j DROPl
+	$ipt -A OUTPUT  -o $ext -p $icmp ! --$icmp-type 8 -j drop
+	$ipt -A FORWARD -o $ext -p $icmp ! --$icmp-type 8 -j drop
 	# Allow to ping out
 	$ipt -A OUTPUT  -o $ext  -p $icmp  --$icmp-type 8 -m conntrack --ctstate NEW -j ACCEPT
+
+	if [[ -n "$int" ]]; then
+		$ipt -A INPUT    -i $int -s $msk -j ACCEPT
+		$ipt -A FORWARD  -o $int -s $msk -j ACCEPT
+		$ipt -A OUTPUT   -o $int -s $msk -j ACCEPT
+	fi
 }
-main() {
+
+doif() {
 	local bc icmp if=$1 lbdif=lo lbdmsk lbdnet msk net ip icmp ipt
-	if $ipv4; then
-		icmp=icmp ipt="$(which iptables) --modprobe=modprobe"
-		ip="$($ifc  $if | $grp 'inet addr:' | $awk '{print $2}' | cut -d: -f2)"
-		lbdip="$($ifc  $lbdif | $grp 'inet addr:' | $awk '{print $2}' | cut -d: -f2)"
-		lbdmsk="$($ifc  $lbdif | $grp Mask: | $awk '{print $4}' | cut -d: -f2)"
-		lbdnet="$lbdip/$lbdmsk"
-		bc="$($ifc  $ext | $grp Bcast: | $awk '{print $3}' | cut -d: -f2)"
-		msk="$($ifc $ext | $grp Mask: | $awk '{print $4}' | cut -d: -f2)"
+	if [ -n "$ipv4" ]; then
+		icmp=icmp ipt="$(which iptables) --modprobe=$(which modprobe)"
+		ip="$( $ifc $ext | $grp 'inet ' | $awk '{print $2}')"
+		bc="$( $ifc $ext | $grp 'inet ' | $awk '{print $6}')"
+		msk="$($ifc $ext | $grp 'inet ' | $awk '{print $4}')"
+		lbdip="$( $ifc  $lbdif | $grp 'inet ' | $awk '{print $2}')"
+		lbdmsk="$($ifc  $lbdif | $grp 'inet ' | $awk '{print $4}')"
+		lbdnet="loop back iface: $lbdip/$lbdmsk"
 		net="$ip/$msk"
-		echo "ip=$ip bc=$bc msk=$msk net=$net"
-		$ipt -F; $ipt -X; pre; iface
-		if [[ -n "$int" ]]; then
-			$ipt -A INPUT    -i $int -s $msk -j ACCEPT
-			$ipt -A FORWARD  -o $int -s $msk -j ACCEPT
-			$ipt -A OUTPUT   -o $int -s $msk -j ACCEPT
-		fi
-		post
+		echo "ipr: ip=$ip bc=$bc msk=$msk net=$net"
+		$ipt -F; $ipt -X
+		doipr
 		[[ -n "$save" ]] && $ipt-save >$save
 	fi
-	if $ipv6; then
-		icmp=icmpv6 ipt="$(which ip6tables) --modprobe=modprobe"
-		ip="$($ifc  $if | $grp 'inet6 addr:' | $awk '{print $3}')"
-		lbdip="$($ifc  $lbdif | $grp inet6 | $awk '{print $3}')"
-		echo "ip=$ip lbdip=$lbdip"
+	if [ -n "$ipv6" ]; then
+		icmp=icmpv6 ipt="$(which ip6tables) --modprobe=$(which modprobe)"
+		ip="$($ifc  $if | $grp 'inet6 ' | $awk '{print $2}')"
+		lbdip="$($ifc  $lbdif | $grp inet6 | $awk '{print $2}')"
+		echo "ipr: ip=$ip lbdip=$lbdip"
 		unset -v ipv4 {,lbd}{bc,msk,net}
-		$ipt -F; $ipt -X; pre; iface; post
+		$ipt -F; $ipt -X
+		doipr
 		[[ -n "$fsave" ]] && $ipt-save >${save/ipt/ip6t}
 	fi
 }
 
-[[ -n "$ext" ]] && main "$ext"
-[[ -n "$int" ]] && ext=$int int= && main "$ext"
+if [ -n "$ext" ]; then
+	doif "$ext"
+elif [ -n "$int" ]; then
+	ext=$int int= && doif "$ext"
+else 
+	usage
+fi
 
-unset -v awk bck dhcp dsr ext i ipv ipv4 ipv6 ifc int ipt grp kmod module sed srv
+unset -v awk bck dhcp dsr ext i ipv ipv4 ipv6 ifc int ipt grp kmod module srv
 
 # vim:fenc=utf-8:ci:pi:sts=0:sw=2:ts=2:

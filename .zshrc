@@ -1,7 +1,9 @@
-# $Id: ~/.zshrc, 2014/07/07 22:01:25 -tclover Exp $
+# $Id: ~/.zshrc, 2014/07/15 22:01:25 -tclover Exp $
 
-if [[ -f ~/.dir_colors ]] { eval $(dircolors -b ~/.dir_colors) 
-} elif [[ -f /etc/DIR_COLORS ]] { eval $(dircolors -b /etc/DIR_COLORS) 
+if [[ -f ~/.dir_colors ]] {
+	eval $(dircolors -b ~/.dir_colors) 
+} elif [[ -f /etc/DIR_COLORS ]] {
+	eval $(dircolors -b /etc/DIR_COLORS) 
 } else { eval $(dircolors) }
 
 # Load all of the config files in ~/.oh-my-zsh that end in .zsh
@@ -41,6 +43,9 @@ for plugin ($plugins)
 
 if [[ -f ~/scripts/functions-zsh ]] {
 	source ~/scripts/functions-zsh
+}
+if [[ -f ~/.aliasrc ]] {
+	source ~/.aliasrc
 }
 for scr (~/scripts/*.zsh) alias ${${scr:t}%.zsh}='~/scripts/'${scr:t}
 

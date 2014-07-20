@@ -1,8 +1,9 @@
-# $Id: ~/.bashrc, 2014/07/07 22:52:41 -tclover Exp $
+# $Id: ~/.bashrc, 2014/07/15 22:52:41 -tclover Exp $
 
 [[ $- != *i* ]] && return
-[[ -f ~/.aliasrc ]] && source ~/.aliasrc
-
+if [[ -f ~/.aliasrc ]]; then
+	source ~/.aliasrc
+fi
 if [[ -f /etc/bash_completion ]] && ! shopt -oq posix; then
 	source /etc/bash_completion
 fi

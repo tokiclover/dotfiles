@@ -122,11 +122,12 @@ doipr() {
 	$ipt -A badtcp -j LOG --log-prefix 'IPT-badtcp: '
 	$ipt -A badtcp -j DROP
 	# Drop or rejetc bad tcp packets stated NEW but without a SYN packet
+	$ipt -A badtcp  -p tcp -m conntrack --ctstate INVALID -j badtcp
 	$ipt -A badtcp  -p tcp --tcp-flags SYN,ACK SYN,ACK -m conntrack --ctstate NEW -j REJECT --reject-with tcp-reset
 	$ipt -A badtcp  -p tcp ! --syn -m conntrack --ctstate NEW -j badtcp
 	# Filter bad tcp right at the bat
-	$ipt -A INPUT   -p tcp -j badtcp
-	$ipt -A OUTPUT  -p tcp -j badtcp
+	#$ipt -A INPUT   -p tcp -j badtcp
+	#$ipt -A OUTPUT  -p tcp -j badtcp
 	# Add IPSet sets while at it if enabled
 	for b in $ipb; do
 		$ipt -I INPUT -m set --set $b src -j drop
@@ -180,6 +181,7 @@ doipr() {
 	fi
 
 	$ipt -A INPUT   -p tcp --dport auth --syn -m conntrack --ctstate NEW -j ACCEPT
+	$ipt -A OUTPUT  -p tcp --dport auth --syn -m conntrack --ctstate NEW -j ACCEPT
 	$ipt -A INPUT   -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
 	$ipt -A OUTPUT  -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
 	$ipt -A FORWARD -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT

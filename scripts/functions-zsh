@@ -1,4 +1,4 @@
-# $Id: $HOME/scripts/functions.zsh,v 2014/07/15 11:59:26 -tclover Exp $
+# $Id: $HOME/scripts/functions.zsh,v 2014/07/20 11:59:26 -tclover Exp $
 
 # @FUNCTION: error
 # @DESCRIPTION: hlper function, print message to stdout
@@ -27,10 +27,13 @@ function info() {
 
 # @FUNCTION: mktmp
 # @DESCRIPTION: make tmp dir or file in ${TMPDIR:-/tmp}
-# @ARG: -d|-f [-m <mode>] [-o <owner[:group]>] [-g <group>] TEMPLATE
+# @ARG: [-d|-f] [-m <mode>] [-o <owner[:group]>] [-g <group>] TEMPLATE
 function mktmp() {
+	[[ $# == 0 ]] &&
+	print "usage: mktmp [-d|-f] [-m <mode>] [-o <owner[:group]>] [-g <group>] TEMPLATE" &&
+	exit 1
 	local type mode owner group tmp TMP=${TMPDIR:-/tmp}
-	while [[ $# > 1 ]] {
+	while [[ $# -ge 1 ]] {
 		case $1 in
 			-d) type=dir; shift;;
 			-f) type=file; shift;;
@@ -47,7 +50,7 @@ function mktmp() {
 		die "mktmp: failed to make $TMP"
 	} else {
 		mkdir -p $TMP:h &&
-		echo >$TMP || die "mktmp: failed to make $TMP"
+		touch $TMP || die "mktmp: failed to make $TMP"
 		[[ -n $mode ]] && chmod $mode $TMP
 	}
 	[[ -n $owner ]] && chown $owner $TMP

@@ -1,4 +1,4 @@
-# $Id: ~/.xinitrc, 2015/07/15 15:32:37 -tclover Exp $
+# $Id: ~/.xinitrc, 2015/07/20 15:32:37 -tclover Exp $
 
 dbus-launch --sh-syntax --exit-with-session nm-applet --sm-disable &
 dbus-launch --sh-syntax --exit-with-session gcm-session &
@@ -18,8 +18,8 @@ xset fp+ /usr/share/fonts/terminus
 xset fp rehash
 xrdb -load ~/.Xresources
 setbacklight -set 20
-setxkbmap -model dell -layout fr -variant oss,bepo \
-	-option altwin:meta_win,keypad:future,compose:102-altgr,terminate:ctrl_alt_bksp
+#setxkbmap -model pc102 -layout fr -variant ,oss,latin9,oss_latin9 \
+#	-option grp:shift_caps_toggle,keypad:future,terminate:ctrl_alt_bksp
 #xrdb -merge ~/.Xdefaults
 #[[ -f ~/.xcolors/sj-bright ]] && xrdb -merge ~/.xcolors/sj-bright
 [[ -f ~/.Xmodmap ]] && xmodmap ~/.Xmodmap

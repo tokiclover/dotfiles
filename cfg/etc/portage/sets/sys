@@ -1,2 +1,4 @@
 dev-libs/cloog-ppl
 app-editors/nano
+sys-kernel/git-sources:3.14.12
+sys-kernel/git-sources:3.12.24

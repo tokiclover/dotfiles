@@ -1,17 +1,18 @@
-# $Id: $HOME/scripts/functions.bash,v 2014/07/20 12:59:26 -tclover Exp $
+# $Id: $HOME/scripts/functions.bash, 2014/07/22 12:59:26 -tclover Exp $
 
 # @FUNCTION: die
 # @DESCRIPTION: hlper function, print error message to stdout
 # @USAGE: <string>
-function error() { 
+function eerror() { 
 	echo -ne "${0##*/}: \e[1;31m \e[0m$@\n"
-	$LOG && logger -p $facility.err "${0##*/}: $@"
+	[[ -n "$LOG" ]] && [[ -n "$facility" ]] &&
+	logger -p $facility "${0##*/}: $@"
 }
 
 # @FUNCTION: die
 # @DESCRIPTION: hlper function, print message and exit
 # @USAGE: <string>
-function die() {
+function edie() {
 	local ret=$?
 	error "$@"
 	exit $ret
@@ -20,9 +21,10 @@ function die() {
 # @FUNCTION: into
 # @DESCRIPTION: hlper function, print info message to stdout
 # @USAGE: <string>
-function info() { 
+function einfo() { 
 	echo -ne "${0##*/}: \e[1;32m \e[0m$@\n"
-	$LOG && logger -p $facility.info "${0##*/}: $@"
+	[[ -n "$LOG" ]] && [[ -n "$facility" ]] &&
+	logger -p $facility "${0##*/}: $@"
 }
 
 # @FUNCTION: mktmp

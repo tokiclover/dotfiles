@@ -1,17 +1,18 @@
-# $Id: $HOME/scripts/functions.zsh,v 2014/07/20 11:59:26 -tclover Exp $
+# $Id: $HOME/scripts/functions.zsh, 2014/07/22 11:59:26 -tclover Exp $
 
 # @FUNCTION: error
 # @DESCRIPTION: hlper function, print message to stdout
 # @USAGE: <string>
-fuction error() {
-	$LOG && logger -p $facility.err -t ${(%):-%1x}: $@
+fuction eerror() {
+	[[ -n $LOG ]] && [[ -n $facility ]] &&
+	logger -p $facility -t ${(%):-%1x}: $@
 	print -P "${(%):-%1x}: ${(%):-%1x}: %B%F{red}*%b%f $@"
 }
 
 # @FUNCTION: die
 # @DESCRIPTION: hlper function, print message and exit
 # @USAGE: <string>
-function die() {
+function edie() {
   local ret=$?
   print -P "%F{red}*%f $@"
   exit $ret
@@ -20,8 +21,9 @@ function die() {
 # @FUNCTION: info
 # @DESCRIPTION: hlper function, print message to stdout
 # @USAGE: <string>
-function info() {
-	$LOG && logger -p $facility.err -t ${(%):-%1x}: $@
+function einfo() {
+	[[ -n $LOG ]] && [[ -n $facility ]] &&
+	logger -p $facility -t ${(%):-%1x}: $@
 	print -P "${(%):-%1x}: %B%F{green}*%b%f $@"
 }
 

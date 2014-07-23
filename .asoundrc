@@ -1,14 +1,14 @@
 # $Id: $HOME/.asoundrc,v 1.2 2014/07/20 11:47:33 -tclover Exp $
 #
-## HW
+#-*- HW -*-
 pcm.hdi { type hw; card HDMI }
 pcm.pch { type hw; card PCH }
 pcm.cmi { type hw; card CMI8788; device 1 }
-## DEFAULT
+#-*- DEFAULT -*-
 #pcm.!default { type plug; slave.pcm jackplug }
 pcm.!default { type plug; slave.pcm dmixer }
 ctl.!default { type hw; card PCH }
-## BS2B
+#-*- BS2B -*-
 ctl.bs2b { type hw; card PCH }
 pcm.bs2b { type plug; slave.pcm plugbs2b }
 pcm.plugbs2b {
@@ -23,7 +23,7 @@ pcm.plugbs2b {
 	}
 	]
 }
-## JACK output
+#-*- JACK -*-
 ctl.jack { type hw; card PCH }
 pcm.jack { type plug; slave.pcm jackplug }
 pcm.jackplug {
@@ -39,7 +39,7 @@ pcm.jackplug {
 		1 alsa_pcm:capture_2
 	}
 }
-## MBEQ
+#-*- MBEQ -*-
 ctl.eq { type hw; card PCH }
 pcm.eq { type plug; slave.pcm plugeq }
 pcm.plugeq {
@@ -58,7 +58,7 @@ pcm.plugeq {
 	}
 	]
 }
-## DMIX
+#-*- DMIX -*-
 ctl.dmixer { type hw; card PCH }
 pcm.dmixer { type plug; slave.pcm dmixplug }
 pcm.dmixplug {
@@ -76,11 +76,11 @@ pcm.dmixplug {
 		1 1
 	}
 }
-## EQUALIZER
+#-*- EQUALIZER -*-
 ctl.equal { type equal }
 pcm.equal { type plug; slave.pcm plugequal }
 pcm.plugequal { type equal; slave.pcm jackplug }
-## ALSA-EMU
+#-*- OSS ALSA-EMU -*-
 #pcm.alsa {
 #	type oss
 #	device /dev/oss/oss_cmi878x0/pcm1
@@ -89,7 +89,7 @@ pcm.plugequal { type equal; slave.pcm jackplug }
 #	type oss
 #	device /dev/oss/oss_cmi878x0/mix1
 #}
-## OSS-EMU
+#-*- ALSA OSS-EMU -*-
 ctl.oss { type oss }
 pcm.oss { type plug; slave.pcm jackplug }
 #

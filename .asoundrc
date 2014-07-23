@@ -65,7 +65,7 @@ pcm.dmixplug {
 	type dmix
 	ipc_key 1048
 	slave {
-		pcm hda
+		pcm pch
 		period_time 0
 		period_size 1024
 		buffer_size 4096

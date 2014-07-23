@@ -1,13 +1,15 @@
 # $Id: $HOME/.asoundrc,v 1.2 2013/01/10 11:47:33 -tclover Exp $
 #
 ## HW
-pcm.hda { type hw; card Intel; device 1 }
+pcm.hdi { type hw; card HDMI }
+pcm.pch { type hw; card PCH }
 pcm.cmi { type hw; card CMI8788; device 1 }
 ## DEFAULT
-pcm.!default { type plug; slave.pcm jackplug }
-ctl.!default { type hw; card Intel }
+#pcm.!default { type plug; slave.pcm jackplug }
+pcm.!default { type hw; card PCH }
+ctl.!default { type hw; card PCH }
 ## BS2B
-ctl.bs2b { type hw; card Intel }
+ctl.bs2b { type hw; card PCH }
 pcm.bs2b { type plug; slave.pcm plugbs2b }
 pcm.plugbs2b {
 	type ladspa
@@ -22,7 +24,7 @@ pcm.plugbs2b {
 	]
 }
 ## JACK output
-ctl.jack { type hw; card Intel }
+ctl.jack { type hw; card PCH }
 pcm.jack { type plug; slave.pcm jackplug }
 pcm.jackplug {
 	type jack
@@ -38,7 +40,7 @@ pcm.jackplug {
 	}
 }
 ## MBEQ
-ctl.eq { type hw; card Intel }
+ctl.eq { type hw; card PCH }
 pcm.eq { type plug; slave.pcm plugeq }
 pcm.plugeq {
 	type ladspa
@@ -57,7 +59,7 @@ pcm.plugeq {
 	]
 }
 ## DMIX
-ctl.dmixer { type hw; card Intel }
+ctl.dmixer { type hw; card PCH }
 pcm.dmixer {
 	type dmix
 	ipc_key 1048
@@ -90,4 +92,4 @@ pcm.plugequal { type equal; slave.pcm jackplug }
 ctl.oss { type oss }
 pcm.oss { type plug; slave.pcm jackplug }
 #
-# vim:fenc=utf-8:ci:pi:sts=0:sw=3:ts=3:
+# vim:fenc=utf-8:ci:pi:sts=0:sw=2:ts=2:

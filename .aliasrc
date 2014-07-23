@@ -1,11 +1,11 @@
-# $Id: ~/.aliasrc, 2014/07/15 13:31:48 -tclover Exp $
+# $Id: ~/.aliasrc, 2014/07/20 13:31:48 -tclover Exp $
 
 alias ipr='~/scripts/ipr'
 alias iru='~/scripts/iru'
 alias lbd='~/scripts/lbd'
 
-alias pu='pushd'
-alias po='popd'
+alias pu=pushd
+alias po=popd
 
 alias ls='ls --color=auto'
 alias dir='dir --color=auto'
@@ -22,14 +22,14 @@ alias lso='ls -hrtl *$@* | head'
 alias lsl='ls -Alh'
 alias halt='sudo /sbin/halt'
 alias root='sudo /sbin/reboot'
-alias cl='clear'
-alias md='mkdir'
-alias rd='rmdir'
-alias hy='history'
-alias mo='more'
-alias le='less'
-alias gr='grep'
-alias hl='history|less'
+alias cl=clear
+alias md=mkdir
+alias rd=rmdir
+alias hy=history
+alias mo=more
+alias le=less
+alias gr=grep
+alias hl='history | less'
 alias ct='tar -cvpf'
 alias xt='tar -xvpf'
 
@@ -61,6 +61,8 @@ alias qz=qsize
 alias qbz=qtbz2
 alias qu=quse
 alias qx=qxpack
+
+alias ydl=youtube-dl
 
 #alias bs='bscan --mode=1-bit --page=Letter --comp=lzw'
 #alias bl='bscan --mode=1-bit --page=Legal --comp=lzw'

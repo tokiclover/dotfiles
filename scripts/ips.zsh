@@ -94,7 +94,7 @@ ipb() {
 			ipset add $tmp ${=line}
 		done <$datafile
 	} else {
-		net=($(sed -rne 's/(^([0-9]{1,3}\.){3}[0-9]{1,3}).*$/\1/p' $datafile))
+		net=($(sed -rne 's/\(^([0-9]{1,3}\.){3}[0-9]{1,3}\).*$/\1/p' $datafile))
 		ip=${#net[*]}
 		while [[ $((--ip)) -ge 0 ]] {
 			ipset add $tmp ${net[ip]}

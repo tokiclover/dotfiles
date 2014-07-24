@@ -1,5 +1,5 @@
 #!/bin/zsh
-# $Id: ~/.scripts/ips.zsh,v 2.0 2014/07/07 14:56:24 -tclover Exp $
+# $Id: ~/.scripts/ips.zsh,v 2.0 2014/07/22 14:56:24 -tclover Exp $
 usage() {
   cat <<-EOF
   usage: ${(%):-%1x} [-f|-file <file>] [-t|-target <url>] [OPTIONS]
@@ -15,7 +15,7 @@ usage() {
   -x, -xtr [</path/xtr>] path to xtr script, default to '~/.scripts/xtr'
   -r, -raw               data file is raw file with only usable data
   -a, -archive           data file is an archive or tarball file
-  -u, -usage             print this help/usage and exit
+  -h, -help              print this help/usage and exit
 
    default:             :...two implemented use cases...:
   -ipdeny               use http://ipdeny.com/../all-zones.tar.gz
@@ -25,7 +25,7 @@ exit $?
 }
 
 error() {
-	$LOG && logger -p $facility.err -t ips: $@
+	[[ -n $LOG ]] && logger -p $facility.err -t ips: $@
 	print -P "ips: %B%F{red}*%b%f $@"
 }
 die() {
@@ -34,16 +34,16 @@ die() {
 	exit $ret
 }
 info()  { 
-	$LOG && logger -p $facility.notice -t ips: $@
+	[[ -n $LOG ]] && logger -p $facility.notice -t ips: $@
 	print -P "ips: %B%F{green}*%b%f $@" 
 }
 
 zmodload zsh/zutil
 zparseopts -E -D -K -A opts d: datadir: f: file: L logger p: params: t: target: \
-	g:: gpg:: x: xtr: r raw a archive dshield ipdeny u usage || usage
+	g:: gpg:: x: xtr: r raw a archive dshield ipdeny h help || usage
 
 if [[ -z ${opts[*]} ]] { typeset -A opts }
-if [[ -n ${(k)opts[-u]} ]] || [[ -n ${(k)opts[-usage]} ]] { usage }
+if [[ -n ${(k)opts[-h]} ]] || [[ -n ${(k)opts[-help]} ]] { usage }
 if [[ -n ${(k)opts[-o]} ]] || [[ -n ${(k)opts[-logger]} ]] {
 	LOG=true
 	facility=${opts[-logger]:-${opts[-l]:-cron}}
@@ -51,8 +51,8 @@ if [[ -n ${(k)opts[-o]} ]] || [[ -n ${(k)opts[-logger]} ]] {
 if [[ -n ${(k)opts[-r]} ]] || [[ -n ${(k)opts[-raw]} ]] { RAW=true }
 if [[ -n ${(k)opts[-a]} ]] || [[ -n ${(k)opts[-archive]} ]] { ARCHIVE=true }
 if [[ -n ${(k)opts[-dshield]} ]] {
-	opts[-target]=http://feeds.dshield.org/block.txt
-	opts[-gpg]=${opts[-target]}.asc
+	opts[-target]=https://feeds.dshield.org/block.txt
+#	opts[-gpg]=${opts[-target]}.asc
 }
 if [[ -n ${(k)opts[-ipdeny]} ]] {
 	opts[-target]=http://www.ipdeny.com/ipblocks/data/countries/all-zones.tar.gz
@@ -63,7 +63,7 @@ if [[ -n ${(k)opts[-ipdeny]} ]] {
 if [[ -n ${(k)opts[-l]} ]] || [[ -n ${(k)opts[-list]} ]] {
 :	${opts[-params]:=${opts[-p]:-list:net}}
 } else {
-:	${opts[-params]:=${opts[-p]:-hash:ip --netmask 24 --hashsize 64}}
+:	${opts[-params]:=${opts[-p]:-hash:ip netmask 24 hashsize 64}}
 }
 
 mkdir -p -m 0750 ${opts[-datadir]} 
@@ -86,23 +86,25 @@ get_sign() {
 }
 
 ipb() {
-	ipb=${datafile%.*}-ips
-	tmp=$(mktemp ${ipb:t}-tmp-XXXXXX)
+	local ipb=${${datafile:t}%.*}-ips tmp net ip
+	tmp=${ipb/ips/tmp}
 	ipset create $tmp ${=opts[-params]}
-	if [[ $RAW ]] {
+	if [[ -n $RAW ]] {
 		while read line; do
+			info "$line"
 			ipset add $tmp ${=line}
 		done <$datafile
 	} else {
-		net=($(sed -rne 's/\(^([0-9]{1,3}\.){3}[0-9]{1,3}\).*$/\1/p' $datafile))
+		net=($(sed -nre 's/(^([0-9]{1,3}\.){3}[0-9]{1,3}).*$/\1/p' $datafile))
 		ip=${#net[*]}
 		while [[ $((--ip)) -ge 0 ]] {
+			info "$net[ip]"
 			ipset add $tmp ${net[ip]}
 		}
 	}
-	ipset create -exist $ips ${=opts[-params]}
-	ipset swap $tmp $ipb
-	ipset destroy $tmp
+	ipset create -exist $ipb ${=opts[-params]}
+	ipset swap $tmp $ipb &&
+	ipset destroy $tmp &&
 	info "$ipb IPSet updated"
 }
 
@@ -117,7 +119,7 @@ if [[ -n ${(k)opts[-target]} ]] || [[ -n ${(k)opts[-t]} ]] {
 	datafile=${opts[-datadir]}/${opts[-target]:t}
 	oldtime=$(get_time)
 	get_file ${opts[-target]}
-	if [[ $GPG ]] {
+	if [[ -n $GPG ]] {
 		if [[ -z $gpgfile ]] {
 			gpgfile=${datafile%*.}.asc
 			get_file ${opts[-target]}.asc
@@ -134,11 +136,11 @@ if [[ -n ${(k)opts[-target]} ]] || [[ -n ${(k)opts[-t]} ]] {
 	$GPG && [[ -z $gpgfile ]] && gpgfile=$datafile.asc
 } else { die "-t|-f should be passed with a url|file" }
 
-$GPG && get_sign
+[[ -n $GPG ]] && get_sign
 
 newtime=$(get_time)
 if [[ $newtime != $oldtime ]] {
-	if [[ $ARCHIVE ]] {
+	if [[ -n $ARCHIVE ]] {
 		[[ -x ${opts[-xtr]} ]] || die "xtr script not found"
 		tmpdir=$(mktemp -d ips-XXXXXX)
 		pushd -q $tmpdir || die "failed to make a $tmpdir"
@@ -155,6 +157,6 @@ if [[ $newtime != $oldtime ]] {
 	ipb
 }
 
-unset -v archive datafile facility opts net ip ipb tmp tmpdir \
-	oldtime newtime raw GPG LOG
+unset -v archive datafile facility opts tmpdir oldtime newtime raw GPG LOG
+
 # vim:fenc=utf-8:ci:pi:sts=0:sw=4:ts=4:

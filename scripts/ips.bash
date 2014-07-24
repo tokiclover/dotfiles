@@ -1,5 +1,5 @@
 #!/bin/bash
-# $Id: ~/scripts/ips.bash, 2.0 2014/07/07 13:56:21 -tclover Exp $
+# $Id: ~/scripts/ips.bash, 2.0 2014/07/22 13:56:21 -tclover Exp $
 usage() {
   cat <<-EOF
   usage: ${0##*/}  [-f|-file <file>] [-t|-target <url>] [OPTIONS]
@@ -15,7 +15,7 @@ usage() {
   -x, --xtr [</path/xtr>] path to xtr script, default to '~/.scripts/xtr'
   -r, --raw               data file is raw file with only usable data
   -a, --archive           data file is an archive or tarball file
-  -u, --usage             print this help/usage and exit
+  -h, --help, -?          print this help/usage and exit
 
     default:              :...two implemented use cases...:
   --ipdeny                use http://ipdeny.com/../all-zones.tar.gz
@@ -26,7 +26,7 @@ exit $?
 
 error() { 
 	echo -ne "ips: \e[1;31m \e[0m$@\n"
-	$LOG && logger -p $facility.err "ips: $@"
+	[[ -n "$LOG" ]] && logger -p $facility.err "ips: $@"
 }
 
 die() {
@@ -37,7 +37,7 @@ die() {
 
 info() { 
 	echo -ne "ips: \e[1;32m \e[0m$@\n"
-	$LOG && logger -p $facility.info "ips: $@"
+	[[ -n "$LOG" ]] && logger -p $facility.info "ips: $@"
 }
 
 opt=$(getopt -o ad:f:g::o::p:rt:ux: -l archive,datadir:,filename:,gpg::,logger:: \
@@ -58,15 +58,17 @@ while [[ $# > 0 ]]; do
 		-t|--target) opts[target]+=" ${2}"; shift 2;;
 		-x|--xtr) xtr="$2"; shift 2;;
 		--dshield) opts[target]=http://feeds.dshield.org/block.txt
-		           opts[gpg]=${opts[target]}.asc;;
+		           #opts[gpg]=${opts[target]}.asc
+			   shift;;
 		--ipdeny) ARCHIVE=true RAW=true
-		opts[target]=http://www.ipdeny.com/ipblocks/data/countries/all-zones.tar.gz;;
+		opts[target]=http://www.ipdeny.com/ipblocks/data/countries/all-zones.tar.gz
+			shift;;
 		--) shift; break;;
-		-u|--usage|*) usage;;
+		-?|-h|--help|*) usage;;
 	esac
 done
 [[ -n "${opts[datadir]}" ]] || opts[datadir]="/var/lib/ipset"
-[[ -n "${opts[params]}" ]] || opts[params]="hash:ip --netmask 24 --hashsize 64"
+[[ -n "${opts[params]}" ]] || opts[params]="hash:ip netmask 24 hashsize 64"
 
 mkdir -p -m 0750 ${opts[datadir]} 
 for module in $(find /lib/modules/$(uname -r) -name \
@@ -82,27 +84,28 @@ get_file() {
 }
 
 get_sign() {
-	[[ -e $gpgfile ]] || die "$gpgfile not found"
+	[[ -e "$gpgfile" ]] || die "$gpgfile not found"
 	gpg --verify $gpgfile $datafile ||
 	die "gpg failed to verify $datafile file"
 }
 
 ipb() {
-	ipb=${datafile%.*}-ips
-	tmp=$(mktemp ${datafile##*/}-tmp-XXXXXX)
+	local ipb=${datafile##*/} tmp net ip
+	ipb=${ipb%.*}-ips
+	tmp=${ipb/ips/tmp}
 	ipset create $tmp ${opts[params]}
-	if $RAW; then
+	if [[ -n "$RAW" ]]; then
 		while read line; do
 			ipset add $tmp $line
 		done <$datafile
 	else
-		net=($(sed -rne 's/\(^([0-9]{1,3}\.){3}[0-9]{1,3}\).*$/\1/p' $datafile))
+		net=($(sed -nre 's/(^([0-9]{1,3}\.){3}[0-9]{1,3}).*$/\1/p' $datafile))
 		ip=${#net[*]}
 		while [[ $((--ip)) -ge 0 ]]; do
 			ipset add $tmp ${net[ip]}
 		done
 	fi
-	ipset create -exist $ips ${opts[params]}
+	ipset create -exist $ipb ${opts[params]}
 	ipset swap $tmp $ipb
 	ipset destroy $tmp
 	info "$ipb IPSet updated"
@@ -112,12 +115,12 @@ if [[ -n ${opts[gpg]} ]]; then
 	[[ "${opts[gpg]}" != "y" ]] && gpgfile=${opts[-gpg]}
 fi
 
-if [[ -n ${opts[target]} ]]; then
+if [[ -n "${opts[target]}" ]]; then
 	datafile=${opts[datadir]}/${opts[target]##*/}
 	oldtime=$(get_time)
 	get_file ${opts[target]}
-	if $GPG; then
-		if [[ -z $gpgfile ]] {
+	if [[ -n "$GPG" ]]; then
+		if [[ -z $gpgfile ]]; then
 			gpgfile=${datafile%*.}.asc
 			get_file ${opts[target]}.asc
 		elif [[ "${gpgfile%%*/}" == "http*:" ]]; then
@@ -125,20 +128,20 @@ if [[ -n ${opts[target]} ]]; then
 			get_file ${opts[gpg]}
 		fi
 	fi
-elif [[ -n ${opts[file]} ]]; then
+elif [[ -n "${opts[file]}" ]]; then
 	datafile=${opts[file]}
 	[[ -e $datafile ]] || die "no $datafile file provided"
 	oldtime=$(get_time)
-	$GPG && [[ -z $gpgfile ]] && gpgfile=$datafile.asc
+	[[ -n "$GPG" ]] && [[ -z $gpgfile ]] && gpgfile=$datafile.asc
 else
 	die "-t|-f should be passed with a url|file"
 fi
 
-$GPG && get_sign
+[[ -n "$GPG" ]] && get_sign
 
 newtime=$(get_time)
 if [[ $newtime != $oldtime ]]; then
-	if $ARCHIVE; then
+	if [[ -n "$ARCHIVE" ]]; then
 		[[ -n "${opts[xtr]}" ]] || opts[xtrr]="~/scripts/xtr"
 		[[ -x "${opts[xtr]}" ]] || die "xtr script not found"
 		tmpdir=$(mktemp -d ips-XXXXXX)
@@ -156,6 +159,6 @@ if [[ $newtime != $oldtime ]]; then
 	ipb
 fi
 
-unset -v archive datafile facility opts net ip ipb tmp tmpdir \
-	oldtime newtime raw GPG LOG
+unset -v archive datafile facility opts tmpdir oldtime newtime raw GPG LOG
+
 # vim:fenc=utf-8:ci:pi:sts=0:sw=4:ts=4:

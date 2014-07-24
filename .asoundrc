@@ -1,15 +1,14 @@
-# $Id: $HOME/.asoundrc,v 1.2 2014/07/20 11:47:33 -tclover Exp $
+# $Id: $HOME/.asoundrc, 2014/07/22 11:47:33 -tclover Exp $
 #
 #-*- HW -*-
 pcm.hdi { type hw; card HDMI }
 pcm.pch { type hw; card PCH }
 pcm.cmi { type hw; card CMI8788; device 1 }
 #-*- DEFAULT -*-
-#pcm.!default { type plug; slave.pcm jackplug }
 pcm.!default { type plug; slave.pcm dmixer }
 ctl.!default { type hw; card PCH }
 #-*- BS2B -*-
-ctl.bs2b { type hw; card PCH }
+ctl.bs2b { type plug; slave.ctl default }
 pcm.bs2b { type plug; slave.pcm plugbs2b }
 pcm.plugbs2b {
 	type ladspa
@@ -24,7 +23,7 @@ pcm.plugbs2b {
 	]
 }
 #-*- JACK -*-
-ctl.jack { type hw; card PCH }
+ctl.jack { type plug; slave.ctl default }
 pcm.jack { type plug; slave.pcm jackplug }
 pcm.jackplug {
 	type jack
@@ -40,7 +39,7 @@ pcm.jackplug {
 	}
 }
 #-*- MBEQ -*-
-ctl.eq { type hw; card PCH }
+ctl.eq { type plug; slave.ctl default }
 pcm.eq { type plug; slave.pcm plugeq }
 pcm.plugeq {
 	type ladspa
@@ -59,7 +58,7 @@ pcm.plugeq {
 	]
 }
 #-*- DMIX -*-
-ctl.dmixer { type hw; card PCH }
+ctl.dmixer { type plug; slave.ctl default }
 pcm.dmixer { type plug; slave.pcm dmixplug }
 pcm.dmixplug {
 	type dmix

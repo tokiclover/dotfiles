@@ -1,8 +1,11 @@
 # $Id: $HOME/.asoundrc, 2014/07/22 11:47:33 -tclover Exp $
 #
 #-*- HW -*-
+ctl.hdi { type hw; card HDMI }
 pcm.hdi { type hw; card HDMI }
+ctl.pch { type hw; card PCH }
 pcm.pch { type hw; card PCH }
+ctl.ctl { type hw; card CMI8788 }
 pcm.cmi { type hw; card CMI8788; device 1 }
 #-*- DEFAULT -*-
 pcm.!default { type plug; slave.pcm dmixer }

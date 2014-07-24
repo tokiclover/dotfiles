@@ -1,71 +1,62 @@
 #!/bin/zsh
-# $Id: ~/scripts/fhp.zsh,v 1.3 2014/07/07 21:09:26 -tclover Exp $
+# $Id: ~/scripts/fhp.zsh,v 1.4 2014/07/22 21:09:26 -tclover Exp $
 #
-# A handy script to put firefox profile to tmpfs or zram device.
-# A frst environment variable is required in ~/.zshrc or whatever:
-# `export FHP=$(print ~/.mozilla/firefox/*.default(/))';
-# and maybe something like: */30 * * * * $USER ~/.scripts/fhp
-# in cron to keep track of changes.
-# If you have an entry like this in your `/etc/fstab':
-# tmp	/tmp	tmpfs	mode=0777,size=128M,noatime	0 0
-# just set `TMPFS=/tmp' in your env; or else, if you have a fs
-# mount on top of a zram device, then just set ZRAMFS.
+# @DESCRIPTION: set firefox profile dir to tmpfs or zram backed fs
+#
+# And maybe something like: */30 * * * * $USER ~/scripts/fhp.zsh
+# in cron job to keep track of changes is necessary.
 
-# @ENV_VARIABLE: FHP
-# @DESCRIPTION: Firefox profile
-# @EXEMPLE: FHP=/$USER/.mozilla/firefox/abc123.default
+# @ENV_VARIABLE: FHPDIR
+# @DESCRIPTION: Firefox profile dir to handle
+# @EXEMPLE: FHPDIR=~/.mozilla/firefox/abc123.default
 
-# @ENV_VARIABLE: ZRAMFS
+# @ENV_VARIABLE: ZRAMDIR:=/mnt/zram
 # @DESCRIPTION: Zram block device backed FS to use for firefox profile
-# @EXAMPLE: ZRAMFS=/zram
 
-# @ENV_VARIABLE: TMPFS
+# @ENV_VARIABLE: TMPDIR:-/tmp/.private/$USER
 # @DESCRIPTION: tmpfs directory to use instead of zram fs backed fs
-# @EXEMPLE: TMPFS=/tmp
-
-# @ENV_VARIABLE: FHP_INIT
-# @DESCRIPTION: an env variable to avoid wasting extra cpu cycles
+# you should have this one already, just put it to tmpfs with something like:
+# /etc/fstab: tmp	/tmp	tmpfs	mode=1777,size=256M,noatime	0 0
 
 fhp_init() {
-:	${FHP:=$(print ~/.mozilla/firefox/*.default)}
-	local _m=/.private/$USER
+	local mnt
+:	${FHPDIR:=$(print ~/.mozilla/firefox/*.default 2>/dev/null)}
 
-	[[ -z $FHP ]] && die "no profile found"
+	[[ -z $FHPDIR ]] && die "fhp: no profile found"
+	grep $FHPDIR /proc/mounts && return
 	
-	if [[ -n $ZRAMFS ]] {
-		_m=$ZRAMFS$_m
-	} elif [[ -n $TMPFS ]] {
-		 _m=$TMPFS$_m
+	if [[ -n $ZRAMDIR ]] {
+		mnt=$ZRAMDIR/$USER/fhp
+	} elif [[ -n $TMPDIR ]] {
+		 mnt=$TMPDIR/fhp
 	} else {
-		die "neither ZRAMFS nor TMPFS env variable is set"
+		die "fhp: neither ZRAMDIR nor TMPDIR env variable is set"
 	}
 	
-	if [[ ! -d $_m ]] {
-		sudo mkdir -p $_m &&
-		sudo chown $UID:$GID -R $_m:h
-		chmod 0700 $_m:h
+	if [[ ! -d $mnt ]] {
+		sudo mkdir -p $mnt &&
+		sudo chown $UID:$GID -R $mnt:h
+		chmod 1700 $mnt:h
 	}
-	sudo mount --bind $FHP $_m || die "Failed to mount $_m"
-
-	export FHP_INIT=1
+	sudo mount --bind $FHPDIR $mnt || die "fhp: failed to mount $mnt"
 }
 
 fhp_update() {
-	local _d=$FHP:h _p=$FHP:t
+	local dir=$FHPDIR:h fhp=$FHPDIR:t
 	
-	pushd -q $_d
-	if [[ -f $_p/.unpacked ]] {
-		mv -f $_p.tgz $_p.old.tgz || die "failed to override .old profile"
-		tar -X $_p/.unpacked -czpf $_p.tgz $_p/ ||
-		die "failed to pack the profie"
+	pushd -q $dir
+	if [[ -f $fhp/.unpacked ]] {
+		mv -f $fhp.tar.gz $fhp.old.tar.gz || die "fhp: failed to override old tarball"
+		tar -X $fhp/.unpacked -czpf $fhp.tar.gz $fhp/ ||
+		die "fhp: failed to pack the profile"
 	} else {
-		tar xzpf $_p.tgz || tar xzpf $_p.old.tgz &&
-		touch $_p/.unpacked || die "failed to unpack the profile"
+		tar xzpf $fhp.tar.gz || tar xzpf $fhp.old.tar.gz &&
+		touch $fhp/.unpacked || die "fhp: failed to unpack the profile"
 	}
 	popd -q
 }
 
-[[ -n $FHP_INIT ]] || fhp_init
+fhp_init
 fhp_update
 
 # vim:fenc=utf-8:ft=zsh:ci:pi:sts=0:sw=2:ts=2:

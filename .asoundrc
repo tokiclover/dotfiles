@@ -13,7 +13,7 @@ ctl.bs2b { type hw; card PCH }
 pcm.bs2b { type plug; slave.pcm plugbs2b }
 pcm.plugbs2b {
 	type ladspa
-	slave.pcm jackplug
+	slave.pcm dmixer
 	path /usr/lib/ladspa
 	plugins [
 	{
@@ -44,7 +44,7 @@ ctl.eq { type hw; card PCH }
 pcm.eq { type plug; slave.pcm plugeq }
 pcm.plugeq {
 	type ladspa
-	slave.pcm jackplug
+	slave.pcm dmixer
 	path /usr/lib/ladspa
 	plugins [
 	{
@@ -79,7 +79,7 @@ pcm.dmixplug {
 #-*- EQUALIZER -*-
 ctl.equal { type equal }
 pcm.equal { type plug; slave.pcm plugequal }
-pcm.plugequal { type equal; slave.pcm jackplug }
+pcm.plugequal { type equal; slave.pcm dmixer }
 #-*- OSS ALSA-EMU -*-
 #pcm.alsa {
 #	type oss
@@ -91,6 +91,6 @@ pcm.plugequal { type equal; slave.pcm jackplug }
 #}
 #-*- ALSA OSS-EMU -*-
 ctl.oss { type oss }
-pcm.oss { type plug; slave.pcm jackplug }
+pcm.oss { type plug; slave.pcm dmixer }
 #
 # vim:fenc=utf-8:ci:pi:sts=0:sw=2:ts=2:

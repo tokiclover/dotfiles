@@ -28,7 +28,7 @@ exit $?
 
 [[ $# = 0 ]] && usage
 
-opt=$(getopt -o ?46I::b:i:e:d:m::S::s:u -l block:,ext:,jabber::,icq::,ipset:: \
+opt=$(getopt -o ?46I::b:i:e:d:m::S::s:h -l block:,ext:,jabber::,icq::,ipset:: \
 	-l mpd::,msn::,torrent::,int:,ipv:,dhcp:,module::,mpd,save::,srv: \
 	-l usage,yahoo:: -n ${0##*/} -- "$@" || usage)
 eval set -- "$opt"
@@ -129,8 +129,8 @@ doipr() {
 	#$ipt -A INPUT   -p tcp -j badtcp
 	#$ipt -A OUTPUT  -p tcp -j badtcp
 	# Add IPSet sets while at it if enabled
-	for b in $ipb; do
-		$ipt -I INPUT -m set --set $b src -j drop
+	for b in $(echo "$ipb" | sed -e 's/,/ /g'); do
+		$ipt -I INPUT -m set --match-set $b src,dst -j drop
 	done
 
 	# Accept all traffic from loopback device if the IP matches any of our interfaces.

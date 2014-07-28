@@ -1,4 +1,4 @@
-`$Id: dotfiles/README.textile, 2014/07/02 18:11:51 -tclover Exp $`
+`$Id: dotfiles/README.textile, 2014/07/26 18:11:51 -tclover Exp $`
 
 ---
 
@@ -17,17 +17,18 @@ another _dotfiles_ repository
 
 * cbu: is a simple script to back up/restore cfg files or directories;
 * fhp: is a simple script which put firefox profile into tmpfs/zram backed FS (dep: functions.$shell);
-* functions.$shell: functions for bash and zsh, almost only die() helper;
+* functions: functions for bash and zsh, almost only die() helper;
 * hda: is a simple script to enable snd-hda power management (PM);
 * hdu: is a simple script which ease updating '$Header:...$' or '$Id:...$' update;
-* ipb: is a script which can be used to retrieve IP block lists to be added to iptables rules;
+* ips: is a script which can be used to retrieve IP block lists to be added to iptables rules;
 * ipr: is script to generate ip[6]tables net rules;
 * ifup: is an init svc script to ease ipr and ipb start up if an iface is up;
 * kvm: is a script to ease kvm loadind with a few default option;
 * lbd: is a script to add/remove loop back devices;
-* mkstg4: a stage4 maker scripts with squashed (system and/or local) directories support;
+* mkstage4: a stage4 maker scripts with squashed (system and/or local) directories support;
 * soundon.user: an oss4 user soundon script;
 * term'*': terminal colors display scripts;
+* zram.initd: a init service to initialize zram devices.
 * zramdir.initd: an init svc which can put several directories (var/{log,run,lock}..) into zram backed fs.
 
 [my-zsh]: https://github.com/tokiclover/oh-my-zsh

@@ -18,7 +18,6 @@ another _dotfiles_ repository
 * cbu: is a simple script to back up/restore cfg files or directories;
 * fhp: is a simple script which put firefox profile into tmpfs/zram backed FS (dep: functions.$shell);
 * functions: functions for bash and zsh, almost only die() helper;
-* hda: is a simple script to enable snd-hda power management (PM);
 * hdu: is a simple script which ease updating '$Header:...$' or '$Id:...$' update;
 * ips: is a script which can be used to retrieve IP block lists to be added to iptables rules;
 * ipr: is script to generate ip[6]tables net rules;

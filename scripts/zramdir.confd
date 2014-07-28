@@ -1,13 +1,14 @@
-# $Header: /etc/conf.d/zramdr, 2014/06/31 13:05:19 -tclover Exp $
+# $Header: /etc/conf.d/zramdir, 2014/06/31 13:05:19 -tclover Exp $
+# zramdir can put several directories to a zram backed block device;
+# this init service require lz4 compressor, or else edit zramdir.init.d
+# root directory or mount point
+zram_root=/var/tmp
 
-# zram root directory or mount point
-zramroot=/zram
-
-# compressed/restored directories when starting/stoping service
-# to keep fs consistencies
-comp_dir=/var/log
+# compressed and restored directories when starting/stoping service
+# to keep fs consistencies (colon separated list)
+compressed_dir=/var/log
 
 # contrary to the previous one, fs does not keep consistency upon restart
-uncomp_dir=
+uncompressed_dir=
 
 # vim:fenc=utf-8:ft=gentoo-conf-d:ci:pi:sts=0:sw=4:ts=4:

@@ -1,59 +1,66 @@
-#!/sbin/runscript
+"#!/sbin/runscript
 # Copyright 1999-2014 Gentoo Foundation
 # Distributed under the terms of the 2-clause BSD or GPL-2 license
-# $Header: /etc/init.d/zramdir,v 3.0 2014/07/07 13:05:23 -tclover Exp $
+# $Header: /etc/init.d/zramdir,v 3.1 2014/07/26 13:05:23 -tclover Exp $
 
 conf_file="/etc/conf.d/${SVCNAME}"
 description="use zram and optional tarball archive for directories /var/{log,...}"
 
 depend() {
-        need localmount
-        before bootmisc acpid
+	need localmount zram
+	before bootmisc acpid
 }
 
 start() {
-	local IFS="$IFS:"
+	local IFS=":${IFS}"
 	
-	if ! grep ${zramroot} /proc/mounts >/dev/null 2>&1; then
-		eend "$?" "Failure: no suitable zram root found"
+	if ! grep $zram_root /proc/mounts >/dev/null 2>&1; then
+		eend "${?}" "no suitable zram backed root dir found"
 	fi
 	
 	for dir in ${comp_dir}; do
-		chk ${dir}
+		chk "${dir}"
 	done
 	
-	for dir in ${comp_dir} ${uncomp_dir}; do
-		mkdir -p ${zramroot}${dir}
-		mount --bind ${dir} ${zramroot}${dir}
+	for dir in ${compressed_dir} ${uncompressed_dir}; do
+		mkdir -p ${zram_root}${dir}
+		mount --bind ${dir} ${zram_root}${dir}
 	
-		if [[ -f ${dir}.tar.gz ]]; then
-			tar -xzpf ${dir}.tar.gz -C ${zramroot}
+		if [ -f ${dir}.tar.lz4 ]; then
+			deflate "${dir}" "${zram_root}"
 		fi
 	done
-
 }
 
 stop() {
-	local IFS="$IFS:"
-	
-	for dir in ${comp_dir}; do
-		cmp "${dir}" "${zramroot}"
+	local IFS=":${IFS}"
+	for dir in ${compressed_dir}; do
+		inflate "${dir}" "${zram_root}"
 	done
 }
 
 chk() {
-	if [[ -f ${1}.tar.gz ]]; then
-		return 0
-	elif [[ -d "${1}" ]]; then 
-		cmp "${1}" "/"
-		eend "$?" "Failed to compress ${1}"
+	if [ -e "${1}.tar.lz4" ]; then
+		return
+	elif [ -d "${1}"]; then
+		inflate "${1}"
 	else
-		mkdir -p ${1}
+		einfo "no such directory ${1} found"
 	fi
 }
 
-cmp() {
-	tar -czpf .${1}.tar.gz -C ${2}
+deflate() {
+	pushd "${2}${1%/*}" >/dev/null 2>&1
+	lz4c -d $1.tar.lz4 - | tar -xp
+	eend "${?}" "failed to deflate ${1}"
+	popd > /dev/null 2>&1
 }
 
-# vim:fenc=utf-8:ft=gentoo-init-d:ci:pi:sts=0:sw=4:ts=4:
+inflate() {
+	pushd "${2}${1%/*}" > /dev/null 2>&1
+	tar -Ocp ${1##*/} | lz4c -1 - $1.tar.lz4
+	eend "${?}" "failed to inflate ${1}"
+	popd > /dev/null 2>&1
+}
+
+# vim:fenc=utf-8:ft=gentoo-init-d:ci:pi:sts=0:sw=4:ts=4:"

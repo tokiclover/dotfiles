@@ -1,4 +1,4 @@
-# $Id: $HOME/scripts/functions.zsh, 2014/07/22 11:59:26 -tclover Exp $
+# $Id: $HOME/scripts/functions.zsh, 2014/07/26 11:59:26 -tclover Exp $
 
 # @FUNCTION: error
 # @DESCRIPTION: hlper function, print message to stdout
@@ -12,7 +12,7 @@ fuction eerror() {
 # @FUNCTION: die
 # @DESCRIPTION: hlper function, print message and exit
 # @USAGE: <string>
-function edie() {
+function die() {
   local ret=$?
   print -P "%F{red}*%f $@"
   exit $ret

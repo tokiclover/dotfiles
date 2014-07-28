@@ -1,10 +1,11 @@
 #!/bin/zsh
-# $Id: ~/scripts/fhp.zsh,v 1.4 2014/07/22 21:09:26 -tclover Exp $
+# $Id: ~/scripts/fhp.zsh,v 1.5 2014/07/22 21:09:26 -tclover Exp $
 #
 # @DESCRIPTION: set firefox profile dir to tmpfs or zram backed fs
 #
 # And maybe something like: */30 * * * * $USER ~/scripts/fhp.zsh
 # in cron job to keep track of changes is necessary.
+# lz4 compressed is required, or else, edit to your needs
 
 # @ENV_VARIABLE: FHPDIR
 # @DESCRIPTION: Firefox profile dir to handle
@@ -18,40 +19,50 @@
 # you should have this one already, just put it to tmpfs with something like:
 # /etc/fstab: tmp	/tmp	tmpfs	mode=1777,size=256M,noatime	0 0
 
-fhp_init() {
-	local mnt
-:	${FHPDIR:=$(print ~/.mozilla/firefox/*.default 2>/dev/null)}
+source ~/scripts/functions.zsh || return 1
 
-	[[ -z $FHPDIR ]] && die "fhp: no profile found"
-	grep $FHPDIR /proc/mounts && return
+fhp_init() {
+:	${FHPDIR:=$(print ~/.mozilla/firefox/*.default 2>/dev/null)}
+:	${TMPDIR:=/tmp}
+
+	[[ -z $FHPDIR ]] && die "fhp: no firefox profile dir found"
+	mount | grep "$FHPDIR" >/dev/null 2>&1 && return
 	
-	if [[ -n $ZRAMDIR ]] {
-		mnt=$ZRAMDIR/$USER/fhp
-	} elif [[ -n $TMPDIR ]] {
-		 mnt=$TMPDIR/fhp
-	} else {
-		die "fhp: neither ZRAMDIR nor TMPDIR env variable is set"
+	local fhp=$FHPDIR:t mnt
+	if [[ ! -f $FHPDIR.tar.lz4 ]] || [[ ! -f $FHPDIR.old.tar.lz4 ]] {
+		pushd -q $FHPDIR:h || die
+		tar -Ocp $fhp | lz4c -1 - $fhp.tar.lz4  ||
+		die "fhp: failed to pack a new tarball"
+		popd -q
 	}
+
+	[[ -n $ZRAMDIR ]] && mnt=$(mktemp -d $ZRAMDIR/fhp-XXXXXX) ||
+        mnt=$(mktemp -d $TMPDIR/fhp-XXXXXX)
 	
 	if [[ ! -d $mnt ]] {
-		sudo mkdir -p $mnt &&
+		sudo mkdir -p -m1700 $mnt &&
 		sudo chown $UID:$GID -R $mnt:h
-		chmod 1700 $mnt:h
 	}
 	sudo mount --bind $FHPDIR $mnt || die "fhp: failed to mount $mnt"
 }
 
 fhp_update() {
 	local dir=$FHPDIR:h fhp=$FHPDIR:t
+	local tbl=$fhp.tar.lz4 otb=$fhp.old.tar.lz4
 	
 	pushd -q $dir
 	if [[ -f $fhp/.unpacked ]] {
-		mv -f $fhp.tar.gz $fhp.old.tar.gz || die "fhp: failed to override old tarball"
-		tar -X $fhp/.unpacked -czpf $fhp.tar.gz $fhp/ ||
-		die "fhp: failed to pack the profile"
+		mv -f $tbl $otb || die "fhp: failed to override the old tarball"
+		tar -X $fhp/.unpacked -Ocp $fhp | lz4c -1 - $tbl ||
+		die "fhp: failed to repack a new tarball"
 	} else {
-		tar xzpf $fhp.tar.gz || tar xzpf $fhp.old.tar.gz &&
-		touch $fhp/.unpacked || die "fhp: failed to unpack the profile"
+		if [[ -f $tbl ]] {
+			lz4c -d $tbl - | tar -xp && touch $fhp/.unpacked ||
+			die "fhp: failed to unpack the profile"
+		} elif [[ -f $otb ]] {
+			lz4c -d $otb - | tar -xp && touch $fhp/.unpacked ||
+			die "fhp: failed to unpack the profile"
+		} else { die "fhp: failed to unpack the profile" }
 	}
 	popd -q
 }

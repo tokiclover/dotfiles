@@ -1,4 +1,4 @@
-# $Id: $HOME/scripts/functions.bash, 2014/07/22 12:59:26 -tclover Exp $
+# $Id: $HOME/scripts/functions.bash, 2014/07/25 12:59:26 -tclover Exp $
 
 # @FUNCTION: die
 # @DESCRIPTION: hlper function, print error message to stdout
@@ -12,7 +12,7 @@ function eerror() {
 # @FUNCTION: die
 # @DESCRIPTION: hlper function, print message and exit
 # @USAGE: <string>
-function edie() {
+function die() {
 	local ret=$?
 	error "$@"
 	exit $ret
@@ -85,19 +85,20 @@ function bash_prompt() {
 	case "$TERM" in
 	xterm*|rxvt*)
 		PS1="${fg[cyan]}┌${fbg[hicolor]}${fg[blue]}(${fg[magenta]}\$${fg[blue]}${fg[magenta]}\h:$(\
-		tty | cut -b6-)${fg[blue]}\D{%m/%d}${fg[magenta]}\t${fg[blue]})${fbg[hicolor]}${fg[blue]}\
-		(${fg[magenta]}$NPWD${fg[blue]})${fbg[hiclor]}${fg[blue]}${fg[black]}\
-		\n${fg[cyan]}${fbg[hicolor]}${fg[blue]}${fg[green]}${fbg[reset]} "
+		tty | cut -b6-)${fg[blue]}⋅\D{%m/%d}⋅${fg[magenta]}\t${fg[blue]})${fbg[hicolor]}${fg[blue]}\
+		(${fg[magenta]}$NPWD${fg[blue]})${fbg[hiclor]}${fg[blue]}${fg[black]}
+		\n${fg[cyan]}${fbg[hicolor]}${fg[blue]}${fg[green]}${fbg[reset]}-» "
    		PS2="${fg[blue]}${fg[green]} ${fbg[reset]}"
         TITLEBAR="\$${NPWD}"
 		;;
 	linux*)
-		PS1="${fg[cyan]}┌${bfg[hicolor]}${fg[blue]}(${fg[magenta]\$${fg[blue]}\D{%m/%d}${fg[magenta]}\h:$(\
-		tty | cut -b6-)$[fg[blue]}${fg[magenta]}\t${fg[blue]})${fbg[hicolor]}${fg[blue]}(${fg[magenta]$NPWD${fg[blue]})${fbg[hicolor]}${fg[blue]}${fg[black]}\n${fg[cyan]}${fbg[hicolor]}${fg[blue]}${fbg[reset]} "
-		PS2="${fg[blue]}${fg[green]}${fbg[reset]}"
+		PS1="${fg[cyan]}┌${bfg[hicolor]}${fg[blue]}(${fg[magenta]}\$⋅${fg[magenta]}\h:$(\
+		tty | cut -b6-)${fg[blue]}⋅\D{%m/%d}⋅${fg[magenta]}\t${fg[blue]})${fbg[hicolor]}${fg[blue]}(${fg[magenta]}\
+		${NPWD}${fg[blue]})${fbg[hicolor]}${fg[blue]}${fg[black]}\n${fg[cyan]}${fbg[hicolor]}${fg[blue]}${fbg[reset]} "
+		PS2="${fg[blue]}${fg[green]}${fbg[reset]}-»"
 		;;
-	*) PS1="${fg[blue]}(${fg[magenta]}\$${fg[blue]}\D{%m/%d}${fg[magenta]}\h:$(tty | \
-		cut -b6-)${fg[blue]}${fg[magenta]}${fg[blue]})${fbg[reset]} "
+	*) PS1="${fg[blue]}(${fg[magenta]}\$${fg[blue]}\D{%m/%d}${fg[magenta]}\h:$(\
+	tty | cut -b6-)${fg[blue]}${fg[magenta]}${fg[blue]})${fbg[reset]} "
 		;;
 	esac
 }

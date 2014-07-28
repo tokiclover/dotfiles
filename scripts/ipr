@@ -1,5 +1,5 @@
 #!/bin/sh
-# $Id: ~/scripts/ipr,v 2.3 2014/07/15 15:11:10 -tclover Exp $
+# $Id: ~/scripts/ipr,v 2.3 2014/07/25 15:11:10 -tclover Exp $
 
 usage() {
 cat <<-EOF
@@ -66,10 +66,10 @@ awk="$(which awk)"
 ifc="$(which ifconfig)"
 grp="$(which grep)"
 
-bck+=,0:1,13,98,111,123,137:139,161:162,445,517:518,520,1214,1999,2049,3049,4329
+bck+=,0:1,13,98,111,137:139,161:162,445,517:518,520,1214,1999,2049,3049,4329
 bck+=,6346,3128,8000,8008,8080,12345,65535,98,512:515,1080,6000:6009,6112,1427,9000
 srv+=,git,domain,ssh,http,http-alt,https,ftp,ftp-data,ftps,ipp,imap2,imap3,imaps,mail
-srv+=,time,rsync,ircd,ircs,hkp,telnets,ftp,ftp-data
+srv+=,time,rsync,ircd,ircs,hkp,telnets,ftp,ftp-data,ntp
 for i in $bck; do
 	[[ -n "$(echo -- $srv | $grp $i)" ]] && srv=${srv/,$i/} || srv+=,$i
 done

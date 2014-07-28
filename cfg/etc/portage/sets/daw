@@ -1,0 +1,15 @@
+=media-sound/jack-audio-connection-kit-2.9999
+media-sound/jack_mixer::bar
+media-sound/ladish::bar
+media-sound/laditools::bar
+virtual/liblash::bar
+#media-sound/rosegarden
+#media-sound/hydrogen
+media-sound/seq24::bar
+#media-sound/ardour
+media-plugins/ladspa-bs2b
+media-plugins/swh-plugins
+media-plugins/tap-plugins
+#media-sound/rezound
+#media-sound/jamin
+#media-sound/jamin-presets

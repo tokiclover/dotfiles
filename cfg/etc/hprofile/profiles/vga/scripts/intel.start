@@ -6,5 +6,5 @@ if [ -e /sys/kernel/debug/vgaswitcheroo/switch ]; then
 	echo OFF >/sys/kernel/debug/vgaswitcheroo/switch
 fi
 [ "$(eselect opengl show)" != "xorg-x11" ] && eselect opengl set xorg-x11
-[ "$(eselect xvmc show)" != "intel-i815" ] && eselect xvmc set intel-i815
+[ "$(eselect xvmc show)" != "intel-i815/i965" ] && eselect xvmc set 'intel-i815/i965'
 # vim:fenc=utf-8:ft=sh:ci:pi:sts=0:sw=4:ts=4:

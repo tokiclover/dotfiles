@@ -6,3 +6,4 @@ if [ -e /sys/kernel/debug/vgaswitcheroo/switch ]; then
 #	echo OFF >/sys/kernel/debug/vgaswitcheroo/switch
 fi
 [ "$(eselect opengl show)" != "xorg-x11" ] && eselect opengl set xorg-x11
+[ "$(eselect xvmc show)" != "xorg-x11" ] && eselect opengl set xorg-x11

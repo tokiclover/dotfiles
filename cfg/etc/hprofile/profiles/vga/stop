@@ -1,4 +1,8 @@
 #!/bin/sh
-[ "${1}" == "intel" ] || [ "${1}" == "radeon" ] &&
-    echo ON >/sys/kernel/debug/vgaswitcheroo/switch
+if [ -e /sys/kernel/debug/vgaswitcheroo/switch ]; then
+	case ${1} in
+		intel|radeon|nouveau) echo ON >/sys/kernel/debug/vgaswitcheroo/switch;;
+	esac
+fi
 echo "Finished Stopping profile ${1} and moving back xorg.conf"
+# vim:fenc=utf-8:ft=sh:ci:pi:sts=0:sw=4:ts=4:

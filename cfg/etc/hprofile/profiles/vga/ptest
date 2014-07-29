@@ -11,7 +11,7 @@ vga=$(grep + ${vgp})
 pci=$(sed -nre 's/^[0-9].*\+.*[a-zA-Z]:([0-9].*$)/\1/p' ${vgp})
 if [ -d /sys/bus/pci/drivers/nouveau/${pci} ];then
 	drv=nouveau
-elif [ -d /sys/bus/pci/drivers/radeon/${pci} ] then
+elif [ -d /sys/bus/pci/drivers/radeon/${pci} ]; then
 	drv=radeon
 fi
 
@@ -20,7 +20,7 @@ case ${vga} in
 	*:DIS:+*) echo "${drv}"; exit;;
 esac
 
-drv="$(lspci -k | sed -nre 's/Kernel driver in use: ((i915|fglrx|radeon|nouveau|nvidia))/\1/p)"
+drv="$(lspci -k | sed -nre 's/Kernel driver in use: ((i915|fglrx|radeon|nouveau|nvidia))/\1/p')"
 
 echo "${drv:-invalid}"
 

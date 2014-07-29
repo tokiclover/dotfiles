@@ -152,8 +152,8 @@ doipr() {
 		elif [ -n "$ipv6" ]; then
 			dv="--sport dhcpv6-server --dport dhcpv6-server"
 		fi
-		$ipt -A INPUT  -p udp -i $ext $dv ${dsr:+-s $dsr} -m conntrack --ctstate NEW -j ACCEPT
-		$ipt -A OUTPUT -p udp -o $ext $dv ${dsr:+-s $dsr} -m conntrack --ctstate NEW -j ACCEPT
+		$ipt -A INPUT  -p udp -i $ext $dv ${dsr:+-s $dsr} -j ACCEPT
+		$ipt -A OUTPUT -p udp -o $ext $dv ${dsr:+-s $dsr} -j ACCEPT
 	fi
 	
 	echo -n "ipr: Allowing inside systems to use service: "

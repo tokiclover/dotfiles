@@ -1,7 +1,10 @@
 #!/bin/sh
-echo "Starting intel vga profile."
-echo IGD >/sys/kernel/debug/vgaswitcheroo/switch &&
-echo OFF >/sys/kernel/debug/vgaswitcheroo/switch ||
-exit $?
+echo "Starting intel vga profile"
+modprobe i915 || exit $?
+if [ -e /sys/kernel/debug/vgaswitcheroo/switch ]; then
+	echo IGD >/sys/kernel/debug/vgaswitcheroo/switch &&
+	echo OFF >/sys/kernel/debug/vgaswitcheroo/switch ||
+fi
 [ "$(eselect opengl show)" != "xorg-x11" ] && eselect opengl set xorg-x11
 [ "$(eselect xvmc show)" != "intel-i815" ] && eselect xvmc set intel-i815
+# vim:fenc=utf-8:ft=sh:ci:pi:sts=0:sw=4:ts=4:

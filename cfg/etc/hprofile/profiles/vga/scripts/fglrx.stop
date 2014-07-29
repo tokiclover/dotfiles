@@ -1,7 +1,4 @@
 #!/bin/sh
-echo "Stopping nvidia profile."
-if ! rmmod fglrx; then
-	ret=$?
-	echo "failed to remove fglrx module"
-	exit $ret
-fi
+echo "Stopping fglrx vga profile."
+rmmod fglrx || echo "failed to remove fglrx module"
+# vim:fenc=utf-8:ft=sh:ci:pi:sts=0:sw=4:ts=4:

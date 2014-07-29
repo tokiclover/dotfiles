@@ -1,8 +1,8 @@
 #!/bin/sh
-echo "Starting nouveau profile."
-if ! modprobe nouveau; then
-	ret=$?
-	echo "failed to load nouveau module"
-	exit $ret
+echo "Starting nouveau vga profile"
+modprobe nouveau || exit$?
+if [ -e /sys/kernel/debug/vgaswitcheroo/switch ]; then
+	echo DIS >/sys/kernel/debug/vgaswitcheroo/switch
+#	echo OFF >/sys/kernel/debug/vgaswitcheroo/switch
 fi
 [ "$(eselect opengl show)" != "xorg-x11" ] && eselect opengl set xorg-x11

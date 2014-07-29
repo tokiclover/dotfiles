@@ -126,8 +126,6 @@ doipr() {
 	$ipt -A badtcp  -p tcp --tcp-flags SYN,ACK SYN,ACK -m conntrack --ctstate NEW -j REJECT --reject-with tcp-reset
 	$ipt -A badtcp  -p tcp ! --syn -m conntrack --ctstate NEW -j badtcp
 	# Filter bad tcp right at the bat
-	#$ipt -A INPUT   -p tcp -j badtcp
-	#$ipt -A OUTPUT  -p tcp -j badtcp
 	# Add IPSet sets while at it if enabled
 	for b in $(echo "$ipb" | sed -e 's/,/ /g'); do
 		$ipt -I INPUT -m set --match-set $b src,dst -j drop

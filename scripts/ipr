@@ -1,5 +1,5 @@
 #!/bin/sh
-# $Id: ~/scripts/ipr,v 2.3 2014/07/26 15:11:10 -tclover Exp $
+# $Id: ~/scripts/ipr,v 2.3 2014/07/28 15:11:10 -tclover Exp $
 
 usage() {
 cat <<-EOF
@@ -106,6 +106,7 @@ for v in $ipv; do
 done
 
 doipr() {
+	local b dv p s
 	# Deny then accept: this keeps holes from opening up while we close ports and such
 	$ipt -P INPUT      DROP
 	$ipt -P OUTPUT     DROP
@@ -146,10 +147,13 @@ doipr() {
 	echo ""
 	
 	if [ -n "$dhcp" ]; then 
-		[ -n "$ipv4" ] &&
-			$ipt -A INPUT -p udp ${dsr:+-s $dsr} --sport 67:68         --dport 67:68         -j ACCEPT
-		[ -n "$ipv6" ] &&
-			$ipt -A INPUT -p udp ${dsr:+-s $dsr} --sport dhcpv6-server --dport dhcpv6-server -j ACCEPT
+		if [ -n "$ipv4" ]; then
+			dv="--sport 67:68 --dport 67:68"
+		elif [ -n "$ipv6" ]; then
+			dv="--sport dhcpv6-server --dport dhcpv6-server"
+		fi
+		$ipt -A INPUT  -p udp -i $ext $dv ${dsr:+-s $dsr} -m conntrack --ctstate NEW -j ACCEPT
+		$ipt -A OUTPUT -p udp -o $ext $dv ${dsr:+-s $dsr} -m conntrack --ctstate NEW -j ACCEPT
 	fi
 	
 	echo -n "ipr: Allowing inside systems to use service: "

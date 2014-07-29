@@ -1,24 +1,23 @@
 #!/bin/zsh
-# $Id: ~/.scripts/ips.zsh,v 2.0 2014/07/22 14:56:24 -tclover Exp $
+# $Id: ~/.scripts/ips.zsh,v 2.0 2014/07/28 14:56:24 -tclover Exp $
 usage() {
   cat <<-EOF
   usage: ${(%):-%1x} [-f|-file <file>] [-t|-target <url>] [OPTIONS]
   
   -d, -datadir           data dir location, default to '/var/lib/ipset'
   -f, -file <file>       file src to use insted of using a url target
-  -o, -logger <cron>     use facility to log in logger, default to cron
-  -l, -list [<name>]     add set to <name> list:net, IPBlock by default
+  -l, -logger <user>     use facility to log in logger, default to cron
   -p, -params <params>   parameters, options to pass to IPSet
   -t, -target <url>      use url src to use instead using a file target
   -g, -gpg [<url.asc>]   use url to get pub key or use <file.asc> if -f,
                          default to <url.asc> if <use.asc> not specified
-  -x, -xtr [</path/xtr>] path to xtr script, default to '~/.scripts/xtr'
+  -x, -xtr [</path/xtr>] path to xtr script, default to '~/scripts/xtr'
   -r, -raw               data file is raw file with only usable data
   -a, -archive           data file is an archive or tarball file
   -h, -help              print this help/usage and exit
 
    default:             :...two implemented use cases...:
-  -ipdeny               use http://ipdeny.com/../all-zones.tar.gz
+  -ipdeny               use http://ipdeny.com/ipblocks/data/
   -dshield              use https://www.dshield.org/block.txt
 EOF
 exit $?
@@ -39,44 +38,40 @@ info()  {
 }
 
 zmodload zsh/zutil
-zparseopts -E -D -K -A opts d: datadir: f: file: L logger p: params: t: target: \
+zparseopts -E -D -K -A opts d: datadir: f: file: l logger p: params: t: target: \
 	g:: gpg:: x: xtr: r raw a archive dshield ipdeny h help || usage
 
 if [[ -z ${opts[*]} ]] { typeset -A opts }
 if [[ -n ${(k)opts[-h]} ]] || [[ -n ${(k)opts[-help]} ]] { usage }
 if [[ -n ${(k)opts[-o]} ]] || [[ -n ${(k)opts[-logger]} ]] {
 	LOG=true
-	facility=${opts[-logger]:-${opts[-l]:-cron}}
+	facility=${opts[-logger]:-${opts[-l]:-user}}
 }
 if [[ -n ${(k)opts[-r]} ]] || [[ -n ${(k)opts[-raw]} ]] { RAW=true }
 if [[ -n ${(k)opts[-a]} ]] || [[ -n ${(k)opts[-archive]} ]] { ARCHIVE=true }
-if [[ -n ${(k)opts[-dshield]} ]] {
-	opts[-target]=https://feeds.dshield.org/block.txt
-#	opts[-gpg]=${opts[-target]}.asc
-}
-if [[ -n ${(k)opts[-ipdeny]} ]] {
-	opts[-target]=http://www.ipdeny.com/ipblocks/data/countries/all-zones.tar.gz
-	ARCHIVE=true RAW=true
-}
 : 	${opts[-datadir]:=${opts[-d]:-/var/lib/ipset}}
 :	${opts[-xtr]:=${opts[-x]:-~/scripts/xtr}}
-if [[ -n ${(k)opts[-l]} ]] || [[ -n ${(k)opts[-list]} ]] {
-:	${opts[-params]:=${opts[-p]:-list:net}}
-} else {
-:	${opts[-params]:=${opts[-p]:-hash:ip netmask 24 hashsize 64}}
+:	${opts[-params]:=${opts[-p]:-hash:net hashsize 64}}
+if [[ -n ${(k)opts[-dshield]} ]] {
+	opts[-target]="https://feeds.dshield.org/block.txt"
+	DSHIELD=${opts[-target]}
+}
+if [[ -n ${(k)opts[-ipdeny]} ]] {
+	opts[-target]="http://www.ipdeny.com/ipblocks/data/countries/MD5SUM"
+	opts[-datadir]=${opts[-datadir]}/ipdeny IPDENY=true RAW=true
 }
 
-mkdir -p -m 0750 ${opts[-datadir]} 
-for module (/lib/modules/$(uname -r)/**/ip_set{,_${${=opts[-params]}[1]/:/_}}.ko) { 
+mkdir -p -m 0600 ${opts[-datadir]} 
+for module (/lib/modules/$(uname -r)/**/ip_set{,_${${=opts[-params]/:/_}[(w)1]}}.ko) { 
 	modprobe ${${module:t}%.ko} 
 }
 
 get_time() {
-	print $(date -r $datafile +%m/%d:%R 2>/dev/null)
+	print $(date -r ${1:-$datafile} +%m/%d:%R 2>/dev/null)
 }
 
 get_file() {
-	wget -qNP ${opts[-datadir]} $1 || die "wget failed to get ${1}"
+	wget -qNP ${opts[-datadir]} ${1} || die "wget failed to get ${1}"
 }
 
 get_sign() {
@@ -85,27 +80,42 @@ get_sign() {
 	die "gpg failed to verify $datafile file"
 }
 
-ipb() {
-	local ipb=${${datafile:t}%.*}-ips tmp net ip
-	tmp=${ipb/ips/tmp}
-	ipset create $tmp ${=opts[-params]}
-	if [[ -n $RAW ]] {
-		while read line; do
-			info "$line"
-			ipset add $tmp ${=line}
-		done <$datafile
-	} else {
-		net=($(sed -nre 's/(^([0-9]{1,3}\.){3}[0-9]{1,3}).*$/\1/p' $datafile))
-		ip=${#net[*]}
-		while [[ $((--ip)) -ge 0 ]] {
-			info "$net[ip]"
-			ipset add $tmp ${net[ip]}
+get_target() {
+	local target=${1:-opts[-target]}
+	datafile=${opts[-datadir]}/${target:t}
+	oldtime=$(get_time)
+	get_file $target
+
+	if [[ -n $GPG ]] {
+		if [[ -z $gpgfile ]] {
+			gpgfile=${datafile%*.}.asc
+			get_file ${opts[-target]}.asc
+		} elif [[ ${gpgfile%%*/} == "http*:" ]] {
+			gpgfile=${opts[-datadir]}/$gpgfile:t
+			get_file ${opts[-gpg]}
 		}
 	}
-	ipset create -exist $ipb ${=opts[-params]}
-	ipset swap $tmp $ipb &&
+}
+
+ipfilter() {
+	sed -nre 's/(^([0-9]{1,3}\.){3}[0-9]{1,3}).*$/\1/p' ${1:-$datafile}
+}
+
+ipblock() {
+	local data=${1:-$datafile} name=${2} tmp net i
+:	${name:=${${data:t}%.*}}
+	tmp=${name%-*}-tmp
+	if [[ -n $RAW ]] { net=($(<$data))
+	} else { net=($(ipfilter $data)) }
+	i=${#net[*]}
+	ipset create $tmp ${=opts[-params]}
+	while [[ $((--i)) -ge 0 ]] {
+		ipset add $tmp ${net[$i]}
+	}
+	ipset create -exist $name ${=opts[-params]}
+	ipset swap $tmp $name &&
 	ipset destroy $tmp &&
-	info "$ipb IPSet updated"
+	info "$name IPSet updated"
 }
 
 if [[ -n ${(k)opts[-gpg]} ]] || [[ -n ${(k)opts[-g]} ]] {
@@ -116,30 +126,19 @@ if [[ -n ${(k)opts[-gpg]} ]] || [[ -n ${(k)opts[-g]} ]] {
 
 if [[ -n ${(k)opts[-target]} ]] || [[ -n ${(k)opts[-t]} ]] {
 :	${opts[-target]:=${opts[-t]}}
-	datafile=${opts[-datadir]}/${opts[-target]:t}
-	oldtime=$(get_time)
-	get_file ${opts[-target]}
-	if [[ -n $GPG ]] {
-		if [[ -z $gpgfile ]] {
-			gpgfile=${datafile%*.}.asc
-			get_file ${opts[-target]}.asc
-		} elif [[ ${gpgfile%%*/} == "http*:" ]] {
-			gpgfile=${opts[-datadir]}/$gpgfile:t
-			get_file ${opts[-gpg]}
-		}
-	}
+	get_target ${opts[-target]}
 } elif [[ -n ${(k)opts[-file]} ]] || [[ -n ${(k)opts[-f]} ]] {
 :	${opts[-file]:=${opts[-f]}}
 	datafile=${opts[-file]}
 	[[ -e $datafile ]] || die "no $datafile file provided"
 	oldtime=$(get_time)
-	$GPG && [[ -z $gpgfile ]] && gpgfile=$datafile.asc
+	[[ -n $GPG ]] && [[ -z $gpgfile ]] && gpgfile=$datafile.asc
 } else { die "-t|-f should be passed with a url|file" }
 
 [[ -n $GPG ]] && get_sign
 
 newtime=$(get_time)
-if [[ $newtime != $oldtime ]] {
+#if [[ $newtime != $oldtime ]] {
 	if [[ -n $ARCHIVE ]] {
 		[[ -x ${opts[-xtr]} ]] || die "xtr script not found"
 		tmpdir=$(mktemp -d ips-XXXXXX)
@@ -150,13 +149,34 @@ if [[ $newtime != $oldtime ]] {
 			oldtime=$(get_time)
 			cp -a $file $datafile
 			newtime=$(get_time)
-			[[ $newtime != $oldtime ]] && ipb
+			[[ $newtime != $oldtime ]] && ipblock
 		}
 		popd -q
-	}
-	ipb
-}
+	} elif [[ -n $IPDENY ]] {
+		n=IPBlock t=${opts[-target]:h} d=${opts[-datadir]}
+		echo >${d}/${n}
+		while read h c; do
+			if [[ ${c/*.} != zone ]] { continue }
+			datafile=${d}/${c}
+			if [[ -f ${datafile} ]] { s=($(md5sum ${datafile}))
+				if [[ ${s[1]} != ${h} ]] { get_file ${t}/${c} }
+			} else { get_file ${t}/${c} }
+			s=($(md5sum $datafile))
+			if [[ ${s[1]} != ${h} ]] { rm ${datafile}
+			} else { cat <${datafile} >>${d}/${n} }
+		done <${d}/MD5SUM
 
-unset -v archive datafile facility opts tmpdir oldtime newtime raw GPG LOG
+		if [[ -n ${DSHIELD} ]] {
+			get_target ${DSHIELD}
+			for i ($(ipfilter ${opts[-datadir]}/${DSHIELD:t})) {
+				echo $i/24 >>${d}/${n}
+			}
+		}
+		datafile=${d}/$n ipblock
+		unset n t h c d
+	} else { ipblock }
+#}
+
+unset -v ARCHIVE DSHIELD GPG LOG RAW datafile facility opts tmpdir oldtime newtime
 
 # vim:fenc=utf-8:ci:pi:sts=0:sw=4:ts=4:

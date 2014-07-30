@@ -1,17 +1,42 @@
 #!/bin/sh
-hprofile disk.adp
-for d in $(ls -d /sys/devices/system/cpu/cpu[0-9]*); do
-	echo ondemand >$d/cpufreq/scaling_governor
+
+hprofile disk.quiet
+
+for cpu in $(ls -d /sys/devices/system/cpu/cpu[0-9]*); do
+	echo powersave >$cpu/cpufreq/scaling_governor
 done
-echo 200 >/sys/devices/system/cpu/cpufreq/ondemand/sampling_down_factor
-echo 1   >/sys/devices/system/cpu/sched_mc_power_savings
-echo powersave >/sys/module/pcie_aspm/parameters/policy
-for d in $(ls -d /sys/class/scsi_host/host[0-9]*); do
-	[ "$(cat $d/proc_name)" = "ahci" ] &&
-		echo min_power >$d/link_power_management_policy
+
+[ -e /sys/module/pcie_aspm/parameters/policy ] &&
+	echo powersave >/sys/module/pcie_aspm/parameters/policy
+for scsi in $(ls -d /sys/class/scsi_host/host[0-9]*); do
+	case "$(cat $d/proc_name)" in
+		ahci|usb-storage) echo min_power >$scsi/link_power_management_policy;;
+	esac
 done
-[ -e /run/openrc/started/alsasound ] &&
-	echo 0 >/sys/module/snd_hda_intel/parameters/power_save
-#iwpriv wlan0 set_power 6
-xbacklight -set 20
-xset dpms 0 0 300
+
+# set usb host to auto powersave
+for usb in $(ls -d /sys/bus/usb/devices/{usb[0-9],[0-9]-[0-9]}); do
+	echo auto >$usb/power/control
+done
+
+# pci power control
+for pci in $(ls -d /sys/bus/pci/devices/0000:0*); do 
+	echo auto >$pci/power/control
+done
+
+# snd-hda-intel powersave
+[ -e /sys/module/snd_hda_intel/parameters/power_save ] &&
+	echo 1 >/sys/module/snd_hda_intel/parameters/power_save
+
+# turn off NMI watchdog
+[ -e /proc/sys/kernel/nmi_watchdog ] &&
+	echo 0 >/proc/sys/kernel/nmi_watchdog
+
+# VM write back timeout
+[ -e /proc/sys/vm/dirty_writeback_centisecs ] &&
+	echo 2500 >/proc/sys/vm/dirty_writeback_centisecs
+
+xbacklight -set 25
+xset dpms 300 400 600
+
+# vim:fenc=utf-8:ci:pi:sts=0:sw=4:ts=4:

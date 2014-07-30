@@ -6,11 +6,11 @@ if [ ! -e sys/kernel/debug/vgaswitcheroo/switch ]; then
 	echo 0 >/sys/class/vtconsole/vtcon1/bind
 	if ! rmmod nouveau; then
 		echo "failed to remove nouveau module"
-		exit
+	else
+		/etc/init.d/consolefont restart
+		rmmod ttm
+		rmmod drm_kms_helper
+		rmmod dri
 	fi
-	/etc/init.d/consolefont restart
-	rmmod ttm
-	rmmod drm_kms_helper
-	rmmod dri
 fi
 # vim:fenc=utf-8:ft=sh:ci:pi:sts=0:sw=4:ts=4:

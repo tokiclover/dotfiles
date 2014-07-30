@@ -7,3 +7,4 @@ if [ -e /sys/kernel/debug/vgaswitcheroo/switch ]; then
 fi
 [ "$(eselect opengl show)" != "xorg-x11" ] && eselect opengl set xorg-x11
 [ "$(eselect xvmc show)" != "xorg-x11" ] && eselect opengl set xorg-x11
+# vim:fenc=utf-8:ft=sh:ci:pi:sts=0:sw=4:ts=4:

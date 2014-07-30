@@ -9,7 +9,8 @@ done
 [ -e /sys/module/pcie_aspm/parameters/policy ] &&
 	echo powersave >/sys/module/pcie_aspm/parameters/policy
 for scsi in $(ls -d /sys/class/scsi_host/host[0-9]*); do
-	case "$(cat $d/proc_name)" in
+	[ -e $scsi/link_power_management_policy ] || continue
+	case $(cat $scsi/proc_name) in
 		ahci|usb-storage) echo min_power >$scsi/link_power_management_policy;;
 	esac
 done

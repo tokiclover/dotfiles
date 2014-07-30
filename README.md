@@ -1,4 +1,4 @@
-`$Id: dotfiles/README.textile, 2014/07/26 18:11:51 -tclover Exp $`
+`$Id: dotfiles/README.textile, 2014/07/22 18:11:51 -tclover Exp $`
 
 ---
 
@@ -21,7 +21,6 @@ another _dotfiles_ repository
 * hdu: is a simple script which ease updating '$Header:...$' or '$Id:...$' update;
 * ips: is a script which can be used to retrieve IP block lists to be added to iptables rules;
 * ipr: is script to generate ip[6]tables net rules;
-* ifup: is an init svc script to ease ipr and ipb start up if an iface is up;
 * kvm: is a script to ease kvm loadind with a few default option;
 * lbd: is a script to add/remove loop back devices;
 * mkstage4: a stage4 maker scripts with squashed (system and/or local) directories support;

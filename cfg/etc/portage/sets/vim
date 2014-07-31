@@ -1,0 +1,17 @@
+app-editors/vim
+app-vim/airline
+app-vim/align
+app-vim/colorschemes
+app-vim/colorsel
+app-vim/ctrlp
+app-vim/ctx
+app-vim/nerdtree
+app-vim/pathogen
+app-vim/recover
+app-vim/txtfmt
+app-vim/vim-spell-en
+app-vim/vim-spell-fr
+app-vim/xsl-syntax
+app-vim/youcompleteme
+app-vim/yankring
+app-vim/zencodingvim-vim

@@ -1,5 +1,5 @@
 #!/bin/sh
-echo "Stopping nouveau vga profile"
+echo "Stoping vga.${1} profile"
 # uncomment the following line and last one if one need
 # to force remove nouveau/kms driver for e.g. nvidia
 if [ ! -e sys/kernel/debug/vgaswitcheroo/switch ]; then

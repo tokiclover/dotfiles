@@ -1,5 +1,5 @@
 #!/bin/sh
-echo "Starting vga profile to fglrx"
+echo "Starting vga.${1} profile"
 if ! modprobe fglrx; then
 	echo "failed to load fglrx module"
 	exit

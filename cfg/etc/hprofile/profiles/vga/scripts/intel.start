@@ -1,5 +1,5 @@
 #!/bin/sh
-echo "Starting intel vga profile"
+echo "Starting vga.${1} profile"
 modprobe i915 || exit $?
 if [ -e /sys/kernel/debug/vgaswitcheroo/switch ]; then
 	echo IGD >/sys/kernel/debug/vgaswitcheroo/switch &&

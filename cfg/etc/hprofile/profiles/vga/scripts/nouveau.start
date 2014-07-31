@@ -1,5 +1,5 @@
 #!/bin/sh
-echo "Starting nouveau vga profile"
+echo "Starting vga.${1} profile"
 modprobe nouveau || exit$?
 if [ -e /sys/kernel/debug/vgaswitcheroo/switch ]; then
 	echo DIS >/sys/kernel/debug/vgaswitcheroo/switch

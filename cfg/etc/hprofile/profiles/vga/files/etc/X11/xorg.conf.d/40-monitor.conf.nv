@@ -1,0 +1,16 @@
+Section "Monitor"
+    Identifier  "Default"
+EndSection
+
+Section "Device"
+    Option      "EXAVsync"  "True"
+    Option      "GLXVBlank" "True"
+    Identifier  "NV"
+    Driver      "nv"
+EndSection
+
+Section "Screen"
+    Identifier "NV"
+    Device     "NV"
+    Monitor    "Default"
+EndSection

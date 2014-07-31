@@ -1,5 +1,5 @@
 #!/bin/sh
-echo "Starting nvidia vga profile"
+echo "Starting vga.${1} profile"
 if ! modprobe nvidia; then
 	echo "failed to load nvidia module"
 	exit $?

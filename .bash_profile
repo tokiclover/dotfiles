@@ -1,4 +1,4 @@
-# $Id: ~/.bash_profile, 2013/06/26 08:03:53 -tclover Exp $
+# $Id: ~/.bash_profile, 2014/07/31 08:03:53 -tclover Exp $
 
 [[ -f ~/.bashrc ]] && source ~/.bashrc
 shopt -s cdspell
@@ -18,5 +18,6 @@ export XMODIFIERS="@im=none"
 export XDG_CONFIG_HOME="$HOME/.config"
 export XDG_RUNTIME_DIR="/tmp/.private/$USER"
 export FHPDIR=$(ls -d $HOME/.mozilla/firefox/*.default 2>/dev/null)
+export G_SLICE=always-malloc
 
 # vim:fenc=utf-8:ci:pi:sts=0:sw=2:ts=2:

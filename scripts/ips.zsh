@@ -1,5 +1,5 @@
 #!/bin/zsh
-# $Id: ~/.scripts/ips.zsh,v 2.0 2014/07/28 14:56:24 -tclover Exp $
+# $Id: ~/.scripts/ips.zsh,v 2.0 2014/07/31 14:56:24 -tclover Exp $
 usage() {
   cat <<-EOF
   usage: ${(%):-%1x} [-f|-file <file>] [-t|-target <url>] [OPTIONS]
@@ -138,7 +138,7 @@ if [[ -n ${(k)opts[-target]} ]] || [[ -n ${(k)opts[-t]} ]] {
 [[ -n $GPG ]] && get_sign
 
 newtime=$(get_time)
-#if [[ $newtime != $oldtime ]] {
+if [[ $newtime != $oldtime ]] {
 	if [[ -n $ARCHIVE ]] {
 		[[ -x ${opts[-xtr]} ]] || die "xtr script not found"
 		tmpdir=$(mktemp -d ips-XXXXXX)
@@ -175,7 +175,7 @@ newtime=$(get_time)
 		datafile=${d}/$n ipblock
 		unset n t h c d
 	} else { ipblock }
-#}
+}
 
 unset -v ARCHIVE DSHIELD GPG LOG RAW datafile facility opts tmpdir oldtime newtime
 

@@ -1,5 +1,5 @@
 #!/bin/bash
-# $Id: ~/scripts/ips.bash, 2.0 2014/07/22 13:56:21 -tclover Exp $
+# $Id: ~/scripts/ips.bash, 2.0 2014/07/31 13:56:21 -tclover Exp $
 usage() {
   cat <<-EOF
   usage: ${0##*/}  [-f|-file <file>] [-t|-target <url>] [OPTIONS]
@@ -148,7 +148,7 @@ fi
 [[ -n "$GPG" ]] && get_sign
 
 newtime=$(get_time)
-#if [[ $newtime != $oldtime ]]; then
+if [[ $newtime != $oldtime ]]; then
 	if [[ -n "$ARCHIVE" ]]; then
 		[[ -n "${opts[xtr]}" ]] || opts[xtrr]="~/scripts/xtr"
 		[[ -x "${opts[xtr]}" ]] || die "xtr script not found"
@@ -190,7 +190,7 @@ newtime=$(get_time)
 	else
 		ipblock
 	fi
-#fi
+fi
 
 unset -v ARCHIVE DSHIELD GPG LOG RAW datafile facility opts tmpdir oldtime newtime
 

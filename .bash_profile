@@ -12,12 +12,8 @@ else PATH="/usr/local/bin:/usr/bin:/bin:${PATH}"; fi
 export PATH
 unset ROOTPATH
 
-export ECORE_IMF_MODULE="xim"
-export GTK2_RC_FILES="$HOME/.gtkrc-2.0"
-export XMODIFIERS="@im=none"
-export XDG_CONFIG_HOME="$HOME/.config"
-export XDG_RUNTIME_DIR="/tmp/.private/$USER"
 export FHPDIR=$(ls -d $HOME/.mozilla/firefox/*.default 2>/dev/null)
-export G_SLICE=always-malloc
+[[ -f ~/.Xprofile ]] && source ~/.Xprofile
+
 
 # vim:fenc=utf-8:ci:pi:sts=0:sw=2:ts=2:

@@ -6,9 +6,6 @@ lxde-base/lxpanel
 lxde-base/lxrandr
 lxde-base/lxsession
 x11-misc/pcmanfm
-x11-wm/openbox
-x11-misc/openbox-menu
-x11-misc/obconf
 media-gfx/gpicview
 media-gfx/pqiv
 media-gfx/qiv

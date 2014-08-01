@@ -15,6 +15,7 @@ start() {
 	eend $?
 	hprofile power.$pwr
 	eend $?
+	return 0
 }
 
 stop() {

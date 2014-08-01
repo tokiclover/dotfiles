@@ -1,0 +1,48 @@
+#!/bin/sh
+# $Id: /etc/hprofile/profiles/power/base-start, 2014/07/31 -tclover $
+
+CPU=${1:-powersave}
+PCI=${2:-auto}
+USB=${3:-auto}
+HDA=${5:-1}
+NMI=${6:-0}
+VMW=${7:-1000}
+ASPM=${8:-default}
+SCSI=${4:-min_power}
+
+for cpu in $(ls -d /sys/devices/system/cpu/cpu[0-9]*); do
+	echo $CPU >$cpu/cpufreq/scaling_governor
+done
+
+[ -e /sys/module/pcie_aspm/parameters/policy ] &&
+	echo $ASPM >/sys/module/pcie_aspm/parameters/policy
+for scsi in $(ls -d /sys/class/scsi_host/host[0-9]*); do
+	[ -e $scsi/link_power_management_policy ] || continue
+	case $(cat $scsi/proc_name) in
+		ahci|usb-storage) echo $SCSI >$scsi/link_power_management_policy;;
+	esac
+done
+
+# set usb host to auto powersave
+for usb in $(ls -d /sys/bus/usb/devices/{usb[0-9],[0-9]-[0-9]}); do
+	echo $USB >$usb/power/control
+done
+
+# pci power control
+for pci in $(ls -d /sys/bus/pci/devices/0000:0*); do 
+	echo $PCI >$pci/power/control
+done
+
+# snd-hda-intel powersave
+[ -e /sys/module/snd_hda_intel/parameters/power_save ] &&
+	echo $HDA >/sys/module/snd_hda_intel/parameters/power_save
+
+# turn off NMI watchdog
+[ -e /proc/sys/kernel/nmi_watchdog ] &&
+	echo $NMI >/proc/sys/kernel/nmi_watchdog
+
+# VM write back timeout
+[ -e /proc/sys/vm/dirty_writeback_centisecs ] &&
+	echo $VMW >/proc/sys/vm/dirty_writeback_centisecs
+
+# vim:fenc=utf-8:ci:pi:sts=0:sw=4:ts=4:

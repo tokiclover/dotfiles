@@ -1,4 +1,4 @@
-! $Id: ~/.Xresources,v 1.1 2012/09/26 22:10:45 -tclover Exp $
+! $Id: ~/.Xresources,v 1.1 2014/07/24 22:10:45 -tclover Exp $
 
 !-*-{ Global font
 *font:                -*-terminus-*-*-*-*-*-*-*-*-*-*-*-*
@@ -30,7 +30,7 @@ URxvt*matcher.button: 1
 URxvt*geometry:       128x36
 URxvt.saveLines:      1000
 !-*- Trasperancy -*-
-URxvt*transparent: 	  False
+URxvt*transparent:    False
 URxvt*inheritPixmap:  False
 URxvt*shading:        30
 URxvt*tintColor:      #404040
@@ -111,11 +111,20 @@ Xpdf*fontList:        Terminus
 !-*-}
 
 !-*-{ Xcursor
-!Xcursor.theme:       Vanilla-DMZ-AA
-!Xcursor.size:        22
+Xcursor.theme:       Vanilla-DMZ-AA
+Xcursor.size:        22
+!-*-}
+
+!-*-{ Xclock
+Xclock*faceName:          Terminus:pixelsize=8
+Xclock*update:            1
+Xclock*analog:            false
+Xclock*Foreground:        white
+Xclock*background:        black
 !-*-}
 
 !-*-{ Xcalc
+xcalc*faceName:                        Terminus:pixelsize=8
 xcalc*geometry:                        200x275
 xcalc.ti.bevel.background:             #151515
 xcalc.ti.bevel.screen.background:      #101010

@@ -1,0 +1,9 @@
+# $Id: $HOME/scripts/functions, 2014/07/31 11:59:26 -tclover Exp $
+
+# @FUNCTION: xkc
+# @DESCRIPTION: simple Xev KeyCode
+function xkc() {
+    xev | grep -A2 --line-buffered '^KeyRelease' | \
+    sed -nre '/keycode /s/^.*keycode ([0-9]*).* (.*, (.*)).*$/\1 \2/p'
+}
+

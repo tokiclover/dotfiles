@@ -1,4 +1,6 @@
-# $Id: $HOME/scripts/functions.bash, 2014/07/25 12:59:26 -tclover Exp $
+# $Id: $HOME/scripts/functions.bash, 2014/07/31 12:59:26 -tclover Exp $
+
+[[ -f ~/scripts/functions ]] && source ~/scripts/functions
 
 # @FUNCTION: die
 # @DESCRIPTION: hlper function, print error message to stdout
@@ -88,8 +90,8 @@ function bash_prompt() {
 		tty | cut -b6-)${fg[blue]}⋅\D{%m/%d}⋅${fg[magenta]}\t${fg[blue]})${fbg[hicolor]}${fg[blue]}\
 		(${fg[magenta]}$NPWD${fg[blue]})${fbg[hiclor]}${fg[blue]}${fg[black]}
 		\n${fg[cyan]}${fbg[hicolor]}${fg[blue]}${fg[green]}${fbg[reset]}-» "
-   		PS2="${fg[blue]}${fg[green]} ${fbg[reset]}"
-        TITLEBAR="\$${NPWD}"
+	 		PS2="${fg[blue]}${fg[green]} ${fbg[reset]}"
+		TITLEBAR="\$${NPWD}"
 		;;
 	linux*)
 		PS1="${fg[cyan]}┌${bfg[hicolor]}${fg[blue]}(${fg[magenta]}\$⋅${fg[magenta]}\h:$(\
@@ -106,4 +108,102 @@ function bash_prompt() {
 # @DESCRIPTION: bash prompt command
 PROMPT_COMMAND=bash_prompt
 
-# vim:fenc=utf-8:ft=zsh:ci:pi:sts=0:sw=2:ts=2:
+# @FUNCTION: kmp-aa
+# @DESCRIPTION: little helpter to retrieve Kernel Module Parameters
+function kmp-aa () 
+{ 
+	local c d line m mc mod md de n=/dev/null o
+	c=$(tput op) o=$(echo -en "\n$(tput setaf 2)-*- $(tput op)")
+	if [[ -n "$*" ]]
+	then
+	  mod=($*)
+	else
+	  while read line
+	  do
+	      mod+=( ${line%% *})
+	  done </proc/modules
+	fi
+	for m in ${mod[@]}
+	do
+	  md=/sys/module/$m/parameters
+		[[ ! -d $md ]] && continue
+		d=$(modinfo -d $m 2>$n | tr '\n' '\t')
+		echo -en "$o$m$c"
+		[[ ${#d} -gt 0 ]] && echo -n " - $d"
+		echo
+		pushd $md >$n 2>&1
+		for mc in *
+		do
+			de=$(modinfo -p $m 2>$n | grep ^$mc 2>$n | sed "s/^$mc=//" 2>$n)
+			echo -en "\t$mc=$(cat $mc 2>$n)"
+			[[ ${#de} -gt 1 ]] && echo -en " - $de"
+			echo
+		done
+		popd >$n 2>&1
+	done
+}
+
+
+# @FUNCTION: kmp-color
+# @DESCRIPTION: colorful helper to retrieve Kernel Module Parameters
+function kmp-color ()
+{
+	local green yellow cyan reset
+	if tty -s <&1
+	then
+	  green="${fg[green]}"
+	  yellow="${fg[yellow]}"
+	  cyan="${fg[cyan]}"
+	  reset="${bfg[reset]}"
+	fi
+	newline='
+'
+
+	local d line m mc md mod n=/dev/null
+	if [[ -n "$*" ]]
+	then
+	  mod=($*)
+	else
+	  while read line
+	  do
+	      mod+=( ${line%% *})
+	  done </proc/modules
+	fi
+	for m in ${mod[@]}
+	do
+	  md=/sys/module/$m/parameters
+	  [[ ! -d $md ]] && continue
+	  d="$(modinfo -d $m 2>$n | tr '\n' '\t')"
+	  echo -en "$green$m$reset"
+	  [[ ${#d} -gt 0 ]] && echo -n " - $d"
+	  echo
+	  declare pnames=() pdescs=() pvals=()
+	  local add_desc=false p pdesc pname
+	  while IFS="$newline" read p
+	  do
+	    if [[ $p =~ ^[[:space:]] ]]
+	    then
+		    pdesc+="$newline	$p"
+	    else
+		    $add_desc && pdescs+=("$pdesc")
+		    pname="${p%%:*}"
+		    pnames+=("$pname")
+		    pdesc=("	${p#*:}")
+		    pvals+=("$(cat $md/$pname 2>$n)")
+	    fi
+	    add_desc=true
+	  done < <(modinfo -p $m 2>$n)
+	  $add_desc && pdescs+=("$pdesc")
+	  for ((i=0; i<${#pnames[@]}; i++))
+	  do
+	    [[ -z ${pnames[i]} ]] && continue
+	    printf "  $cyan%s$reset = $yellow%s$reset\n%s\n" \
+		  ${pnames[i]} \
+		  "${pvals[i]}" \
+		  "${pdescs[i]}"
+	  done
+	  echo
+	done
+}
+
+# vim:fenc=utf-8:ft=zsh:ci:pi:sts=4:sw=4:ts=4:

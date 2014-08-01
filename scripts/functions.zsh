@@ -1,4 +1,6 @@
-# $Id: $HOME/scripts/functions.zsh, 2014/07/26 11:59:26 -tclover Exp $
+# $Id: $HOME/scripts/functions.zsh, 2014/07/31 11:59:26 -tclover Exp $
+
+if [[ -f ~/scripts/functions ]] { source ~/scripts/functions }
 
 # @FUNCTION: error
 # @DESCRIPTION: hlper function, print message to stdout
@@ -13,9 +15,9 @@ fuction eerror() {
 # @DESCRIPTION: hlper function, print message and exit
 # @USAGE: <string>
 function die() {
-  local ret=$?
-  print -P "%F{red}*%f $@"
-  exit $ret
+	local ret=$?
+	print -P "%F{red}*%f $@"
+	exit $ret
 }
 
 # @FUNCTION: info
@@ -60,4 +62,95 @@ function mktmp() {
 	print "$TMP"
 }
 
-# vim:fenc=utf-8:ft=zsh:ci:pi:sts=0:sw=2:ts=2:
+# @FUNCTION: kmp-aa
+# @DESCRIPTION: little helpter to retrieve Kernel Module Parameters
+function kmp-aa () 
+{ 
+	local c d line m mc mod md de n=/dev/null o
+	c=$(tput op) o=$(print -P "\n$(tput setaf 2)-*- $(tput op)")
+	if [[ -n "$*" ]] {
+	  mod=($*)
+	} else {
+	  while read line
+	  do
+	      mod+=( ${line%% *})
+	  done </proc/modules
+	}
+	for m (${mod[@]})
+	{
+	    md=/sys/module/$m/parameters
+		if [[ ! -d $md ]] { continue }
+		d=$(modinfo -d $m 2>$n | tr '\n' '\t')
+		print -P $o$m$c
+		if [[ ${#d} -gt 0 ]] { print -P " - $d" }
+		pushd -q $md
+		for mc (*(.))
+		{
+			de=$(modinfo -p $m 2>$n | grep ^$mc 2>$n | sed "s/^$mc=//" 2>$n)
+			print -P "\t$mc=$(cat $mc 2>$n)"
+			if [[ ${#de} -gt 1 ]] { print -P " - $de" }
+			print
+		}
+		popd -q
+	}
+}
+
+
+# @FUNCTION: kmp-color
+# @DESCRIPTION: colorful helper to retrieve Kernel Module Parameters
+function kmp-color ()
+{
+	local green yellow cyan reset
+	autoload colors zsh/terminfo
+	if [[ $terminfo[colors] -ge 8 ]] { colors }
+	for color (green yellow cyan)
+	  {
+	  eval $color='%{${fg[(L)color]}%}'
+	}
+	reset="%{$terminfo[sgr0]%}"
+	newline='
+'
+
+	local d line m mc md mod n=/dev/null
+	if [[ -n "$*" ]] {
+	  mod=($*)
+	} else {
+	  while read line
+	  do
+	      mod+=( ${line%% *})
+	  done </proc/modules
+	}
+	for m (${mod[@]})
+	{
+	  md=/sys/module/$m/parameters
+	  if [[ ! -d $md ]] { continue }
+	  d="$(modinfo -d $m 2>$n | tr '\n' '\t')"
+	  print -P $green$m$reset
+	  if [[ ${#d} -gt 0 ]] { print -P " - $d"}
+	  print
+	  declare pnames=() pdescs=() pvals=()
+	  local add_desc=false p pdesc pname
+	  while IFS="$newline" read p
+	  do
+	    if [[ $p =~ ^[[:space:]] ]] {
+		    pdesc+="$newline	$p"
+	    } else {
+		    $add_desc && pdescs+=("$pdesc")
+		    pname="${p%%:*}"
+		    pnames+=("$pname")
+		    pdesc=("	${p#*:}")
+		    pvals+=("$(cat $md/$pname 2>$n)")
+	    }
+	    add_desc=true
+	  done < <(modinfo -p $m 2>$n)
+	  $add_desc && pdescs+=("$pdesc")
+	  for ((i=0; i<${#pnames[@]}; i++))
+	  {
+	    if [[ -z ${pnames[i]} ]] { continue }
+	    print -P "  $cyan${pnames[i]}$reset = $yellow${pvals[i]}$reset\n${pdescs[i]}\n"
+	  }
+	  print
+	}
+}
+
+# vim:fenc=utf-8:ft=zsh:ci:pi:sts=4:sw=4:ts=4:

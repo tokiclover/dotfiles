@@ -30,7 +30,7 @@ URxvt*matcher.button: 1
 URxvt*geometry:       128x36
 URxvt.saveLines:      1000
 !-*- Trasperancy -*-
-URxvt*transparent: 	  False
+URxvt*transparent:    False
 URxvt*inheritPixmap:  False
 URxvt*shading:        30
 URxvt*tintColor:      #404040

@@ -8,7 +8,7 @@ set nocompatible
 
 " -------------------------------------------------- BEFORE
 for f in split(glob('~/.vim/before/*.vim'), '\n')
-	exe 'source' f
+	source f
 endfor
 
 " -------------------------------------------------- GLOBAL

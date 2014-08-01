@@ -6,8 +6,8 @@ $script "powersave" "auto" "auto" "min_power" "1" "0" "2500" "powersave"
 hprofile disk.quiet
 
 if [ -n "$DISPLAY" ]; then
-    xbacklight -set 30
-    xset dpms 300 400 600
+    xbacklight -set 20
+    xset dpms 200 400 600
 fi
 
 # vim:fenc=utf-8:ci:pi:sts=0:sw=4:ts=4:

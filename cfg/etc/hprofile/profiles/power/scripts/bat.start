@@ -6,7 +6,7 @@ $script "powersave" "auto" "auto" "min_power" "1" "0" "1500" "powersave"
 hprofile disk.bat
 
 if [ -n "$DISPLAY" ]; then
-    xbacklight -set 30
+    xbacklight -set 20
     xset dpms 300 400 600
 fi
 

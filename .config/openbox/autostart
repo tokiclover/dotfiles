@@ -1,0 +1,9 @@
+# $Id: ~/.config/openbox/autostart, 2014/07/31 -tclover $
+
+DESKTOP_ENV="OPENBOX"
+tint2 &
+#feh --bg-scale ~/pic/ &
+batti &
+numlockx &
+
+# vim:fenc=utf-8:ci:pi:sts=2:sw=2:ts=2:

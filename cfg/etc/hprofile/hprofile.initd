@@ -1,0 +1,30 @@
+#!/sbin/runscript
+# Copyright 1999-2014 Gentoo Foundation
+# Distributed under the terms of the 2-clause BSD or GPL-2 license
+# $Header: hprofile.initd,v 1.1 2014/07/31 13:05:23 -tclover Exp $
+
+depend() {
+	after modules
+}
+
+start() {
+	local vga=$(hpdet vga)
+	local pwr=$(hpdet pwr)
+	ebegin "Selecting hardware profile vga.$vga and power.$pwr"
+	hprofile vga.$vga
+	eend $?
+	hprofile power.$pwr
+	eend $?
+}
+
+stop() {
+	local vga=$(hpdet vga)
+	local pwr=$(hpdet power)
+	ebegin "Selecting hardware profile vga.$vga and power.$pwr"
+	hprofile -s vga 
+	eend $?
+	hprofile -s power
+	eend $?
+}
+
+# vim:fenc=utf-8:ft=gentoo-init-d:ci:pi:sts=0:sw=4:ts=4:

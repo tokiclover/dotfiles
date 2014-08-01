@@ -37,7 +37,9 @@ done
 [ -e /proc/sys/vm/dirty_writeback_centisecs ] &&
 	echo 2500 >/proc/sys/vm/dirty_writeback_centisecs
 
-xbacklight -set 15
-xset dpms 300 400 600
+if [ -n "$DISPLAY" ]; then
+    xbacklight -set 30
+    xset dpms 300 400 600
+fi
 
 # vim:fenc=utf-8:ci:pi:sts=0:sw=4:ts=4:

@@ -107,8 +107,8 @@ endif
 
 " -------------------------------------------------- KEYBINDINGS
 " disable forward / backward (tmux)
-noremap <c-b> <NOP>
-noremap <c-f> <NOP>
+"noremap <c-b> <NOP>
+"noremap <c-f> <NOP>
 
 " redraw screen
 nnoremap <leader>r <ESC>:redraw!<CR>

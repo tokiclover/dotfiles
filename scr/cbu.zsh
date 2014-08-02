@@ -1,5 +1,5 @@
 #!/bin/zsh
-# $Id: ~/scripts/cbu.zsh,v 1.0 2014/07/07 23:44:53 -tclover Exp $
+# $Id: ~/scr/cbu.zsh,v 1.0 2014/07/31 23:44:53 -tclover Exp $
 
 usage() {
   cat <<-EOF

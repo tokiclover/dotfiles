@@ -1,5 +1,5 @@
 #!/bin/sh
-# $Id: $HOME/scripts/xtr,v 2014/07/07 14:00:26 -tclover Exp $
+# $Id: ~/scr/xtr,v 2014/07/31 14:00:26 -tclover Exp $
 
 # @SCRIPT: xtr
 # @DESCRIPTION: eXTRact archives or tarball archives

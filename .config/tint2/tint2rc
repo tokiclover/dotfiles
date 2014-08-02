@@ -10,13 +10,13 @@ border_color = #323232 100
 rounded = 0
 border_width = 1
 background_color = #181818 95
-border_color = #245f99 80
+border_color = #245f99 90
 
 #-*-ID#3
 rounded = 0
 border_width = 1
-background_color = #484848 90
-border_color = #383838 90
+background_color = #484848 95
+border_color = #383838 95
 
 #-*-Panel
 panel_monitor = all
@@ -65,7 +65,7 @@ task_font = Cousine 8
 task_font_color = #fafafa 100
 task_active_font_color = #245f99 100
 task_urgent_font_color = #345f99 100
-task_iconified_font_color = #eaeaea 100
+task_iconified_font_color = #1a1a1a 100
 font_shadow = 0
 
 #-*-System-Tray
@@ -83,17 +83,18 @@ time2_format = %A %d %B
 time2_font = Cousine 8
 clock_font_color = #fafafa 100
 clock_padding = 1 0
-clock_background_id = 1
-clock_rclick_command = orage
+clock_background_id = 3
+clock_rclick_command = xclock -digital -fg '#245f99' -bg '#101010'
+clock_tooltip = %a, %d. %b %Y
 
 #-*-Tooltips
-tooltip = 0
+tooltip = 1
 tooltip_padding = 2 2
 tooltip_show_timeout = 0.7
 tooltip_hide_timeout = 0.3
-tooltip_background_id = 1
-tooltip_font = sans 10
-tooltip_font_color = #aaaaaa 90
+tooltip_background_id = 2
+tooltip_font = Cousine 8
+tooltip_font_color = #245f99 90
 
 #-*-Mouse
 mouse_middle = none
@@ -102,14 +103,14 @@ mouse_scroll_up = toggle
 mouse_scroll_down = iconify
 
 #-*-Battery
-battery = 0
+battery = 1
 battery_low_status = 10
 battery_low_cmd = notify-send "battery low"
 battery_hide = 98
 bat1_font = Cousine 8
-bat2_font = Cousine 6
+bat2_font = Cousine 8
 battery_font_color = #fafafa 90
 battery_padding = 1 0
-battery_background_id = 1
+battery_background_id = 3
 
 #-*-EOC

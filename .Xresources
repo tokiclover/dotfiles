@@ -119,8 +119,8 @@ Xcursor.size:        22
 Xclock*faceName:          Terminus:pixelsize=8
 Xclock*update:            1
 Xclock*analog:            false
-Xclock*Foreground:        white
-Xclock*background:        black
+Xclock*Foreground:        #245f99
+Xclock*background:        #101010
 !-*-}
 
 !-*-{ Xcalc

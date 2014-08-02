@@ -1,5 +1,5 @@
 #!/bin/zsh
-# $Id: ~/scripts/fhp.zsh,v 1.5 2014/07/22 21:09:26 -tclover Exp $
+# $Id: ~/scr/fhp.zsh,v 1.5 2014/07/31 21:09:26 -tclover Exp $
 #
 # @DESCRIPTION: set firefox profile dir to tmpfs or zram backed fs
 #

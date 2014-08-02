@@ -1,5 +1,5 @@
 #!/bin/bash
-# $Id: ~/scripts/fhp.bash,v 1.5 2014/07/26 21:09:26 -tclover Exp $
+# $Id: ~/scr/fhp.bash,v 1.5 2014/07/31 21:09:26 -tclover Exp $
 #
 # @DESCRIPTION: set firefox profile dir to tmpfs or zram backed fs
 #

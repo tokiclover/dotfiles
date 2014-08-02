@@ -11,7 +11,7 @@ usage() {
   -t, -target <url>      use url src to use instead using a file target
   -g, -gpg [<url.asc>]   use url to get pub key or use <file.asc> if -f,
                          default to <url.asc> if <use.asc> not specified
-  -x, -xtr [</path/xtr>] path to xtr script, default to '~/scripts/xtr'
+  -x, -xtr [</path/xtr>] path to xtr script, default to '~/scr/xtr'
   -r, -raw               data file is raw file with only usable data
   -a, -archive           data file is an archive or tarball file
   -h, -help              print this help/usage and exit

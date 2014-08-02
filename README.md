@@ -1,4 +1,4 @@
-`$Id: dotfiles/README.textile, 2014/07/22 18:11:51 -tclover Exp $`
+`$Id: dotfiles/README.textile, 2014/07/31 18:11:51 -tclover Exp $`
 
 ---
 
@@ -13,7 +13,7 @@ another _dotfiles_ repository
 `% cd ~/.oh-my-zsh && git checkout my-zsh`
 * and then exec your shell with `% exec $SHELL`
 
-# .scripts: extra info
+# .scr: scripts extra info
 
 * cbu: is a simple script to back up/restore cfg files or directories;
 * fhp: is a simple script which put firefox profile into tmpfs/zram backed FS (dep: functions.$shell);
@@ -28,6 +28,7 @@ another _dotfiles_ repository
 * term'*': terminal colors display scripts;
 * zram.initd: a init service to initialize zram devices.
 * zramdir.initd: an init svc which can put several directories (var/{log,run,lock}..) into zram backed fs.
+* xtr: stand for eXtract TaRball, just run with a list of tarball to extract;
 
 [my-zsh]: https://github.com/tokiclover/oh-my-zsh
 [oh-my-zsh]: https://github.com/robbyrussell/oh-my-zsh

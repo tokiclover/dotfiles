@@ -1,5 +1,5 @@
 #!/bin/bash 
-# $Id: ~/scripts/termcolors.bash, 2014/07/07 $
+# $Id: ~/scr/termcolors.bash, 2014/07/31 $
 
 # This file echoes a bunch of color codes to the 
 # terminal to demonstrate what's available.  Each 

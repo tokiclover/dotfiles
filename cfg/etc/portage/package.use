@@ -1,0 +1,66 @@
+app-doc/doxygen dot
+app-text/docbook-sgml-utils jadetex
+x11-libs/libxcb xkb
+media-libs/mesa gbm
+app-portage/layman subversion
+dev-vcs/git subvervion
+sys-auth/pambase mktemp pam_krb5 pam_ssh
+sys-devel/gcc awt fortran gcj objc objc++ objc-gc
+sys-devel/llvm gold
+media-libs/mesa openmax openvg xa
+dev-libs/apr-util ldap
+net-nds/openldap sasl
+sys-kernel/git-sources:3.14.12 -aufs -bfq bfs ck fbcondecor -gentoo -hardened optimization reiser4 toi uksm
+sys-kernel/git-sources:3.12.24 -aufs -bfq bfs ck fbcondecor -gentoo -hardened optimization reiser4 toi uksm
+sys-kernel/mkinitramfs-ll bash btrfs cryptsetup dmraid jfs mdadm reiserfs squashfs xfs zfs zram zsh 
+dev-libs/cyrus-sasl ldapdb
+sys-fs/cryptsetup -gcrypt
+sys-apps/busybox mdev
+net-libs/gnutls pkcs11
+net-firewall/ipset -modules
+sys-fs/eudev gudev
+virtual/udev gudev
+x11-libs/libdrm libkms
+x11-drivers/nvidia-drivers uvm
+x11-terms/rxvt-unicode 256-color blink
+x11-misc/tint2 battery tint2conf
+
+net-dialup/ppp eap-tls
+net-wireless/wpa_supplicant eap-sim gnutls
+net-dns/dnsmasq uth-dns dhcp-tools dnssec
+net-misc/networkmanager bluetooth connection-sharing dhcpcd gnutls modemmanager -nss resolvconf
+gnome-base/gvfs archive blurey mtp udisks
+
+sys-apps/lm_sensors sensord
+x11-themes/e-gtk-theme -gnome minimal openbox
+media-video/mpv bluray bs2b dvdnav encode lua luajit vaapi vf-dlopen
+media-video/mplayer2 bluray bs2b md5sum mmxext pnm tga yuv4mpeg
+media-video/ffmpeg cdio faac frei0r mmxext schroedinger sse4 vaapi vpx x265
+media-video/libav cdio faac frei0r mmxext schroedinger vaapi vpx
+
+media-libs/libpng apng
+media-sound/ncmpcpp taglib visualizer
+media-gfx/imagemagick corefonts hdri
+media-gfx/ufraw contrast gimp
+app-text/evince xps
+net-p2p/rtorrent daemon
+net-misc/tor nat-pmp tor-hardening transparent-proxy
+dev-java/icedtea -javascript
+app-office/libreoffice java jemalloc
+www-client/firefox custom-cflags custom-optimization jit system-cairo system-icu system-jpeg system-sqlite
+net-libs/neon gnutls libproxy pkcs11
+app-emulation/qemu sasl smartcard tls virtfs vhost-net
+dev-db/sqlite secure-delete
+net-print/cups ppds
+media-libs/gegl raw
+media-sound/deadbeef alac midi
+media-sound/wildmidi -oss
+dev-libs/efl drm fribidi harfbuzz jp2k physics sound xim -wayland -egl -gles 
+x11-wm/enlightenment -wayland
+media-libs/elementary -wayland
+media-video/x264-encoder avs custom-cflags
+x11-libs/libfm udisks
+x11-themes/efenniht minimal
+x11-themes/ardoise-xcursor-theme minimal
+media-fonts/unifont utils
+net-libs/loudmouth debug

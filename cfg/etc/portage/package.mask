@@ -1,0 +1,5 @@
+sys-fs/udev
+sys-apps/systemd
+lxde-base/lxpolkit
+#>app-cdr/brasero-3.0
+>gnome-extra/gnome-color-manager-3.0

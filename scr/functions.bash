@@ -1,6 +1,6 @@
 # $Id: ~/scr/functions.bash, 2014/07/31 12:59:26 -tclover Exp $
 
-[[ -f ~/scripts/functions ]] && source ~/scripts/functions
+[[ -f ~/scr/functions ]] && source ~/scr/functions
 
 # @FUNCTION: die
 # @DESCRIPTION: hlper function, print error message to stdout

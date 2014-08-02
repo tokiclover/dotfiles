@@ -1,5 +1,5 @@
 #!/bin/bash
-# $Id: ~/scripts/ips.bash, 2.0 2014/07/31 13:56:21 -tclover Exp $
+# $Id: ~/scr/ips.bash, 2.0 2014/07/31 13:56:21 -tclover Exp $
 usage() {
   cat <<-EOF
   usage: ${0##*/}  [-f|-file <file>] [-t|-target <url>] [OPTIONS]
@@ -150,7 +150,7 @@ fi
 newtime=$(get_time)
 if [[ $newtime != $oldtime ]]; then
 	if [[ -n "$ARCHIVE" ]]; then
-		[[ -n "${opts[xtr]}" ]] || opts[xtrr]="~/scripts/xtr"
+		[[ -n "${opts[xtr]}" ]] || opts[xtrr]="~/scr/xtr"
 		[[ -x "${opts[xtr]}" ]] || die "xtr script not found"
 		tmpdir=$(mktemp -d ips-XXXXXX)
 		pushd $tmpdir >/dev/null 2>&1 || die "failed to make a $tmpdir"

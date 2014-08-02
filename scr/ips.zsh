@@ -1,5 +1,5 @@
 #!/bin/zsh
-# $Id: ~/.scripts/ips.zsh,v 2.0 2014/07/31 14:56:24 -tclover Exp $
+# $Id: ~/.scr/ips.zsh,v 2.0 2014/07/31 14:56:24 -tclover Exp $
 usage() {
   cat <<-EOF
   usage: ${(%):-%1x} [-f|-file <file>] [-t|-target <url>] [OPTIONS]
@@ -50,7 +50,7 @@ if [[ -n ${(k)opts[-o]} ]] || [[ -n ${(k)opts[-logger]} ]] {
 if [[ -n ${(k)opts[-r]} ]] || [[ -n ${(k)opts[-raw]} ]] { RAW=true }
 if [[ -n ${(k)opts[-a]} ]] || [[ -n ${(k)opts[-archive]} ]] { ARCHIVE=true }
 : 	${opts[-datadir]:=${opts[-d]:-/var/lib/ipset}}
-:	${opts[-xtr]:=${opts[-x]:-~/scripts/xtr}}
+:	${opts[-xtr]:=${opts[-x]:-~/scr/xtr}}
 :	${opts[-params]:=${opts[-p]:-hash:net hashsize 64}}
 if [[ -n ${(k)opts[-dshield]} ]] {
 	opts[-target]="https://feeds.dshield.org/block.txt"

@@ -29,12 +29,9 @@ ladi-system-tray > ~/.log/ladi/ladi.log 2>&1 &
 urxvtd -q -o -f &
 
 case $(tty | cut -b9-) in
-	1) exec ck-launch-session dbus-launch --sh-syntax --exit-with-session enlightenment_start
-		;;
-	2) exec ck-launch-session dbus-launch --sh-syntax --exit-with-session lxsession
-		;;
-	3) exec ck-launch-session dbus-launch --sh-syntax --exit-with-session openbox-session
-		;;
+	1) exec ck-launch-session dbus-launch --sh-syntax --exit-with-session enlightenment_start;;
+	2) exec ck-launch-session dbus-launch --sh-syntax --exit-with-session lxsession          ;;
+	3) exec ck-launch-session dbus-launch --sh-syntax --exit-with-session openbox-session  	 ;;
 esac
 
-# vim:fenc=utf-8:ci:pi:sts=0:sw=4:ts=4:
+# vim:fenc=utf-8:ft=sh:ci:pi:sts=2:sw=2:ts=2:

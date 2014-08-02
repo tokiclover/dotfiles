@@ -1,5 +1,5 @@
 #!/bin/zsh
-# $Id: ~/scripts/mkstage4.zsh,v 1.3 2014/07/07 13:08:56 -tclover Exp $
+# $Id: ~/scr/mkstage4.zsh,v 1.3 2014/07/31 13:08:56 -tclover Exp $
 usage() {
   cat <<-EOF
   usage: ${(%):-%1x} [OPTIONS...]

@@ -1,4 +1,4 @@
-# $Id: ~/.xinitrc, 2015/07/22 15:32:37 -tclover Exp $
+# $Id: ~/.xinitrc, 2015/07/31 15:32:37 -tclover Exp $
 
 dbus-launch --sh-syntax --exit-with-session nm-applet --sm-disable &
 dbus-launch --sh-syntax --exit-with-session gcm-session &
@@ -21,10 +21,9 @@ setbacklight -set 20
 #setxkbmap -model pc102 -layout fr -variant ,oss,latin9,oss_latin9 \
 #	-option grp:shift_caps_toggle,keypad:future,terminate:ctrl_alt_bksp
 #xrdb -merge ~/.Xdefaults
-#[[ -f ~/.xcolors/sj-bright ]] && xrdb -merge ~/.xcolors/sj-bright
-[[ -f ~/.Xmodmap ]] && xmodmap ~/.Xmodmap
-
-#xcalib -gc 1.0 -b 0.0 -co 100.0 ~/.icc/sRGB_v4_ICC_preference.icc
+#xrdb -merge ~/.xcolor/sj-bright
+[ -f ~/.Xmodmap ] && xmodmap ~/.Xmodmap
+#xcalib -gc 1.0 -b 0.0 -co 100.0 ~/.color/icc/sRGB_v4_ICC_preference_displayclass.icc
 unclutter -idle 8 -noevents &
 ladi-system-tray > ~/.log/ladi/ladi.log 2>&1 &
 urxvtd -q -o -f &

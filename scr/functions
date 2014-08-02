@@ -1,4 +1,4 @@
-# $Id: $HOME/scripts/functions, 2014/07/31 11:59:26 -tclover Exp $
+# $Id: ~/scr/functions, 2014/07/31 11:59:26 -tclover Exp $
 
 # @FUNCTION: xkc
 # @DESCRIPTION: simple Xev KeyCode

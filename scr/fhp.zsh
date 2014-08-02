@@ -19,7 +19,7 @@
 # you should have this one already, just put it to tmpfs with something like:
 # /etc/fstab: tmp	/tmp	tmpfs	mode=1777,size=256M,noatime	0 0
 
-source ~/scripts/functions.zsh || return 1
+source ~/scr/functions.zsh || return 1
 
 fhp_init() {
 :	${FHPDIR:=$(print ~/.mozilla/firefox/*.default 2>/dev/null)}

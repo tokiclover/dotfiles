@@ -3,7 +3,7 @@
 #
 # @DESCRIPTION: set firefox profile dir to tmpfs or zram backed fs
 #
-# And maybe something like: */30 * * * * $USER ~/scripts/fhp.zsh
+# And maybe something like: */30 * * * * $USER ~/scr/fhp.zsh
 # in cron job to keep track of changes is necessary.
 # lz4 compressed is required, or else, edit to your needs
 

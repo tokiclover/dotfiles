@@ -1,5 +1,5 @@
 #!/bin/zsh
-# $Id: ~/scripts/kvm.bash, 2014/07/07 11:44:37 -tclover Exp $
+# $Id: ~/scr/kvm.bash, 2014/07/31 11:44:37 -tclover Exp $
 usage() {
   cat <<-EOF
   usage: ${(%):-%1x} [OPTIONS]

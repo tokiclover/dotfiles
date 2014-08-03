@@ -1,31 +1,34 @@
 #!/sbin/runscript
 # Copyright 1999-2014 Gentoo Foundation
 # Distributed under the terms of the 2-clause BSD or GPL-2 license
-# $Header: hprofile.initd,v 1.1 2014/07/31 13:05:23 -tclover Exp $
+# $Header: hprofile.initd,v 1.2 2014/08/01 13:05:23 -tclover Exp $
+
+config_file="/etc/conf.d/${SVCNAME}"
+description="initialize hprofile boot profiles"
 
 depend() {
 	after modules
 }
 
 start() {
-	local vga=$(hpdet vga)
-	local pwr=$(hpdet pwr)
-	ebegin "Selecting hardware profile vga.$vga and power.$pwr"
-	hprofile vga.$vga
-	eend $?
-	hprofile power.$pwr
-	eend $?
+	local profile value
+	for profile in $HPROFILE; do
+	    value=$(hpdet $profile)
+	    ebegin "Selecting $profile profile $value"
+	    hprofile $hprofile.$value
+	    eend "$?" "Failed to start $profile.$value profile"
+	done
 	return 0
 }
 
 stop() {
-	local vga=$(hpdet vga)
-	local pwr=$(hpdet power)
-	ebegin "Selecting hardware profile vga.$vga and power.$pwr"
-	hprofile -s vga 
-	eend $?
-	hprofile -s power
-	eend $?
+	local profile
+	for profile in $HPROFILE; do
+	    ebegin "Stoping $profile profile"
+	    hprofile -s $hprofile
+	    eend "$?" "Failed to stop $profile profile"
+	done
+	return 0
 }
 
 # vim:fenc=utf-8:ft=gentoo-init-d:ci:pi:sts=0:sw=4:ts=4:

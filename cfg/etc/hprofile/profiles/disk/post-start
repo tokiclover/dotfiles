@@ -1,5 +1,5 @@
 #!/bin/sh
-for dev in $(ls -d /sys/devices/pci*/*/ata*/host*/target*/*/block/sd[a-z]); do
+for dev in $(/etc/hprofile/profiles/disk/ata); do
     echo cfq  >/sys/block/${dev##*/}/queue/scheduler
     echo 0    >/sys/block/${dev##*/}/queue/iosched/slice_idle
     echo 64   >/sys/block/${dev##*/}/queue/iosched/quantum

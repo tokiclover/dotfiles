@@ -1,7 +1,8 @@
-# $Id: ~/.xinitrc, 2015/07/31 15:32:37 -tclover Exp $
+# $Id: ~/.xinitrc, 2015/08/01 15:32:37 -tclover Exp $
 
-dbus-launch --sh-syntax --exit-with-session nm-applet --sm-disable &
-dbus-launch --sh-syntax --exit-with-session gcm-session &
+launch="dbus-launch --sh-syntax --exit-with-session"
+$launch nm-applet --sm-disable &
+$launch gcm-session &
 eval $(gnome-keyring-daemon --daemonize --components=pkcs11,secrets,ssh,gpg)
 echo GNOME_KEYRING_PID=$GNOME_KEYRING_PID >/tmp/.private/$USER/keyring/env
 echo GNOME_KEYRING_CONTROL=$GNOME_KEYRING_CONTROL >>/tmp/.private/$USER/keyring/env
@@ -28,10 +29,11 @@ unclutter -idle 8 -noevents &
 ladi-system-tray > ~/.log/ladi/ladi.log 2>&1 &
 urxvtd -q -o -f &
 
+launch="ck-launch-session $launch"
 case $(tty | cut -b9-) in
-	1) exec ck-launch-session dbus-launch --sh-syntax --exit-with-session enlightenment_start;;
-	2) exec ck-launch-session dbus-launch --sh-syntax --exit-with-session lxsession          ;;
-	3) exec ck-launch-session dbus-launch --sh-syntax --exit-with-session openbox-session  	 ;;
+	1) exec $launch enlightenment_start;;
+	2) exec $launch lxsession          ;;
+	3) exec $launch openbox-session    ;;
 esac
 
 # vim:fenc=utf-8:ft=sh:ci:pi:sts=2:sw=2:ts=2:

@@ -2,6 +2,6 @@ x11-wm/openbox
 x11-misc/openbox-menu
 x11-misc/obconf
 x11-misc/obmenu
-x11-misc/numlockx
 media-gfx/feh
 app-laptop/batti
+x11-misc/netwmpager::bar

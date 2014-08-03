@@ -10,4 +10,7 @@ media-gfx/gpicview
 media-gfx/pqiv
 media-gfx/qiv
 
+app-cdr/brasero
+gnome-extra/gnome-color-manager
 gnome-extra/gcalctool
+media-sound/gmpc

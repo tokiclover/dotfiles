@@ -15,7 +15,7 @@ start() {
 	for profile in $HPROFILE; do
 	    value=$(hpdet $profile)
 	    ebegin "Selecting $profile profile $value"
-	    hprofile $hprofile.$value
+	    hprofile $profile.$value
 	    eend "$?" "Failed to start $profile.$value profile"
 	done
 	return 0
@@ -25,7 +25,7 @@ stop() {
 	local profile
 	for profile in $HPROFILE; do
 	    ebegin "Stoping $profile profile"
-	    hprofile -s $hprofile
+	    hprofile -s $profile
 	    eend "$?" "Failed to stop $profile profile"
 	done
 	return 0

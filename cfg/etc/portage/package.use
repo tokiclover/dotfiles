@@ -5,7 +5,7 @@ media-libs/mesa gbm
 app-portage/layman subversion
 dev-vcs/git subvervion
 sys-auth/pambase mktemp pam_krb5 pam_ssh
-sys-devel/gcc awt fortran gcj objc objc++ objc-gc
+sys-devel/gcc abi_x86_32 -awt fortran gcj objc objc++ objc-gc
 sys-devel/llvm gold
 media-libs/mesa openmax openvg xa
 dev-libs/apr-util ldap
@@ -27,13 +27,13 @@ x11-misc/tint2 battery tint2conf
 
 net-dialup/ppp eap-tls
 net-wireless/wpa_supplicant eap-sim gnutls
-net-dns/dnsmasq uth-dns dhcp-tools dnssec
+net-dns/dnsmasq uth-dns dhcp-tools dnssec script
 net-misc/networkmanager bluetooth connection-sharing dhcpcd gnutls modemmanager -nss resolvconf
 gnome-base/gvfs archive blurey mtp udisks
 
 sys-apps/lm_sensors sensord
 x11-themes/e-gtk-theme -gnome minimal openbox
-media-video/mpv bluray bs2b dvdnav encode lua luajit vaapi vf-dlopen
+media-video/mpv bluray bs2b dvdnav encode vaapi vf-dlopen
 media-video/mplayer2 bluray bs2b md5sum mmxext pnm tga yuv4mpeg
 media-video/ffmpeg cdio faac frei0r mmxext schroedinger sse4 vaapi vpx x265
 media-video/libav cdio faac frei0r mmxext schroedinger vaapi vpx
@@ -64,3 +64,136 @@ x11-themes/efenniht minimal
 x11-themes/ardoise-xcursor-theme minimal
 media-fonts/unifont utils
 net-libs/loudmouth debug
+
+#-*-multilib-*-gtk-libs-dep
+app-accessibility/at-spi2-atk abi_x86_32
+app-accessibility/at-spi2-core abi_x86_32
+dev-libs/atk abi_x86_32
+dev-libs/libIDL abi_x86_32
+gnome-base/gconf abi_x86_32
+gnome-base/gnome-vfs abi_x86_32
+gnome-base/libglade abi_x86_32
+gnome-base/orbit abi_x86_32
+media-gfx/graphite2 abi_x86_32
+media-libs/harfbuzz abi_x86_32
+media-libs/imlib abi_x86_32
+x11-libs/cairo abi_x86_32
+x11-libs/gdk-pixbuf abi_x86_32
+x11-libs/gtk+ abi_x86_32
+x11-libs/gtk+ abi_x86_32
+x11-libs/gtk+ abi_x86_32
+x11-libs/libnotify abi_x86_32
+x11-libs/pango abi_x86_32
+x11-libs/pangox-compat abi_x86_32
+x11-libs/pixman abi_x86_32
+x11-themes/gtk-engines abi_x86_32
+x11-themes/gtk-engines-murrine abi_x86_32
+x11-themes/gtk-engines-xfce abi_x86_32
+x11-themes/gtk-engines-xfce abi_x86_32
+#-*-multilib-*-opengl-dep
+media-libs/freeglut abi_x86_32
+media-libs/glew abi_x86_32
+media-libs/glu abi_x86_32
+media-libs/mesa abi_x86_32
+x11-libs/libdrm abi_x86_32
+#-*-multilib-*-x-libs
+media-libs/fontconfig abi_x86_32
+media-libs/freetype abi_x86_32
+x11-libs/libICE abi_x86_32
+x11-libs/libSM abi_x86_32
+x11-libs/libX11 abi_x86_32
+x11-libs/libXScrnSaver abi_x86_32
+x11-libs/libXau abi_x86_32
+x11-libs/libXaw abi_x86_32
+x11-libs/libXcomposite abi_x86_32
+x11-libs/libXcursor abi_x86_32
+x11-libs/libXdamage abi_x86_32
+x11-libs/libXdmcp abi_x86_32
+x11-libs/libXext abi_x86_32
+x11-libs/libXfixes abi_x86_32
+x11-libs/libXft abi_x86_32
+x11-libs/libXi abi_x86_32
+x11-libs/libXinerama abi_x86_32
+x11-libs/libXmu abi_x86_32
+x11-libs/libXp abi_x86_32
+x11-libs/libXpm abi_x86_32
+x11-libs/libXrandr abi_x86_32
+x11-libs/libXrender abi_x86_32
+x11-libs/libXt abi_x86_32
+x11-libs/libXtst abi_x86_32
+x11-libs/libXv abi_x86_32
+x11-libs/libXvMC abi_x86_32
+x11-libs/libXxf86dga abi_x86_32
+x11-libs/libXxf86vm abi_x86_32
+x11-libs/libpciaccess abi_x86_32
+x11-libs/libvdpau abi_x86_32
+x11-libs/libxcb abi_x86_32
+x11-proto/scrnsaverproto abi_x86_32
+#-*-abi_x86_32-dep
+x11-proto/xf86vidmodeproto abi_x86_32
+dev-libs/libffi abi_x86_32
+x11-libs/libxshmfence abi_x86_32
+x11-proto/dri3proto abi_x86_32
+virtual/udev abi_x86_32
+dev-libs/icu abi_x86_32
+sys-libs/ncurses abi_x86_32
+x11-proto/inputproto abi_x86_32
+sys-fs/eudev abi_x86_32
+sys-apps/attr abi_x86_32
+dev-libs/libpthread-stubs abi_x86_32
+dev-libs/glib abi_x86_32
+dev-util/pkgconfig abi_x86_32
+x11-proto/glproto abi_x86_32
+virtual/pkgconfig abi_x86_32
+app-arch/bzip2 abi_x86_32
+sys-apps/keyutils abi_x86_32
+virtual/libffi abi_x86_32
+virtual/opengl abi_x86_32
+x11-proto/kbproto abi_x86_32
+sys-libs/gpm abi_x86_32
+sys-apps/dbus abi_x86_32
+virtual/libgudev abi_x86_32
+x11-proto/randrproto abi_x86_32
+app-crypt/mit-krb5 abi_x86_32 -openldap -pkinit
+net-print/cups abi_x86_32
+media-libs/libjpeg-turbo abi_x86_32
+sys-libs/zlib abi_x86_32
+x11-proto/xineramaproto abi_x86_32
+sys-libs/e2fsprogs-libs abi_x86_32
+x11-proto/damageproto abi_x86_32
+dev-libs/openssl abi_x86_32
+media-libs/jasper abi_x86_32
+x11-proto/xf86bigfontproto abi_x86_32
+x11-proto/xextproto abi_x86_32
+virtual/krb5 abi_x86_32
+dev-libs/lzo abi_x86_32
+media-libs/jbigkit abi_x86_32
+x11-proto/xproto abi_x86_32
+x11-proto/fixesproto abi_x86_32
+dev-libs/wayland abi_x86_32
+x11-proto/compositeproto abi_x86_32
+x11-proto/videoproto abi_x86_32
+virtual/jpeg abi_x86_32
+dev-libs/libverto abi_x86_32
+x11-proto/xcb-proto abi_x86_32
+net-nds/openldap abi_x86_32
+virtual/libiconv abi_x86_32
+x11-proto/presentproto abi_x86_32
+media-libs/libpng abi_x86_32
+app-arch/xz-utils abi_x86_32
+x11-proto/dri2proto abi_x86_32
+x11-proto/renderproto abi_x86_32
+media-libs/libomxil-bellagio abi_x86_32
+media-libs/tiff abi_x86_32
+x11-proto/xf86driproto abi_x86_32
+dev-libs/expat abi_x86_32
+sys-devel/llvm abi_x86_32
+virtual/libudev abi_x86_32
+dev-libs/libev abi_x86_32
+virtual/glu abi_x86_32
+x11-proto/recordproto abi_x86_32
+sys-apps/util-linux abi_x86_32
+dev-libs/dbus-glib abi_x86_32
+x11-proto/printproto abi_x86_32
+dev-libs/libxml2 abi_x86_32
+net-wireless/hostapd madwifi

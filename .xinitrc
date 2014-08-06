@@ -1,14 +1,12 @@
-# $Id: ~/.xinitrc, 2015/08/01 15:32:37 -tclover Exp $
+# $Id: ~/.xinitrc, 2014/08/06 15:32:37 -tclover Exp $
 
 launch="dbus-launch --sh-syntax --exit-with-session"
 $launch nm-applet --sm-disable &
 $launch gcm-session &
 eval $(gnome-keyring-daemon --daemonize --components=pkcs11,secrets,ssh,gpg)
-echo GNOME_KEYRING_PID=$GNOME_KEYRING_PID >/tmp/.private/$USER/keyring/env
-echo GNOME_KEYRING_CONTROL=$GNOME_KEYRING_CONTROL >>/tmp/.private/$USER/keyring/env
 echo SSH_AUTH_SOCK=$SSH_AUTH_SOCK >>/tmp/.private/$USER/keyring/env
 echo GPG_AGENT_INFO=$GPG_AGENT_INFO >>/tmp/.private/$USER/keyring/env
-export GNOME_KEYRING_PID GNOME_KEYRING_CONTROL SSH_AUTH_SOCK GPG_AGENT_INFO
+export SSH_AUTH_SOCK GPG_AGENT_INFO
 /usr/libexec/polkit-gnome-authentication-agent-1 &
 
 xset s off

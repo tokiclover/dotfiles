@@ -4,6 +4,5 @@ DESKTOP_ENV="OPENBOX"
 tint2 &
 #feh --bg-scale ~/pic/ &
 batti &
-numlockx &
 
-# vim:fenc=utf-8:ci:pi:sts=2:sw=2:ts=2:
+# vim:fenc=utf-8:ft=sh:ci:pi:sts=2:sw=2:ts=2:

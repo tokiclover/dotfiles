@@ -75,7 +75,7 @@ set history=50
 set modeline
 set noswapfile
 set tags=./.tags;/
-set viminfo='20,\"500
+set viminfo="NONE"
 
 " formating
 set autoindent    " automatically indent lines

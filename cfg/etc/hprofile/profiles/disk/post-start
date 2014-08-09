@@ -1,10 +1,10 @@
 #!/bin/sh
 for dev in $(/etc/hprofile/profiles/disk/ata); do
-    echo cfq  >/sys/block/$dev/queue/scheduler
-    echo 0    >/sys/block/$dev/queue/iosched/slice_idle
-    echo 64   >/sys/block/$dev/queue/iosched/quantum
+    echo cfq  >$dev/queue/scheduler
+    echo 0    >$dev/queue/iosched/slice_idle
+    echo 64   >$dev/queue/iosched/quantum
     # more opitmizations with ncq
-    echo 1024 >/sys/block/$dev/queue/nr_requests
-    echo 2    >/sys/block/$dev/device/queue_depth
+    echo 1024 >$dev/queue/nr_requests
+    echo 2    >$dev/device/queue_depth
 done
 # vim:fenc=utf-8:ft=sh:ci:pi:sts=0:sw=4:ts=4:

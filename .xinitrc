@@ -1,4 +1,4 @@
-# $Id: ~/.xinitrc, 2014/08/06 15:32:37 -tclover Exp $
+# $Id: ~/.xinitrc, 2014/08/08 15:32:37 -tclover Exp $
 
 launch="dbus-launch --sh-syntax --exit-with-session"
 $launch nm-applet --sm-disable &
@@ -10,13 +10,11 @@ export SSH_AUTH_SOCK GPG_AGENT_INFO
 /usr/libexec/polkit-gnome-authentication-agent-1 &
 
 xset s off
-xset fp+ /usr/share/fonts/TTF-FD/
 xset fp+ /usr/share/fonts/artwiz-latin1
-xset fp+ /usr/share/fonts/artwiz-aleczapka-en
 xset fp+ /usr/share/fonts/terminus
 xset fp rehash
 xrdb -load ~/.Xresources
-setbacklight -set 20
+xbacklight -set 20
 #setxkbmap -model pc102 -layout fr -variant ,oss,latin9,oss_latin9 \
 #	-option grp:shift_caps_toggle,keypad:future,terminate:ctrl_alt_bksp
 #xrdb -merge ~/.Xdefaults

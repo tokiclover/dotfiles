@@ -26,6 +26,9 @@ call pathogen#infect('/usr/share/vim/vim74/plugin/{}')
 call pathogen#infect('/usr/share/vim/vimfiles/plugin/{}')
 call pathogen#infect('~/.vim/plugin/{}')
 
+" -------------------------------------------------- PLUGIN
+let g:yankring_history_dir='~/.vim/runtime'
+
 " -------------------------------------------------- BASICS
 " settings
 scriptencoding utf-8
@@ -35,7 +38,6 @@ set ruler
 
 filetype off
 
-filetype plugin indent on
 syntax on
 set shell=zsh
 

@@ -1,4 +1,4 @@
-`$Id: dotfiles/README.textile, 2014/07/31 18:11:51 -tclover Exp $`
+`$Id: dotfiles/README.textile, 2014/08/08 18:11:51 -tclover Exp $`
 
 ---
 
@@ -29,6 +29,8 @@ another _dotfiles_ repository
 * zram.initd: a init service to initialize zram devices.
 * zramdir.initd: an init svc which can put several directories (var/{log,run,lock}..) into zram backed fs.
 * xtr: stand for eXtract TaRball, just run with a list of tarball to extract;
+* bfd-plugins: switch ld plugin beetwen LLVMgold.so and GCC liblto_plugin.so,
+    beware to switch to bfd or gold beforehand (using: binutils-config --linker bfd).
 
 [my-zsh]: https://github.com/tokiclover/oh-my-zsh
 [oh-my-zsh]: https://github.com/robbyrussell/oh-my-zsh

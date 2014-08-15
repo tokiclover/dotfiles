@@ -1,25 +1,27 @@
-"#!/sbin/runscript
+#!/sbin/runscript
 # Copyright 1999-2014 Gentoo Foundation
 # Distributed under the terms of the 2-clause BSD or GPL-2 license
-# $Header: ~/scr/zramdir.initd,v 3.1 2014/07/31 13:05:23 -tclover Exp $
+# $Header: ~/scr/zramdir.initd,v 3.1 2014/08/08 13:05:23 -tclover Exp $
 
 conf_file="/etc/conf.d/${SVCNAME}"
 description="use zram and optional tarball archive for directories /var/{log,...}"
 
-depend() {
-	need localmount zram
-	before bootmisc acpid
+depend()
+{
+	need zram
 }
 
-start() {
+start()
+{
 	local IFS=":${IFS}"
 	
-	if ! grep $zram_root /proc/mounts >/dev/null 2>&1; then
+	if ! grep -q $zram_root /proc/mounts; then
 		eend "${?}" "no suitable zram backed root dir found"
+		return
 	fi
 	
-	for dir in ${comp_dir}; do
-		chk "${dir}"
+	for dir in ${compressed_dir}; do
+		chkdir "${dir}"
 	done
 	
 	for dir in ${compressed_dir} ${uncompressed_dir}; do
@@ -32,31 +34,30 @@ start() {
 	done
 }
 
-stop() {
+stop()
+{
 	local IFS=":${IFS}"
 	for dir in ${compressed_dir}; do
 		inflate "${dir}" "${zram_root}"
 	done
 }
 
-chk() {
-	if [ -e "${1}.tar.lz4" ]; then
-		return
-	elif [ -d "${1}"]; then
-		inflate "${1}"
-	else
-		einfo "no such directory ${1} found"
-	fi
+chkdir()
+{
+	[ -e ${1}.tar.lz4 ] && return
+	[ -d "${1}" ] && inflate "${1}"
 }
 
-deflate() {
+deflate()
+{
 	pushd "${2}${1%/*}" >/dev/null 2>&1
 	lz4c -d $1.tar.lz4 - | tar -xp
 	eend "${?}" "failed to deflate ${1}"
 	popd > /dev/null 2>&1
 }
 
-inflate() {
+inflate()
+{
 	pushd "${2}${1%/*}" > /dev/null 2>&1
 	tar -Ocp ${1##*/} | lz4c -1 - $1.tar.lz4
 	eend "${?}" "failed to inflate ${1}"

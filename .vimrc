@@ -38,6 +38,7 @@ set ruler
 
 filetype off
 
+filetype plugin indent on
 syntax on
 set shell=zsh
 
@@ -84,7 +85,7 @@ set autoindent    " automatically indent lines
 set expandtab     " use spaces to indent
 set shiftwidth=4  " number of spaces for indent
 set smarttab      " backspace over tabs
-set softtabstop=4 " tab = softtabstop * spaces
+set softtabstop=0 " tab = softtabstop * spaces
 set tabstop=4     " tab stop distance
 
 " set omnifunc

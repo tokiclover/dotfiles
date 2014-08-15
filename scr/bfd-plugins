@@ -1,0 +1,9 @@
+#!/bin/sh
+cd /usr/x86_64-pc-linux-gnu/binutils-bin/lib/bfd-plugins || exit
+rm *
+if [ x$1 == xclang ]; then
+	ln -s {../../../../lib/,}LLVMgold.so
+else
+	ln -s {../../../../libexec/gcc/x86_64-pc-linux-gnu/4.8.3/,}liblto_plugin.so.0.0.0
+fi
+

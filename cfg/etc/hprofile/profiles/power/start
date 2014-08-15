@@ -1,5 +1,5 @@
 #!/bin/sh
-# $Id: /etc/hprofile/profiles/power/base-start, 2014/07/31 -tclover $
+# $Id: /etc/hprofile/profiles/power/start, 2014/08/01 -tclover Exp $
 
 CPU=${1:-powersave}
 PCI=${2:-auto}

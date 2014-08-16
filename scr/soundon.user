@@ -1,28 +1,31 @@
 #!/bin/sh
-# $ID: ~/scr/soundon.user, 2014/07/31 12:57:40 -tclover Exp $
-if ! grep oss /proc/modules >/dev/null 2>&1; then
-	modprobe -a oss_{cmi878x,hdaudio}
-fi
+# $Id: ~/scr/soundon.user, 2014/08/08 12:57:40 -tclover Exp $
+
+grep -q oss /proc/modules || modprobe -a oss_{{audio,midi}loop,hdaudio,midimix}
+( lspci | grep -q -i cmi878 ) && modprobe oss_cmi878x
+
 ossdetect -diu
 ossdevlinks 
+
 # Remapping ossdevlinks links
 if [ -d /dev/oss/oss_cmi878x ]; then
-	ln -sf /dev/oss/oss_cmi878x0/pcm1 /dev/dsp
-	ln -sf /dev/oss/oss_cmi878x0/pcm1 /dev/dsp_ac3
-	ln -sf /dev/oss/oss_cmi878x0/pcm1 /dev/dsp_in
-	ln -sf /dev/oss/oss_cmi878x0/pcm1 /dev/dsp_mmap
-	ln -sf /dev/oss/oss_cmi878x0/pcm1 /dev/dsp_multich
-	ln -sf /dev/oss/oss_cmi878x0/pcm1 /dev/dsp_out
-	vmixctl attach /dev/oss/oss_cmi878x0/pcm1 /dev/oss/oss_cmi878x0/pcm1
+  pcm=/dev/oss/oss_cmi878x0/pcm1
+  for dsp in /dev/dsp{,_{ac3,in,mmap,multich,out}}
+  do
+	  ln -sf $pcm $dsp
+	done
+	vmixctl attach $cmi/pcm1 $cmi/pcm1
 elif [ -d /dev/oss/oss_hdaudio0 ]; then
-	ln -sf /dev/oss/oss_hdaudio0/pcm0 /dev/dsp
-	ln -sf /dev/oss/oss_hdaudio0/pcmin0 /dev/dsp_in
-#	ln -sf /dev/oss/oss_hdaudio0/spdout0 /dev/dsp
-	ln -sf /dev/oss/oss_hdaudio0/spdout0 /dev/dsp_ac3
-#	ln -sf /dev/oss/oss_hdaudio0/spdin0 /dev/dsp_in
-	ln -sf /dev/oss/oss_hdaudio0/spdout0 /dev/dsp_mmap
-	ln -sf /dev/oss/oss_hdaudio0/spdout0 /dev/dsp_multich
-	ln -sf /dev/oss/oss_hdaudio0/spdout0 /dev/dsp_out
-	vmixctl attach /dev/oss/oss_hdaudio0/pcm0 /dev/oss/oss_hdaudio0/pcmin0
+  pcm=/dev/oss/oss_hdaudio0/pcm0
+  for dsp in /dev/dsp{,_{ac3,mmap,multich}}
+  do
+	  ln -sf $pcm $dsp
+	done
+	ln -sf ${pcm%0}in0  /dev/dsp_in
+	ln -sf ${pcm%0}out0 /dev/dsp_out
+	vmixctl attach $pcm ${pcm%0}in0
 fi
+
+unset pcm
+
 # vim:fenc=utf-8:ft=sh:ci:pi:sts=0:sw=2:ts=2:

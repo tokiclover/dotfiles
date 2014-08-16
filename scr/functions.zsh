@@ -1,7 +1,6 @@
 # $Id: ~/scr/functions.zsh, 2014/07/31 11:59:26 -tclover Exp $
 
-if [[ -f ~/scr/functions ]]
-{ source ~/scr/functions }
+if [[ -f ~/scr/functions ]] { source ~/scr/functions }
 
 # @FUNCTION: error
 # @DESCRIPTION: hlper function, print message to stdout

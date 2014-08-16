@@ -1,11 +1,13 @@
 # $Id: ~/scr/functions.zsh, 2014/07/31 11:59:26 -tclover Exp $
 
-if [[ -f ~/scr/functions ]] { source ~/scr/functions }
+if [[ -f ~/scr/functions ]]
+{ source ~/scr/functions }
 
 # @FUNCTION: error
 # @DESCRIPTION: hlper function, print message to stdout
 # @USAGE: <string>
-fuction eerror() {
+function eerror()
+{
 	[[ -n $LOG ]] && [[ -n $facility ]] &&
 	logger -p $facility -t ${(%):-%1x}: $@
 	print -P "${(%):-%1x}: ${(%):-%1x}: %B%F{red}*%b%f $@"
@@ -14,7 +16,8 @@ fuction eerror() {
 # @FUNCTION: die
 # @DESCRIPTION: hlper function, print message and exit
 # @USAGE: <string>
-function die() {
+function die()
+{
 	local ret=$?
 	print -P "%F{red}*%f $@"
 	exit $ret
@@ -23,7 +26,8 @@ function die() {
 # @FUNCTION: info
 # @DESCRIPTION: hlper function, print message to stdout
 # @USAGE: <string>
-function einfo() {
+function einfo()
+{
 	[[ -n $LOG ]] && [[ -n $facility ]] &&
 	logger -p $facility -t ${(%):-%1x}: $@
 	print -P "${(%):-%1x}: %B%F{green}*%b%f $@"
@@ -32,7 +36,8 @@ function einfo() {
 # @FUNCTION: mktmp
 # @DESCRIPTION: make tmp dir or file in ${TMPDIR:-/tmp}
 # @ARG: [-d|-f] [-m <mode>] [-o <owner[:group]>] [-g <group>] TEMPLATE
-function mktmp() {
+function mktmp()
+{
 	[[ $# == 0 ]] &&
 	print "usage: mktmp [-d|-f] [-m <mode>] [-o <owner[:group]>] [-g <group>] TEMPLATE" &&
 	exit 1
@@ -98,7 +103,7 @@ function kmp-aa ()
 
 # @FUNCTION: kmp-color
 # @DESCRIPTION: colorful helper to retrieve Kernel Module Parameters
-function kmp-color ()
+function kmp-cc ()
 {
 	local green yellow cyan reset
 	autoload colors zsh/terminfo
@@ -153,4 +158,4 @@ function kmp-color ()
 	}
 }
 
-# vim:fenc=utf-8:ft=zsh:ci:pi:sts=4:sw=4:ts=4:
+# vim:fenc=utf-8:ft=zsh:ci:pi:sts=0:sw=4:ts=4:

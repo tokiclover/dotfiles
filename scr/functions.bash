@@ -5,7 +5,8 @@
 # @FUNCTION: die
 # @DESCRIPTION: hlper function, print error message to stdout
 # @USAGE: <string>
-function eerror() { 
+function eerror()
+{ 
 	echo -ne "${0##*/}: \e[1;31m \e[0m$@\n"
 	[[ -n "$LOG" ]] && [[ -n "$facility" ]] &&
 	logger -p $facility "${0##*/}: $@"
@@ -14,7 +15,8 @@ function eerror() {
 # @FUNCTION: die
 # @DESCRIPTION: hlper function, print message and exit
 # @USAGE: <string>
-function die() {
+function die()
+{
 	local ret=$?
 	error "$@"
 	exit $ret
@@ -23,7 +25,8 @@ function die() {
 # @FUNCTION: into
 # @DESCRIPTION: hlper function, print info message to stdout
 # @USAGE: <string>
-function einfo() { 
+function einfo()
+{ 
 	echo -ne "${0##*/}: \e[1;32m \e[0m$@\n"
 	[[ -n "$LOG" ]] && [[ -n "$facility" ]] &&
 	logger -p $facility "${0##*/}: $@"
@@ -32,7 +35,8 @@ function einfo() {
 # @FUNCTION: mktmp
 # @DESCRIPTION: make tmp dir or file in ${TMPDIR:-/tmp}
 # @ARG: [-d|-f] [-m <mode>] [-o <owner[:group]>] [-g <group>] TEMPLATE
-function mktmp() {
+function mktmp()
+{
 	[[  $# == 0 ]] &&
 	echo "usage: mktmp [-d|-f] [-m <mode>] [-o <owner[:group]>] [-g <group>] TEMPLATE" &&
 	exit 1
@@ -72,7 +76,8 @@ bg=([black]="\e[40m" [red]="\e[41m" [green]="\e[42m" [yellow]="\e[43m" [blue]="\
 
 # @FUNCTION: bash_prompt
 # @DESCRIPTION: bash prompt function
-function bash_prompt() {
+function bash_prompt()
+{
 	# Check PWD length
 	local PROMPT COLUMNS LENGTH NPWD
 	PROMPT="---($USER$(uname -n):$(tty | cut -b6-)---()---"
@@ -144,9 +149,9 @@ function kmp-aa ()
 }
 
 
-# @FUNCTION: kmp-color
+# @FUNCTION: kmp-cc
 # @DESCRIPTION: colorful helper to retrieve Kernel Module Parameters
-function kmp-color ()
+function kmp-cc ()
 {
 	local green yellow cyan reset
 	if tty -s <&1
@@ -206,4 +211,4 @@ function kmp-color ()
 	done
 }
 
-# vim:fenc=utf-8:ft=zsh:ci:pi:sts=4:sw=4:ts=4:
+# vim:fenc=utf-8:ft=zsh:ci:pi:sts=0:sw=4:ts=4:

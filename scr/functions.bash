@@ -19,7 +19,7 @@ function die()
 {
 	local ret=$?
 	error "$@"
-	exit $ret
+	return $ret
 }
 
 # @FUNCTION: into

@@ -19,7 +19,7 @@ function die()
 {
 	local ret=$?
 	print -P "%F{red}*%f $@"
-	exit $ret
+	return $ret
 }
 
 # @FUNCTION: info
@@ -98,7 +98,6 @@ function kmp-aa ()
 		popd -q
 	}
 }
-
 
 # @FUNCTION: kmp-color
 # @DESCRIPTION: colorful helper to retrieve Kernel Module Parameters

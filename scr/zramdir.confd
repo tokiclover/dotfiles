@@ -1,4 +1,4 @@
-# $Header: ~/scr/zramdir.confd, 2014/06/31 13:05:19 -tclover Exp $
+# $Header: ~/scr/zramdir.confd, 2014/08/08 13:05:19 -tclover Exp $
 # zramdir can put several directories to a zram backed block device;
 # this init service require lz4 compressor, or else edit zramdir.init.d
 # root directory or mount point

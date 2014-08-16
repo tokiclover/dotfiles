@@ -1,9 +1,11 @@
-# $Id: ~/scr/functions, 2014/07/31 11:59:26 -tclover Exp $
+# $Id: ~/scr/functions, 2014/08/08 11:59:26 -tclover Exp $
 
 # @FUNCTION: xkc
 # @DESCRIPTION: simple Xev KeyCode
-function xkc() {
+function xkc()
+{
     xev | grep -A2 --line-buffered '^KeyRelease' | \
     sed -nre '/keycode /s/^.*keycode ([0-9]*).* (.*, (.*)).*$/\1 \2/p'
 }
 
+# vim:fenc=utf-8:ft=zsh:ci:pi:sts=0:sw=4:ts=4:

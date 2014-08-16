@@ -37,7 +37,7 @@ function einfo()
 # @ARG: [-d|-f] [-m <mode>] [-o <owner[:group]>] [-g <group>] TEMPLATE
 function mktmp()
 {
-	[[  $# == 0 ]] &&
+	[[ $# == 0 ]] &&
 	echo "usage: mktmp [-d|-f] [-m <mode>] [-o <owner[:group]>] [-g <group>] TEMPLATE" &&
 	exit 1
 	local type mode owner group tmp TMP=${TMPDIR:-/tmp}
@@ -121,27 +121,25 @@ function kmp-aa ()
 	c=$(tput op) o=$(echo -en "\n$(tput setaf 2)-*- $(tput op)")
 	if [[ -n "$*" ]]
 	then
-	  mod=($*)
+		mod=($*)
 	else
-	  while read line
-	  do
-	      mod+=( ${line%% *})
-	  done </proc/modules
+		while read line
+		do
+			mod+=( ${line%% *})
+		done </proc/modules
 	fi
 	for m in ${mod[@]}
 	do
-	  md=/sys/module/$m/parameters
+		md=/sys/module/$m/parameters
 		[[ ! -d $md ]] && continue
 		d=$(modinfo -d $m 2>$n | tr '\n' '\t')
-		echo -en "$o$m$c"
-		[[ ${#d} -gt 0 ]] && echo -n " - $d"
+		echo -en "$o$m$c ${d:+:$d}"
 		echo
 		pushd $md >$n 2>&1
 		for mc in *
 		do
 			de=$(modinfo -p $m 2>$n | grep ^$mc 2>$n | sed "s/^$mc=//" 2>$n)
-			echo -en "\t$mc=$(cat $mc 2>$n)"
-			[[ ${#de} -gt 1 ]] && echo -en " - $de"
+			echo -en "\t$mc=$(cat $mc 2>$n) ${de:+ -$de}"
 			echo
 		done
 		popd >$n 2>&1
@@ -156,10 +154,10 @@ function kmp-cc ()
 	local green yellow cyan reset
 	if tty -s <&1
 	then
-	  green="${fg[green]}"
-	  yellow="${fg[yellow]}"
-	  cyan="${fg[cyan]}"
-	  reset="${bfg[reset]}"
+		green="${fg[green]}"
+		yellow="${fg[yellow]}"
+		cyan="${fg[cyan]}"
+		reset="${bfg[reset]}"
 	fi
 	newline='
 '
@@ -167,47 +165,47 @@ function kmp-cc ()
 	local d line m mc md mod n=/dev/null
 	if [[ -n "$*" ]]
 	then
-	  mod=($*)
+		mod=($*)
 	else
-	  while read line
-	  do
-	      mod+=( ${line%% *})
-	  done </proc/modules
+		while read line
+		do
+			mod+=( ${line%% *})
+		done </proc/modules
 	fi
 	for m in ${mod[@]}
 	do
-	  md=/sys/module/$m/parameters
-	  [[ ! -d $md ]] && continue
-	  d="$(modinfo -d $m 2>$n | tr '\n' '\t')"
-	  echo -en "$green$m$reset"
-	  [[ ${#d} -gt 0 ]] && echo -n " - $d"
-	  echo
-	  declare pnames=() pdescs=() pvals=()
-	  local add_desc=false p pdesc pname
-	  while IFS="$newline" read p
-	  do
-	    if [[ $p =~ ^[[:space:]] ]]
-	    then
-		    pdesc+="$newline	$p"
-	    else
-		    $add_desc && pdescs+=("$pdesc")
-		    pname="${p%%:*}"
-		    pnames+=("$pname")
-		    pdesc=("	${p#*:}")
-		    pvals+=("$(cat $md/$pname 2>$n)")
-	    fi
-	    add_desc=true
-	  done < <(modinfo -p $m 2>$n)
-	  $add_desc && pdescs+=("$pdesc")
-	  for ((i=0; i<${#pnames[@]}; i++))
-	  do
-	    [[ -z ${pnames[i]} ]] && continue
-	    printf "  $cyan%s$reset = $yellow%s$reset\n%s\n" \
-		  ${pnames[i]} \
-		  "${pvals[i]}" \
-		  "${pdescs[i]}"
-	  done
-	  echo
+		md=/sys/module/$m/parameters
+		[[ ! -d $md ]] && continue
+		d="$(modinfo -d $m 2>$n | tr '\n' '\t')"
+		echo -en "$green$m$reset"
+		[[ ${#d} -gt 0 ]] && echo -n " - $d"
+		echo
+		declare pnames=() pdescs=() pvals=()
+		local add_desc=false p pdesc pname
+		while IFS="$newline" read p
+		do
+			if [[ $p =~ ^[[:space:]] ]]
+			then
+				pdesc+="$newline	$p"
+			else
+				$add_desc && pdescs+=("$pdesc")
+				pname="${p%%:*}"
+				pnames+=("$pname")
+				pdesc=("	${p#*:}")
+				pvals+=("$(cat $md/$pname 2>$n)")
+			fi
+			add_desc=true
+		done < <(modinfo -p $m 2>$n)
+		$add_desc && pdescs+=("$pdesc")
+		for ((i=0; i<${#pnames[@]}; i++))
+		do
+			[[ -z ${pnames[i]} ]] && continue
+			printf "\t$cyan%s$reset = $yellow%s$reset\n%s\n" \
+			${pnames[i]} \
+			"${pvals[i]}" \
+			"${pdescs[i]}"
+		done
+		echo
 	done
 }
 

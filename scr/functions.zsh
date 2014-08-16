@@ -1,4 +1,4 @@
-# $Id: ~/scr/functions.zsh, 2014/07/31 11:59:26 -tclover Exp $
+# $Id: ~/scr/functions.zsh, 2014/08/08 11:59:26 -tclover Exp $
 
 if [[ -f ~/scr/functions ]] { source ~/scr/functions }
 
@@ -108,9 +108,7 @@ function kmp-cc ()
 	autoload colors zsh/terminfo
 	if [[ $terminfo[colors] -ge 8 ]] { colors }
 	for color (green yellow cyan)
-	  {
 	  eval $color='%{${fg[(L)color]}%}'
-	}
 	reset="%{$terminfo[sgr0]%}"
 	newline='
 '
@@ -157,4 +155,4 @@ function kmp-cc ()
 	}
 }
 
-# vim:fenc=utf-8:ft=zsh:ci:pi:sts=0:sw=4:ts=4:
+# vim:fenc=utf-8:ft=zsh:ci:pi:sts=0:sw=2:ts=2:

@@ -1,4 +1,4 @@
-# $Id: ~/scr/functions.bash, 2014/07/31 12:59:26 -tclover Exp $
+# $Id: ~/scr/functions.bash, 2014/08/08 12:59:26 -tclover Exp $
 
 [[ -f ~/scr/functions ]] && source ~/scr/functions
 
@@ -211,4 +211,4 @@ function kmp-cc ()
 	done
 }
 
-# vim:fenc=utf-8:ft=zsh:ci:pi:sts=0:sw=4:ts=4:
+# vim:fenc=utf-8:ft=zsh:ci:pi:sts=0:sw=2:ts=2:

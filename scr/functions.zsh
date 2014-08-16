@@ -73,27 +73,24 @@ function kmp-aa ()
 	local c d line m mc mod md de n=/dev/null o
 	c=$(tput op) o=$(print -P "\n$(tput setaf 2)-*- $(tput op)")
 	if [[ -n "$*" ]] {
-	  mod=($*)
+		mod=($*)
 	} else {
-	  while read line
-	  do
-	      mod+=( ${line%% *})
-	  done </proc/modules
+		while read line
+		do
+			mod+=( ${line%% *})
+		done </proc/modules
 	}
 	for m (${mod[@]})
 	{
-	    md=/sys/module/$m/parameters
+		md=/sys/module/$m/parameters
 		if [[ ! -d $md ]] { continue }
 		d=$(modinfo -d $m 2>$n | tr '\n' '\t')
-		print -P $o$m$c
-		if [[ ${#d} -gt 0 ]] { print -P " - $d" }
+		print -P $o$m$c ${d:+: $d}
 		pushd -q $md
 		for mc (*(.))
 		{
 			de=$(modinfo -p $m 2>$n | grep ^$mc 2>$n | sed "s/^$mc=//" 2>$n)
-			print -P "\t$mc=$(cat $mc 2>$n)"
-			if [[ ${#de} -gt 1 ]] { print -P " - $de" }
-			print
+			print -P "\t$mc=$(cat $mc 2>$n)" ${de:+ - $de}
 		}
 		popd -q
 	}
@@ -107,50 +104,47 @@ function kmp-cc ()
 	autoload colors zsh/terminfo
 	if [[ $terminfo[colors] -ge 8 ]] { colors }
 	for color (green yellow cyan)
-	  eval $color='%{${fg[(L)color]}%}'
-	reset="%{$terminfo[sgr0]%}"
+		eval $color="%F{$color}"
+	reset="%f"
 	newline='
 '
 
 	local d line m mc md mod n=/dev/null
 	if [[ -n "$*" ]] {
-	  mod=($*)
+		mod=($*)
 	} else {
-	  while read line
-	  do
-	      mod+=( ${line%% *})
-	  done </proc/modules
+		while read line
+		do
+			mod+=( ${line%% *})
+		done </proc/modules
 	}
 	for m (${mod[@]})
 	{
-	  md=/sys/module/$m/parameters
-	  if [[ ! -d $md ]] { continue }
-	  d="$(modinfo -d $m 2>$n | tr '\n' '\t')"
-	  print -P $green$m$reset
-	  if [[ ${#d} -gt 0 ]] { print -P " - $d"}
-	  print
-	  declare pnames=() pdescs=() pvals=()
-	  local add_desc=false p pdesc pname
-	  while IFS="$newline" read p
-	  do
-	    if [[ $p =~ ^[[:space:]] ]] {
-		    pdesc+="$newline	$p"
-	    } else {
-		    $add_desc && pdescs+=("$pdesc")
-		    pname="${p%%:*}"
-		    pnames+=("$pname")
-		    pdesc=("	${p#*:}")
-		    pvals+=("$(cat $md/$pname 2>$n)")
-	    }
-	    add_desc=true
-	  done < <(modinfo -p $m 2>$n)
-	  $add_desc && pdescs+=("$pdesc")
-	  for ((i=0; i<${#pnames[@]}; i++))
-	  {
-	    if [[ -z ${pnames[i]} ]] { continue }
-	    print -P "  $cyan${pnames[i]}$reset = $yellow${pvals[i]}$reset\n${pdescs[i]}\n"
-	  }
-	  print
+		md=/sys/module/$m/parameters
+		if [[ ! -d $md ]] { continue }
+		d=$(modinfo -d $m 2>$n | tr '\n' '\t')
+		print -P $green'-*- '$m$reset ${d:+: $d}
+		declare pnames=() pdescs=() pvals=()
+		local add_desc=false p pdesc pname
+		while IFS="$newline" read p
+		do
+			if [[ $p =~ ^[[:space:]] ]] {
+				pdesc+="$newline	$p"
+			} else {
+				$add_desc && pdescs+=("$pdesc")
+				pname="${p%%:*}"
+				pnames+=("$pname")
+				pdesc=("	${p#*:}")
+				pvals+=("$(cat $md/$pname 2>$n)")
+			}
+			add_desc=true
+		done < <(modinfo -p $m 2>$n)
+		$add_desc && pdescs+=("$pdesc")
+		for ((i=0; i<${#pnames[@]}; i++))
+		{
+			if [[ -z ${pnames[i]} ]] { continue }
+			print -P "\t$cyan${pnames[i]}$reset=$yellow${pvals[i]}$reset -${pdescs[i]}"
+		}
 	}
 }
 

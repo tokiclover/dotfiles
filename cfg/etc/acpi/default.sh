@@ -1,8 +1,15 @@
 #!/bin/sh
-# $Id: /etc/acpi/default.sh, 2014/07/22 14:22:59 -tclover Exp $
+# $Id: /etc/acpi/default.sh, 2014/08/08 14:22:59 -tclover Exp $
 
-log() { logger -p daemon "ACPI: $*"; }
-uhd() { log "event unhandled: $*"; }
+log()
+{
+	logger -p daemon "ACPI: $*"
+}
+
+uhd()
+{
+	log "event unhandled: $*"
+}
 
 set $*
 group=${1%/*}
@@ -83,4 +90,4 @@ esac
 
 unset alsa oss amixer ossmix group action device id
 
-# vim:fenc=utf-8:ft=sh:ci:pi:sts=4:sw=4:ts=4:
+# vim:fenc=utf-8:ft=sh:ci:pi:sts=0:sw=4:ts=4:

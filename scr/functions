@@ -1,5 +1,12 @@
 # $Id: ~/scr/functions, 2014/08/08 11:59:26 -tclover Exp $
 
+# @FUNCTION: genpwd
+# @DESCRIPTION: generate a random password using openssl to stdout
+function genpwd()
+{
+	openssl rand -base64 48
+}
+
 # @FUNCTION: xkc
 # @DESCRIPTION: simple Xev KeyCode
 function xkc()

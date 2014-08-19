@@ -23,6 +23,8 @@ value=$4
 amixer="amixer -q set Master"
 ossmix="ossmix -- vmix0-outvol"
 
+mpris=$(which mpris-remote 2>/dev/null)
+
 case $group in
 	ac_adapter)
 		case $value in
@@ -66,10 +68,8 @@ case $group in
 		;;
 	cd)
 		case $action in
-			play) :;;
-			stop) :;;
-			prev) :;;
-			next) :;;
+			play|stop|next) [ $mpris ] && $mpris $action;;
+			prev) [ $mpris ] && $mpris previous:;;
 			*) uhd $*;;
 		esac
 		;;

@@ -9,17 +9,17 @@ ossdevlinks
 
 # Remapping ossdevlinks links
 if [ -d /dev/oss/oss_cmi878x ]; then
-  pcm=/dev/oss/oss_cmi878x0/pcm1
-  for dsp in /dev/dsp{,_{ac3,in,mmap,multich,out}}
-  do
-	  ln -sf $pcm $dsp
+	pcm=/dev/oss/oss_cmi878x0/pcm1
+	for dsp in /dev/dsp{,_{ac3,in,mmap,multich,out}}
+	do
+		ln -sf $pcm $dsp
 	done
 	vmixctl attach $cmi/pcm1 $cmi/pcm1
 elif [ -d /dev/oss/oss_hdaudio0 ]; then
-  pcm=/dev/oss/oss_hdaudio0/pcm0
-  for dsp in /dev/dsp{,_{ac3,mmap,multich}}
-  do
-	  ln -sf $pcm $dsp
+	pcm=/dev/oss/oss_hdaudio0/pcm0
+	for dsp in /dev/dsp{,_{ac3,mmap,multich}}
+	do
+		ln -sf $pcm $dsp
 	done
 	ln -sf ${pcm%0}in0  /dev/dsp_in
 	ln -sf ${pcm%0}out0 /dev/dsp_out

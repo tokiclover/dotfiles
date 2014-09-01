@@ -16,6 +16,8 @@ another _dotfiles_ repository
 `% git clone --recurse-submodules git://github.com/tokiclover/oh-my-zsh.git .oh-my-zsh`
 `% cd ~/.oh-my-zsh && git checkout my-zsh`
 * and then exec your shell with `% exec $SHELL`
+* another alternative is to clone this repository with *--recurse-submodules* passed to *git*
+* your HOME dir is not empty? just back up your dot files, clone to another directory like *dotfiles* and then move everything manualy to your $HOME dir
 
 # scr: scripts extra info
 

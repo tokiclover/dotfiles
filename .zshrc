@@ -1,4 +1,4 @@
-# $Id: ~/.zshrc, 2014/07/31 22:01:25 -tclover Exp $
+# $Id: ~/.zshrc, 2014/08/31 22:01:25 -tclover Exp $
 
 if [[ -f ~/.dir_colors ]] {
 	eval $(dircolors -b ~/.dir_colors) 
@@ -6,17 +6,8 @@ if [[ -f ~/.dir_colors ]] {
 	eval $(dircolors -b /etc/DIR_COLORS) 
 } else { eval $(dircolors) }
 
-# Load all of the config files in ~/.oh-my-zsh that end in .zsh
-# TIP: Add files you don't want in git to .gitignore
-for config_file ($ZSH/lib/*.zsh) source $config_file
-
-# Load and run compinit
-autoload -U promptinit 
-promptinit -i
-source $ZSH/themes/clover.zsh-theme
-
 autoload -Uz vcs_info
-#zstyle ':vcs_info:*' disable bzr cdv darcs mtn svk tla
+zstyle ':vcs_info:*' disable bzr cdv darcs mtn svk tla
 zstyle ':vcs_info:*' enable git svn
 zstyle ':vcs_info:git:*' unstagedstr '*'
 zstyle ':vcs_info:*' actionformats '%a'
@@ -24,22 +15,12 @@ zstyle ':vcs_info:*' formats       '·%s·%b%u'
 zstyle ':vcs_info:(git|svn):*' branchformat '%b'
 
 setopt EXTENDED_GLOB
-plugins=(zsh-syntax-highlighting)
+plugins=(vi-mode zsh-syntax-highlighting)
 
-# Add all defined plugins to fpath
-plugin=${plugin:=()}
-for plugin ($plugins) fpath=($ZSH/plugins/$plugin $fpath)
+ZSH=$HOME/.oh-my-zsh
+ZSH_THEME=clover
 
-# add a function path
-fpath=($ZSH/functions $ZSH/completions $fpath)
-for func ($fpath[1]/*) source $func
-
-# Load all of the plugins that were defined in ~/.zshrc
-for plugin ($plugins)
-	if [[ -f $ZSH/custom/plugins/$plugin/$plugin.plugin.zsh ]] {
-		source $ZSH/custom/plugins/$plugin/$plugin.plugin.zsh
-	} elif [[ -f $ZSH/plugins/$plugin/$plugin.plugin.zsh ]] {
-		source $ZSH/plugins/$plugin/$plugin.plugin.zsh }
+if [[ -e $ZSH/oh-my-zsh.sh ]] { source $ZSH/oh-my-zsh.sh }
 
 if [[ -f ~/.aliasrc ]] { source ~/.aliasrc }
 for scr (~/scr/*.zsh)

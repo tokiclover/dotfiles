@@ -12,9 +12,8 @@ another _dotfiles_ repository
 
 * clone the repository or repositories: 
 `% git clone git://github.com/tokiclover/dotfiles.git ~/`
-* zsh users may clone my fork of [my-zsh][] of [oh-my-zsh][]: 
+* zsh users may clone my [fork][] of [oh-my-zsh][]: 
 `% git clone --recurse-submodules git://github.com/tokiclover/oh-my-zsh.git .oh-my-zsh`
-`% cd ~/.oh-my-zsh && git checkout my-zsh`
 * and then exec your shell with `% exec $SHELL`
 * another alternative is to clone this repository with *--recurse-submodules* passed to *git*
 * your HOME dir is not empty? just back up your dot files, clone to another directory like *dotfiles* and then move everything manualy to your $HOME dir
@@ -38,7 +37,7 @@ another _dotfiles_ repository
 * bfd-plugins: switch ld plugin beetwen LLVMgold.so and GCC liblto_plugin.so,
     beware to switch to bfd or gold beforehand (using: binutils-config --linker bfd).
 
-[my-zsh]: https://github.com/tokiclover/oh-my-zsh
+[fork]: https://github.com/tokiclover/oh-my-zsh
 [oh-my-zsh]: https://github.com/robbyrussell/oh-my-zsh
 
 ---

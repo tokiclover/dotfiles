@@ -1,8 +1,12 @@
-`$Id: dotfiles/README.textile, 2014/08/08 18:11:51 -tclover Exp $`
+`$Id: dotfiles/README.textile, 2014/08/31 18:11:51 -tclover Exp $`
 
 ---
 
 another _dotfiles_ repository
+
+# COPYING: 2-clause (*simplified* or *new*) BSD or MIT at your *name* preference
+
+(if not explicitly stated otherwise in particular files)
 
 # using this repository
 
@@ -13,7 +17,7 @@ another _dotfiles_ repository
 `% cd ~/.oh-my-zsh && git checkout my-zsh`
 * and then exec your shell with `% exec $SHELL`
 
-# .scr: scripts extra info
+# scr: scripts extra info
 
 * cbu: is a simple script to back up/restore cfg files or directories;
 * fhp: is a simple script which put firefox profile into tmpfs/zram backed FS (dep: functions.$shell);

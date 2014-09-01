@@ -1,8 +1,9 @@
-# $Id: ~/.zshenv, 2014/07/31 09:52:36 -tclover Exp $
+# $Id: ~/.zshenv, 2014/08/31 09:52:36 -tclover Exp $
 
 export ZDOTDIR=$HOME
 export ZLS_COLORS=${LS_COLORS}
 export ZSH=$HOME/.oh-my-zsh
+export ZSH_THEME=clover
 export FHPDIR=$(print $HOME/.mozilla/firefox/*.default(/) 2>/dev/null)
 
 if [[ -f ~/.Xprofile ]] { source ~/.Xprofile }

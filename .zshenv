@@ -2,8 +2,6 @@
 
 export ZDOTDIR=$HOME
 export ZLS_COLORS=${LS_COLORS}
-export ZSH=$HOME/.oh-my-zsh
-export ZSH_THEME=clover
 export FHPDIR=$(print $HOME/.mozilla/firefox/*.default(/) 2>/dev/null)
 
 if [[ -f ~/.Xprofile ]] { source ~/.Xprofile }

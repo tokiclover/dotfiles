@@ -23,6 +23,8 @@ ZSH_THEME=clover
 if [[ -e $ZSH/oh-my-zsh.sh ]] { source $ZSH/oh-my-zsh.sh }
 
 if [[ -f ~/.aliasrc ]] { source ~/.aliasrc }
+if [[ -f ~/scr/functions.zsh ]] { source ~/scr/functions.zsh }
+
 for scr (~/scr/*.zsh)
 	if [[ -x $scr ]] { alias ${${scr:t}%.zsh}='~/scr/'${scr:t} }
 

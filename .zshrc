@@ -1,20 +1,12 @@
 # $Id: ~/.zshrc, 2014/08/31 22:01:25 -tclover Exp $
 
+setopt extended_glob
+
 if [[ -f ~/.dir_colors ]] {
 	eval $(dircolors -b ~/.dir_colors) 
 } elif [[ -f /etc/DIR_COLORS ]] {
 	eval $(dircolors -b /etc/DIR_COLORS) 
 } else { eval $(dircolors) }
-
-autoload -Uz vcs_info
-zstyle ':vcs_info:*' disable bzr cdv darcs mtn svk tla
-zstyle ':vcs_info:*' enable git svn
-zstyle ':vcs_info:git:*' unstagedstr '*'
-zstyle ':vcs_info:*' actionformats '%a'
-zstyle ':vcs_info:*' formats       '·%s·%b%u'
-zstyle ':vcs_info:(git|svn):*' branchformat '%b'
-
-setopt EXTENDED_GLOB
 
 if [[ -e $ZSH/oh-my-zsh.sh ]] {
 	plugins=(vi-mode zsh-syntax-highlighting)

@@ -15,12 +15,13 @@ zstyle ':vcs_info:*' formats       '·%s·%b%u'
 zstyle ':vcs_info:(git|svn):*' branchformat '%b'
 
 setopt EXTENDED_GLOB
-plugins=(vi-mode zsh-syntax-highlighting)
 
-ZSH=$HOME/.oh-my-zsh
-ZSH_THEME=clover
-
-if [[ -e $ZSH/oh-my-zsh.sh ]] { source $ZSH/oh-my-zsh.sh }
+if [[ -e $ZSH/oh-my-zsh.sh ]] {
+	plugins=(vi-mode zsh-syntax-highlighting)
+	ZSH=$HOME/.oh-my-zsh
+	ZSH_THEME=clover
+	source $ZSH/oh-my-zsh.sh
+}
 
 if [[ -f ~/.aliasrc ]] { source ~/.aliasrc }
 if [[ -f ~/scr/functions.zsh ]] { source ~/scr/functions.zsh }

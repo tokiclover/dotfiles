@@ -1,15 +1,19 @@
 #!/bin/zsh
-# $Id: ~/scr/fhp.zsh,v 1.5 2014/07/31 21:09:26 -tclover Exp $
+# $Id: ~/scr/fhp.zsh,v 2.0 2014/08/31 21:09:26 -tclover Exp $
 #
 # @DESCRIPTION: set firefox profile dir to tmpfs or zram backed fs
+# @USAGE: [OPTIONS] [profile]
+# @OPTIONS: [-h|--help] [-c|--comp 'gzip -1']
+# @DESCRIPTION: set compressor, default to lz4
 #
 # And maybe something like: */30 * * * * $USER ~/scr/fhp.zsh
 # in cron job to keep track of changes is necessary.
-# lz4 compressed is required, or else, edit to your needs
+# lz4 compressed is required, or else, use -c|-comp 'lzop -1'
 
-# @ENV_VARIABLE: FHPDIR
+# @ENV_VARIABLE: FHP
 # @DESCRIPTION: Firefox profile dir to handle
-# @EXEMPLE: FHPDIR=~/.mozilla/firefox/abc123.default
+# @EXEMPLE: FHP=abc123
+# which correspond to '~/.mozilla/firefox/$FHP.default' profile
 
 # @ENV_VARIABLE: ZRAMDIR:=/mnt/zram
 # @DESCRIPTION: Zram block device backed FS to use for firefox profile
@@ -21,53 +25,73 @@
 
 source ~/scr/functions.zsh || return 1
 
-fhp_init() {
-:	${FHPDIR:=$(print ~/.mozilla/firefox/*.default 2>/dev/null)}
-:	${TMPDIR:=/tmp}
+# use an anonymous function to initialize
+function {
+	comp="lz4 -1 -"
+	while [[ $# > 0 ]]
+	case $1 in
+		(-h|--help)
+			print "usage: fhp [-c|--comp 'lzop -1'] [profile]"
+			return;;
+		(-c|--comp)
+			comp=${2:-$comp}
+			shift 2;;
+		(*) break;;
+	esac
 
-	[[ -z $FHPDIR ]] && die "fhp: no firefox profile dir found"
-	mount | grep "$FHPDIR" >/dev/null 2>&1 && return
+	local fhp=${1:-$FHP}
+:	${fhp:=${$(print ~/.mozzila/firefox/*.default(/) 2>/dev/null):t}}
+	[[ $fhp ]] || die "fhp: no firefox profile dir found"
+	[[ ${fhp%.default} == $fhp ]] && fhp+=.default
+	local ext=${comp[(w)1]}
+
+:	${FHPDIR:=~/.mozilla/firefox/$fhp}
+:	${TMPDIR:=/tmp/.private/$USER}
+
+	grep -q $FHPDIR /proc/mounts && return
 	
-	local fhp=$FHPDIR:t mnt
-	if [[ ! -f $FHPDIR.tar.lz4 ]] || [[ ! -f $FHPDIR.old.tar.lz4 ]] {
+	if [[ ! -f $FHPDIR.tar.$ext ]] || [[ ! -f $FHPDIR.old.tar.$ext ]] {
 		pushd -q $FHPDIR:h || die
-		tar -Ocp $fhp | lz4c -1 - $fhp.tar.lz4  ||
+		tar -Ocp $fhp | ${=comp} $fhp.tar.$ext  ||
 		die "fhp: failed to pack a new tarball"
 		popd -q
 	}
 
+	local mnt
 	[[ -n $ZRAMDIR ]] && mnt=$(mktemp -d $ZRAMDIR/fhp-XXXXXX) ||
         mnt=$(mktemp -d $TMPDIR/fhp-XXXXXX)
-	
-	if [[ ! -d $mnt ]] {
-		sudo mkdir -p -m1700 $mnt &&
-		sudo chown $UID:$GID -R $mnt:h
-	}
 	sudo mount --bind $FHPDIR $mnt || die "fhp: failed to mount $mnt"
-}
-
-fhp_update() {
-	local dir=$FHPDIR:h fhp=$FHPDIR:t
-	local tbl=$fhp.tar.lz4 otb=$fhp.old.tar.lz4
+ } $@
+ 
+ function fhp() {
+ 	local dir=$FHPDIR:h ext=$comp[(w)1] fhp=$FHPDIR:t
+	local tbl=$fhp.tar.$ext otb=$fhp.old.tar.$ext
 	
 	pushd -q $dir
 	if [[ -f $fhp/.unpacked ]] {
 		mv -f $tbl $otb || die "fhp: failed to override the old tarball"
-		tar -X $fhp/.unpacked -Ocp $fhp | lz4c -1 - $tbl ||
+		tar -X $fhp/.unpacked -Ocp $fhp | ${=comp} $tbl ||
 		die "fhp: failed to repack a new tarball"
 	} else {
+		local decomp=$comp[(w)1] opt
+		case $decomp in
+			(lz4)
+				opt=-;;
+			(bzip2|gzip|lzip|lzop|xz)
+				opt=-c;;
+		esac
+
 		if [[ -f $tbl ]] {
-			lz4c -d $tbl - | tar -xp && touch $fhp/.unpacked ||
+			${=decomp} -d $tbl $opt | tar -xp && touch $fhp/.unpacked ||
 			die "fhp: failed to unpack the profile"
 		} elif [[ -f $otb ]] {
-			lz4c -d $otb - | tar -xp && touch $fhp/.unpacked ||
+			${=decomp} -d $otb $opt | tar -xp && touch $fhp/.unpacked ||
 			die "fhp: failed to unpack the profile"
-		} else { die "fhp: failed to unpack the profile" }
+		} else { die "fhp: no tarball found" }
 	}
 	popd -q
 }
 
-fhp_init
-fhp_update
+fhp
 
 # vim:fenc=utf-8:ft=zsh:ci:pi:sts=0:sw=2:ts=2:

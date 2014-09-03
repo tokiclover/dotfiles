@@ -86,10 +86,10 @@ function fhp() {
 		esac
 
 		if [[ -f $tbl ]]; then
-			$comp -d $tbl $opt | tar -xp && touch $fhp/.unpacked ||
+			$decomp -d $tbl $opt | tar -xp && touch $fhp/.unpacked ||
 			die "fhp: failed to unpack the profile"
 		elif [[ -f $otb ]]; then
-			$comp -d $otb $opt | tar -xp && touch $fhp/.unpacked ||
+			$decomp -d $otb $opt | tar -xp && touch $fhp/.unpacked ||
 			die "fhp: failed to unpack the profile"
 		else
 			die "fhp: no tarball found"

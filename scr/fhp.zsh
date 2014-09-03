@@ -47,6 +47,7 @@ function {
 
 :	${FHPDIR:=~/.mozilla/firefox/$fhp}
 :	${TMPDIR:=/tmp/.private/$USER}
+	[[ $ZRAMDIR]] || [[ -d $TMPDIR ]] || mkdir -p -m1700 $TMPDIR
 
 	grep -q $FHPDIR /proc/mounts && return
 	

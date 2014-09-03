@@ -98,6 +98,6 @@ function fhp() {
 	popd >/dev/null 2>&1
 }
 
-fhp
+fhp "$@"
 
 # vim:fenc=utf-8:ft=sh:ci:pi:sts=0:sw=2:ts=2:

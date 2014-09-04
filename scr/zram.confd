@@ -1,4 +1,4 @@
-# $Header: ~/scr/zram.confd, 2014/08/01 13:05:19 -tclover Exp $
+# $Header: zram.confd, 2014/08/31 13:05:19 -tclover Exp $
 
 # number of zram devices (standard name passed to modprobe)
 num_devices=4

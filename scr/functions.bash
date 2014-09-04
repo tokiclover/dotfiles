@@ -68,17 +68,35 @@ function mktmp()
 }
 
 # ANSI color codes for bash_prompt function
-declare -A bg fg bfg
-bfg=([reset]="\e[0m" [hicolor]="\e[1m" [underline]="\e[4m" [blink]="\e[5m" [inverse]="\e[7m")
-fg=([black]="\e[30m" [red]="\e[31m" [green]="\e[32m" [yellow]="\e[33m" [blue]="\e[34m" \
-	[magenta]="\e[35m" [cyan]="\e[36m" [white]="\e[37m")
-bg=([black]="\e[40m" [red]="\e[41m" [green]="\e[42m" [yellow]="\e[43m" [blue]="\e[44m" \
-	[magenta]="\e[45m" [cyan]="\e[46m" [white]="\e[47m")
+declare -a COLORS CHARS
+COLOR=(black red green yellow blue magenta cyan white)
+SGR07=(reset bold faint italic underline sblink rblink inverse)
 
 # @FUNCTION: bash_prompt
 # @DESCRIPTION: bash prompt function
+# @USAGE: bash_prompt [4-color]
 function bash_prompt()
 {
+	# Initialize colors arrays
+	declare -A BG FG BF
+	local B C CLR=$(tput colors) E="\e[" F
+	if [[ "$CLR" -ge 256 ]]; then
+		B="${E}48;5;"
+		F="${E}1;38;5;"
+	else
+		B="${E}4"
+		F="${E}1;38"
+	fi
+
+	[[ $# -eq 5 ]] && C="$@" || C="4 6 5 2" 
+	for c in $C; do
+		BG[$c]="${B}${i}m"
+		FG[$c]="${F}${i}m"
+	done
+	for (( i=0; i<8; i++ )); do
+		BF[${SGR07[$i]}]="\e[${i}m"
+	done
+
 	# Check PWD length
 	local PROMPT COLUMNS LENGTH NPWD
 	PROMPT="---($USER$(uname -n):$(tty | cut -b6-)---()---"
@@ -89,26 +107,20 @@ function bash_prompt()
 		NPWD="$PWD"
 	fi
 	[[ -n "${NPWD%%HOME*}" ]] && NPWD=${NPWD/~/\~}
+
 	# And the prompt
-	case "$TERM" in
-	xterm*|rxvt*)
-		PS1="${fg[cyan]}┌${fbg[hicolor]}${fg[blue]}(${fg[magenta]}\$${fg[blue]}${fg[magenta]}\h:$(\
-		tty | cut -b6-)${fg[blue]}⋅\D{%m/%d}⋅${fg[magenta]}\t${fg[blue]})${fbg[hicolor]}${fg[blue]}\
-		(${fg[magenta]}$NPWD${fg[blue]})${fbg[hiclor]}${fg[blue]}${fg[black]}
-		\n${fg[cyan]}${fbg[hicolor]}${fg[blue]}${fg[green]}${fbg[reset]}-» "
-	 		PS2="${fg[blue]}${fg[green]} ${fbg[reset]}"
+	if [[ "$CLR" -ge 8 ]]; then
+		PS1="${FG[2]}┌${FB[bold]}$FG[1]}(${FG[4]}\$${FG[1]}${FG[4]}\h:$(\
+		tty | cut -b6-)${FG[1]}⋅\D{%m/%d}⋅${FG[4]}\t${FG[4]})${FB[bold]}${FG[1]}\
+		(${FG[4]}$NPWD${FG[1]})${FB[bold]}${FG[1]}
+		\n${FG[2]}${FB[bold]}${FG[1]}${FG[3]}${FB[reset]}-» "
+	 	PS2="${FG[1]}-» ${FB[reset]}"
 		TITLEBAR="\$${NPWD}"
-		;;
-	linux*)
-		PS1="${fg[cyan]}┌${bfg[hicolor]}${fg[blue]}(${fg[magenta]}\$⋅${fg[magenta]}\h:$(\
-		tty | cut -b6-)${fg[blue]}⋅\D{%m/%d}⋅${fg[magenta]}\t${fg[blue]})${fbg[hicolor]}${fg[blue]}(${fg[magenta]}\
-		${NPWD}${fg[blue]})${fbg[hicolor]}${fg[blue]}${fg[black]}\n${fg[cyan]}${fbg[hicolor]}${fg[blue]}${fbg[reset]} "
-		PS2="${fg[blue]}${fg[green]}${fbg[reset]}-»"
-		;;
-	*) PS1="${fg[blue]}(${fg[magenta]}\$${fg[blue]}\D{%m/%d}${fg[magenta]}\h:$(\
-	tty | cut -b6-)${fg[blue]}${fg[magenta]}${fg[blue]})${fbg[reset]} "
-		;;
-	esac
+	else
+		PS1="${FG[1]}(${FG[4]}\$${FG[1]}\D{%m/%d}${FG[4]}\h:$(\
+		tty | cut -b6-)${FG[1]}${FG[4]}${FG[1]})${FB[reset]} "
+		PS2="${FG[1]}-» ${FB[reset]}"
+	fi
 }
 # @ENV_VARIABLE: PROMPT_COMMAND
 # @DESCRIPTION: bash prompt command

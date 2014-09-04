@@ -55,6 +55,6 @@ for (( b=0; i<8; i++ )); do
 done
 printline
 
-unset B CLR E F R
+unset B BO CLR E F FO R
 
 # vim:fenc=utf-8:ci:pi:sts=0:sw=2:ts=2:

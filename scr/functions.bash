@@ -75,6 +75,8 @@ SGR07=(reset bold faint italic underline sblink rblink inverse)
 # @FUNCTION: bash_prompt
 # @DESCRIPTION: bash prompt function
 # @USAGE: bash_prompt [4-color]
+# if 256 colors is suported, color can be in [0-255] range check out
+# ref: http://www.calmar.ws/vim/256-xterm-24bit-rgb-color-chart.html
 function bash_prompt()
 {
 	# Initialize colors arrays

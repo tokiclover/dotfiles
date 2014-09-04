@@ -1,5 +1,7 @@
 #!/bin/bash
-# $Id: ~/scr/fhp.bash,v 2.0 2014/08/31 21:09:26 -tclover Exp $
+#
+# $Id: fhp.bash,v 2.0 2014/08/31 21:09:26 -tclover Exp $
+# $License: MIT (or 2-clause/new/simplified BSD)   Exp $
 #
 # @DESCRIPTION: set firefox profile dir to tmpfs or zram backed fs
 # @USAGE: [OPTIONS] [profile]
@@ -56,10 +58,10 @@ function fhp() {
 	
 	local dir="${FHPDIR%/*}" fhp="${FHPDIR##*/}" mnt
 	if [[ ! -f "$FHPDIR.tar.$ext" ]] || [[ ! -f "$FHPDIR.old.tar.$ext" ]]; then
-		pushd "$d" >/dev/null 2>&1 || die
+		pushd "$dir" >$n 2>&1 || die
 		tar -Ocp $fhp | $comp $fhp.tar.$ext  ||
 		die "fhp: failed to pack a new tarball"
-		popd >/dev/null 2>&1
+		popd >$n 2>&1
 	fi
 
 	[[ -n "$ZRAMDIR" ]] && mnt="$(mktemp -d $ZRAMDIR/$USER/fhp-XXXXXX)" ||
@@ -71,7 +73,7 @@ function fhp() {
 	local dir="${FHPDIR%/*}" ext="${comp%% *}" fhp="${FHPDIR##*/}"
 	local tbl=$fhp.tar.$ext otb=$fhp.old.tar.$ext
 	
-	pushd "$dir" >/dev/null 2>&1
+	pushd "$dir" >$n 2>&1
 	if [[ -f $fhp/.unpacked ]]; then
 		mv -f $tbl $otb || die "fhp: failed to override the old tarball"
 		tar -X $fhp/.unpacked -Ocp $fhp | $comp $tbl ||
@@ -95,9 +97,9 @@ function fhp() {
 			die "fhp: no tarball found"
 		fi
 	fi
-	popd >/dev/null 2>&1
+	popd >$n 2>&1
 }
 
 fhp "$@"
 
-# vim:fenc=utf-8:ft=sh:ci:pi:sts=0:sw=2:ts=2:
+# vim:fenc=utf-8:ft=sh:ci:pi:sts=0:sw=4:ts=4:

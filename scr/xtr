@@ -17,15 +17,16 @@ usage() {
 [ $# == 0 ] && usage
 
 while [ $# -ge 1 ]; do
-	arg="$1""
+	arg="$1"
 	case "$arg" in
 		*.gpg) gpg=gpg;;
 		-c|--comp) c_opt="$2"
-		     shift 2;;
+		     shift 2
+		     continue;;
 		-g|--gpg) g_opt="$2"
-		     shift 2;;
+		     shift 2
+		     continue;;
 		-h|--help) usage;;
-
 		*.tbz*2*|*.tar.bz*2*) cmp="tar -xvjf";;
 		*.txz*|*.tar.xz*) cmp="tar -xvJf";;
 		*.tgz*|*.tar.gz*) cmp="tar -xvzf";;

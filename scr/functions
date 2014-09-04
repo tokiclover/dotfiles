@@ -1,4 +1,6 @@
-# $Id: ~/scr/functions, 2014/08/08 11:59:26 -tclover Exp $
+# $Id: functions, 2014/08/31 11:59:26 -tclover   Exp $
+# $License: MIT (or 2-clause/new/simplified BSD) Exp $
+#
 
 # @FUNCTION: genpwd
 # @DESCRIPTION: generate a random password using openssl to stdout
@@ -15,4 +17,4 @@ function xkc()
 	sed -nre '/keycode /s/^.*keycode ([0-9]*).* (.*, (.*)).*$/\1 \2/p'
 }
 
-# vim:fenc=utf-8:ft=zsh:ci:pi:sts=0:sw=2:ts=2:
+# vim:fenc=utf-8:ft=zsh:ci:pi:sts=0:sw=4:ts=4:

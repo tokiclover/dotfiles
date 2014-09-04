@@ -1,5 +1,5 @@
-# $Id: functions.bash, 2014/08/31 12:59:26 -tclover            Exp $
-# $License: 2-clause (simplified/new) BSD or MIT (simple name) Exp $
+# $Id: functions.bash, 2014/08/31 12:59:26 -tclover Exp $
+# $License: MIT (or 2-clause/new/simplified BSD)    Exp $
 
 [[ -f ~/scr/functions ]] && source ~/scr/functions
 

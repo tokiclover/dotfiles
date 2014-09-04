@@ -1,4 +1,5 @@
-# $Id: ~/scr/functions.bash, 2014/08/08 12:59:26 -tclover Exp $
+# $Id: functions.bash, 2014/08/31 12:59:26 -tclover            Exp $
+# $License: 2-clause (simplified/new) BSD or MIT (simple name) Exp $
 
 [[ -f ~/scr/functions ]] && source ~/scr/functions
 
@@ -7,7 +8,7 @@
 # @USAGE: <string>
 function eerror()
 { 
-	echo -ne "${0##*/}: \e[1;31m \e[0m$@\n"
+	echo -ne "${0##*/}: \e[1;31m \e[0m$@\n" >&2
 	[[ -n "$LOG" ]] && [[ -n "$facility" ]] &&
 	logger -p $facility "${0##*/}: $@"
 }

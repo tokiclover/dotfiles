@@ -1,5 +1,8 @@
 #!/bin/sh
-# $Id: ~/scr/soundon.user, 2014/08/08 12:57:40 -tclover Exp $
+#
+# $Id: soundon.user, 2014/08/31 12:57:40 -tclover Exp $
+# $License: MIT (or 2-clause/new/simplified BSD)  Exp $
+#
 
 grep -q oss /proc/modules || modprobe -a oss_{{audio,midi}loop,hdaudio,midimix}
 ( lspci | grep -q -i cmi878 ) && modprobe oss_cmi878x

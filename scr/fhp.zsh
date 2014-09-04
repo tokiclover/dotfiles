@@ -1,5 +1,7 @@
 #!/bin/zsh
-# $Id: ~/scr/fhp.zsh,v 2.0 2014/08/31 21:09:26 -tclover Exp $
+#
+# $Id: fhp.zsh,v 2.0 2014/08/31 21:09:26 -tclover Exp $
+# $License: MIT (or 2-clause/new/simplified BSD)  Exp $
 #
 # @DESCRIPTION: set firefox profile dir to tmpfs or zram backed fs
 # @USAGE: [OPTIONS] [profile]
@@ -95,4 +97,4 @@ function {
 
 fhp
 
-# vim:fenc=utf-8:ft=zsh:ci:pi:sts=0:sw=2:ts=2:
+# vim:fenc=utf-8:ft=zsh:ci:pi:sts=0:sw=4:ts=4:

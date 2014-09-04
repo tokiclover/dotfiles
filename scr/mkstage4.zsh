@@ -30,7 +30,7 @@ exit
 }
 
 error() {
-	print -P "%B%F{red}*%b%f $@" <&2
+	print -P "%B%F{red}*%b%f $@" >&2
 }
 
 die() {
@@ -40,11 +40,11 @@ die() {
 alias die='die "%F{yellow}%1x:%U${(%):-%I}%u:%f" $@'
 
 zmodload zsh/zutil
-zparseopts -E -D -K -A opts b c: e+: g q p: r: s: d: t: u cipher: comp: dir: \
-	exclude+: gpg sdr recipient: root: R:: restore:: split: sqfsdir: sqfsd+: \
-	encrypt sign symmetric sysdir+: tarball: usage || usage
+zparseopts -E -D -K -A opts b c: e+: g q p: r: s: d: t: h cipher: comp: dir: \
+	exclude+: gpg sdr recipient: root: R:: restore:: split: sdr-dir+: sdr-root: \
+	encrypt sign symmetric sdr-sys+: tarball: help || usage
 
-if [[ -n ${(k)opts[-u]} ]] || [[ -n ${(k)opts[-usage]} ]] { usage }
+if [[ -n ${(k)opts[-h]} ]] || [[ -n ${(k)opts[-help]} ]] { usage }
 if [[ -z ${opts[*]} ]] { typeset -A opts }
 :	${opts[-comp]:=${opts[-c]:-gzip}}
 : 	${opts[-prefix]:=${opts[-p]:-$(uname -s)-$(uname -m)-$(uname -r | cut -d- -f1)}}

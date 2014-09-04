@@ -1,4 +1,5 @@
-# $Id: ~/scr/functions.zsh, 2014/08/08 11:59:26 -tclover Exp $
+# $Id: functions.zsh, 2014/08/31 11:59:26 -tclover Exp $
+# $License: MIT (or 2-clause/new/simplified BSD)   Exp $
 
 if [[ -f ~/scr/functions ]] { source ~/scr/functions }
 
@@ -9,7 +10,7 @@ function eerror()
 {
 	[[ -n $LOG ]] && [[ -n $facility ]] &&
 	logger -p $facility -t ${(%):-%1x}: $@
-	print -P "${(%):-%1x}: ${(%):-%1x}: %B%F{red}*%b%f $@"
+	print -P "${(%):-%1x}: ${(%):-%1x}: %B%F{red}*%b%f $@" >&2
 }
 
 # @FUNCTION: die

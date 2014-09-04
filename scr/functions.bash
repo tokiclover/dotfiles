@@ -88,7 +88,7 @@ function bash_prompt()
 		F="${E}1;38"
 	fi
 
-	[[ $# -eq 5 ]] && C="$@" || C="4 6 5 2" 
+	[[ $# -eq 4 ]] && C="$@" || C="4 6 5 2" 
 	for c in $C; do
 		BG[$c]="${B}${i}m"
 		FG[$c]="${F}${i}m"

@@ -4,11 +4,13 @@
 
 another _dotfiles_ repository
 
-# COPYING: 2-clause (*simplified* or *new*) BSD or MIT at your *name* preference
+# COPYING:
+
+2-clause (*simplified* or *new*) BSD or MIT at your *name* preference
 
 (if not explicitly stated otherwise in particular files)
 
-# using this repository
+# Using this repository:
 
 * clone the repository or repositories: 
 `% git clone git://github.com/tokiclover/dotfiles.git ~/`
@@ -18,7 +20,7 @@ another _dotfiles_ repository
 * another alternative is to clone this repository with *--recurse-submodules* passed to *git*
 * your HOME dir is not empty? just back up your dot files, clone to another directory like *dotfiles* and then move everything manualy to your $HOME dir
 
-# scr: scripts extra info
+# Scripts extra info (/scr):
 
 * cbu: is a simple script to back up/restore cfg files or directories;
 * fhp: is a simple script which put firefox profile into tmpfs/zram backed FS (dep: functions.$shell);

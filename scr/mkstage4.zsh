@@ -96,7 +96,7 @@ if [[ -n ${(k)opts[-sdr]} ]] || [[ -n ${(k)opts[-q]} ]] {
 	if [[ -n ${opts[-squashd]} ]] {
 		sdr.zsh -r${opts[-sdr-root]} -o0    -d${opts[-sdr-dir]}
 	}
-	for file (${opts[-sdr-root]}/**/*.sfs) {
+	for file (${opts[-sdr-root]}/**/*.squashfs) {
 		opts[-opt]+=" --exclude=${file} --exclude=${file%.sfs}/rr/*"
 		opts[-opt]+=" --exclude=${${file%.sfs}#${opts[-sdr-root]}/}"
 		rsync -avuR ${file} ${opts[-dir]}/${opts[-sdr-root]:t}-${${opts[-prefix]}#*-}

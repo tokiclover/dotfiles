@@ -1,5 +1,7 @@
 #!/bin/sh
-# $Id: ~/scr/ipr,v 2.3 2014/07/31 15:11:10 -tclover Exp $
+#
+# $Id: ipr,v 2.3 2014/08/31 15:11:10 -tclover    Exp $
+# $License: MIT (or 2-clause/new/simplified BSD) Exp $
 
 usage() {
 cat <<-EOF
@@ -262,4 +264,4 @@ fi
 
 unset -v awk bck dhcp dsr ext i ipv ipv4 ipv6 ifc int ipt grp kmod module srv
 
-# vim:fenc=utf-8:ci:pi:sts=0:sw=2:ts=2:
+# vim:fenc=utf-8:ci:pi:sts=0:sw=4:ts=4:

@@ -80,7 +80,7 @@ SGR07=(reset bold faint italic underline sblink rblink inverse)
 function bash_prompt()
 {
 	# Initialize colors arrays
-	declare -A BG FG BF
+	declare -A BG FG FB
 	local B C CLR=$(tput colors) E="\e[" F
 	if [[ "$CLR" -ge 256 ]]; then
 		B="${E}48;5;"
@@ -96,7 +96,7 @@ function bash_prompt()
 		FG[$c]="${F}${i}m"
 	done
 	for (( i=0; i<8; i++ )); do
-		BF[${SGR07[$i]}]="\e[${i}m"
+		FB[${SGR07[$i]}]="\e[${i}m"
 	done
 
 	# Check PWD length
@@ -169,10 +169,10 @@ function kmp-cc ()
 	local green yellow cyan reset
 	if tty -s <&1
 	then
-		green="${fg[green]}"
-		yellow="${fg[yellow]}"
-		cyan="${fg[cyan]}"
-		reset="${bfg[reset]}"
+		green="\e[1;32m"
+		yellow="\e[1;33m"
+		cyan="\e[1;36m"
+		reset="\e[0m"
 	fi
 	newline='
 '

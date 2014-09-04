@@ -1,5 +1,8 @@
 #!/bin/zsh
-# $Id: ~/scr/hdu.zsh,v 1.1 2014/07/31 23:00:55 -tclover Exp $
+#
+# $Id: hdu.zsh,v 1.1 2014/08/31 23:00:55 -tclover Exp $
+# $License: MIT (or 2-clause/new/simplified BSD)  Exp $
+#
 usage() {
   cat <<-EOF
   usage: ${(%):-%1x} [options] <files>

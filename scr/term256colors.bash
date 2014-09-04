@@ -10,7 +10,7 @@ printline() {
 }
 
 declare BO FO C E="\e["
-declare B="${E}48;5" F="38;5" R="${E}m"
+declare B="${E}48;5" F="38;5" R="${E}0m"
 
 C=$(tput colors)
 [[ $C -lt 256 ]] && echo "256 colors not supported" >&2 && exit 1

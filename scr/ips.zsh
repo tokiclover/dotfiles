@@ -1,38 +1,47 @@
 #!/bin/zsh
-# $Id: ~/.scr/ips.zsh,v 2.0 2014/07/31 14:56:24 -tclover Exp $
-usage() {
+#
+# $Id: ips.zsh,v 2.0 2014/07/31 14:56:24 -tclover Exp $
+# $License: MIT (or 2-clause/new/simplified BSD)  Exp $
+#
+function usage()
+{
   cat <<-EOF
   usage: ${(%):-%1x} [-f|-file <file>] [-t|-target <url>] [OPTIONS]
   
-  -d, -datadir           data dir location, default to '/var/lib/ipset'
-  -f, -file <file>       file src to use insted of using a url target
-  -l, -logger <user>     use facility to log in logger, default to cron
-  -p, -params <params>   parameters, options to pass to IPSet
-  -t, -target <url>      use url src to use instead using a file target
-  -g, -gpg [<url.asc>]   use url to get pub key or use <file.asc> if -f,
+  -d, -datadir<dir>      data dir location, default to '/var/lib/ipset'
+  -f, -file<file>        file src to use insted of using a url target
+  -l, -logger<user>      use facility to log in logger, default to cron
+  -p, -params<params>    parameters, options to pass to IPSet
+  -t, -target<url>       use url src to use instead using a file target
+  -g, -gpg[<url.asc>]    use url to get pub key or use <file.asc> if -f,
                          default to <url.asc> if <use.asc> not specified
-  -x, -xtr [</path/xtr>] path to xtr script, default to '~/scr/xtr'
+  -x, -xtr[</path/xtr>]  path to xtr script, default to '~/scr/xtr'
   -r, -raw               data file is raw file with only usable data
   -a, -archive           data file is an archive or tarball file
   -h, -help              print this help/usage and exit
 
-   default:             :...two implemented use cases...:
-  -ipdeny               use http://ipdeny.com/ipblocks/data/
-  -dshield              use https://www.dshield.org/block.txt
+   default:              :...two implemented use cases...:
+  -ipdeny                use http://ipdeny.com/ipblocks/data/
+  -dshield               use https://www.dshield.org/block.txt
 EOF
 exit $?
 }
 
-error() {
+function error()
+{
 	[[ -n $LOG ]] && logger -p $facility.err -t ips: $@
-	print -P "ips: %B%F{red}*%b%f $@"
+	print -P "ips: %B%F{red}*%b%f $@" >&2
 }
-die() {
+
+function die()
+{
 	local ret=$?
 	error $@
 	exit $ret
 }
-info()  { 
+
+function info() 
+{
 	[[ -n $LOG ]] && logger -p $facility.notice -t ips: $@
 	print -P "ips: %B%F{green}*%b%f $@" 
 }
@@ -66,21 +75,25 @@ for module (/lib/modules/$(uname -r)/**/ip_set{,_${${=opts[-params]/:/_}[(w)1]}}
 	modprobe ${${module:t}%.ko} 
 }
 
-get_time() {
+function get_time()
+{
 	print $(date -r ${1:-$datafile} +%m/%d:%R 2>/dev/null)
 }
 
-get_file() {
+function get_file()
+{
 	wget -qNP ${opts[-datadir]} ${1} || die "wget failed to get ${1}"
 }
 
-get_sign() {
+function get_sign()
+{
 	[[ -e $gpgfile ]] || die "$gpgfile not found"
 	gpg --verify $gpgfile $datafile ||
 	die "gpg failed to verify $datafile file"
 }
 
-get_target() {
+function get_target()
+{
 	local target=${1:-opts[-target]}
 	datafile=${opts[-datadir]}/${target:t}
 	oldtime=$(get_time)
@@ -97,11 +110,13 @@ get_target() {
 	}
 }
 
-ipfilter() {
+function ipfilter()
+{
 	sed -nre 's/(^([0-9]{1,3}\.){3}[0-9]{1,3}).*$/\1/p' ${1:-$datafile}
 }
 
-ipblock() {
+function ipblock()
+{
 	local data=${1:-$datafile} name=${2} tmp net i
 :	${name:=${${data:t}%.*}}
 	tmp=${name%-*}-tmp

@@ -17,6 +17,7 @@ usage() {
 [ $# == 0 ] && usage
 
 while [ $# -ge 1 ]; do
+	arg="$1""
 	case "$arg" in
 		*.gpg) gpg=gpg;;
 		-c|--comp) c_opt="$2"
@@ -53,7 +54,7 @@ while [ $# -ge 1 ]; do
 		ret=$?
 	fi
 
-	[ $ret != 0 ] && echo "xtr: failed to extract $1" >&2
+	[ $ret != 0 ] && echo "xtr: failed to extract $arg" >&2
 	shift
 done
 

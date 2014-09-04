@@ -1,6 +1,10 @@
 #!/bin/bash
-# $Id: ~/scr/ips.bash, 2.0 2014/07/31 13:56:21 -tclover Exp $
-usage() {
+#
+# $Id: ips.bash, 2.0 2014/08/31 13:56:21 -tclover Exp $
+# $License: MIT (or 2-clause/new/simplified BSD)  Exp $
+#
+function usage()
+{
   cat <<-EOF
   usage: ${0##*/}  [-f|-file <file>] [-t|-target <url>] [OPTIONS]
   
@@ -24,18 +28,21 @@ EOF
 exit $?
 }
 
-error() { 
-	echo -ne "ips: \e[1;31m \e[0m$@\n"
+function error()
+{
+	echo -ne "ips: \e[1;31m \e[0m$@\n" >&2
 	[[ -n "$LOG" ]] && logger -p $facility.err "ips: $@"
 }
 
-die() {
+function die()
+{
 	local ret=$?
 	error "$@"
 	exit $ret
 }
 
-info() { 
+function info()
+{
 	echo -ne "ips: \e[1;32m \e[0m$@\n"
 	[[ -n "$LOG" ]] && logger -p $facility.info "ips: $@"
 }
@@ -44,6 +51,7 @@ opt=$(getopt -o ad:f:g::o::p:rt:ux: -l archive,datadir:,filename:,gpg::,logger::
 	-l params:,raw,target:,usage,xtr:,dshield,ipdeny \
 	-n ${0##*/} -- "$@" || usage)
 eval set -- "$opt"
+
 declare -A opts
 while [[ $# > 0 ]]; do
 	case $1 in
@@ -65,6 +73,7 @@ while [[ $# > 0 ]]; do
 		-?|-h|--help|*) usage;;
 	esac
 done
+
 [[ -n "${opts[datadir]}" ]] || opts[datadir]="/var/lib/ipset"
 [[ -n "${opts[params]}" ]] || opts[params]="hash:net hashsize 64"
 if [[ -n "$IPDENY" ]]; then
@@ -78,21 +87,25 @@ for module in $(find /lib/modules/$(uname -r) -name \
 	ip_set_$(echo ${opts[params]} | cut -d' ' -f1 | sed -e 's/:/_/').ko)
 do modprobe $(basename ${module%.ko}); done
 
-get_time() {
+function get_time()
+{
 	echo $(date -r ${1:-$datafile} +%m/%d:%R 2>/dev/null)
 }
 
-get_file() {
+function get_file()
+{
 	wget -qNP ${opts[datadir]} ${1} || die "wget failed to get ${1}"
 }
 
-get_sign() {
+function get_sign()
+{
 	[[ -e "$gpgfile" ]] || die "$gpgfile not found"
 	gpg --verify $gpgfile $datafile ||
 	die "gpg failed to verify $datafile file"
 }
 
-get_target() {
+function get_target()
+{
 	local target=${1:-opts[target]}
 	datafile=${opts[datadir]}/${target##*/}
 	oldtime=$(get_time)
@@ -109,11 +122,13 @@ get_target() {
 	fi
 }
 
-ipfilter() {
+function ipfilter()
+{
 	sed -nre 's/(^([0-9]{1,3}\.){3}[0-9]{1,3}).*$/\1/p' ${1:-$datafile}
 }
 
-ipblock() {
+function ipblock()
+{
 	local data=${1:-$datafile} name=${2} tmp net i
 :	${name:=$(basename "${data%.*}")}
 	tmp=${name%-*}-tmp

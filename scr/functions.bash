@@ -109,18 +109,21 @@ function bash_prompt()
 	[[ -n "${NPWD%%HOME*}" ]] && NPWD=${NPWD/~/\~}
 
 	# And the prompt
-	if [[ "$CLR" -ge 8 ]]; then
+	case $TERM in
+	*xterm*|*rxvt*)
 		PS1="${FG[2]}┌${FB[bold]}$FG[1]}(${FG[4]}\$${FG[1]}${FG[4]}\h:$(\
 		tty | cut -b6-)${FG[1]}⋅\D{%m/%d}⋅${FG[4]}\t${FG[4]})${FB[bold]}${FG[1]}\
 		(${FG[4]}$NPWD${FG[1]})${FB[bold]}${FG[1]}
 		\n${FG[2]}${FB[bold]}${FG[1]}${FG[3]}${FB[reset]}-» "
-	 	PS2="${FG[1]}-» ${FB[reset]}"
+		PS2="${FG[1]}-» ${FB[reset]}"
 		TITLEBAR="\$${NPWD}"
-	else
+	;;
+	*)
 		PS1="${FG[1]}(${FG[4]}\$${FG[1]}\D{%m/%d}${FG[4]}\h:$(\
 		tty | cut -b6-)${FG[1]}${FG[4]}${FG[1]})${FB[reset]} "
 		PS2="${FG[1]}-» ${FB[reset]}"
-	fi
+	;;
+	esac
 }
 # @ENV_VARIABLE: PROMPT_COMMAND
 # @DESCRIPTION: bash prompt command

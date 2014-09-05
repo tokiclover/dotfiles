@@ -38,20 +38,32 @@ function einfo()
 # @ARG: [-d|-f] [-m <mode>] [-o <owner[:group]>] [-g <group>] TEMPLATE
 function mktmp()
 {
-	[[ $# == 0 ]] &&
-	echo "usage: mktmp [-d|-f] [-m <mode>] [-o <owner[:group]>] [-g <group>] TEMPLATE" &&
-	exit 1
+	usage='cat <<-EOF
+usage: mktmp [options] TEMPLATE
+  -d, --dir           create a directory
+  -f, --file          create a file
+  -o, --owner <name>  owner naame
+  -g, --group <name>  group name
+  -m, --mode <1700>   octal mode
+  -h, --help          help/exit
+EOF
+exit'
+	
+	[[ $# == 0 ]] && $usage
+	
 	local type mode owner group tmp TMP=${TMPDIR:-/tmp}
 	while [[ $# -ge 1 ]]; do
 		case $1 in
-			-d) type="dir"; shift;;
-			-f) type="file"; shift;;
-			-m) mode="$2"; shift 2;;
-			-o) owner="$2"; shitf 2;;
-			-g) group="$2"; shift 2;;
+			-d|--dir) type=dir; shift;;
+			-f|--file) type=file; shift;;
+			-h|--help) $usage;;
+			-m|--mode) mode=$2; shift 2;;
+			-o|--owner) owner="$2"; shitf 2;;
+			-g|--group) group="$2"; shift 2;;
 		 	*) tmp="$1"; shift;;
 		esac
 	done
+
 	[[ -n "$tmp" ]] && TMP+=/"$tmp"-XXXXXX ||
 	die "mktmp: no $tmp TEMPLATE provided"
 	if [[ "$type" == "dir" ]]; then

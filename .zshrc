@@ -13,7 +13,7 @@ if [[ -f ~/.prezto/init.zsh ]] {
 	zstyle ':prezto:module:prompt' theme 'clover'
 	zstyle ':prezto:load' pmodule 'environment' 'terminal' \
 		'editor' 'prompt' 'syntax-highlighting'
-	source $ZSH/init.zsh
+	source ~/.prezto/init.zsh
 }
 
 if [[ -f ~/.aliasrc ]] { source ~/.aliasrc }

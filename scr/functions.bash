@@ -97,13 +97,16 @@ function bash_prompt()
 	if [[ "$CLR" -ge 256 ]]; then
 		B="${E}48;5;"
 		F="${E}1;38;5;"
+		C="57 77 69 124"
+
 	else
 		B="${E}4"
-		F="${E}1;38"
+		F="${E}1;3"
+		C="4 6 5 2"
 	fi
 
-	[[ $# -eq 4 ]] && C="$@" || C="4 6 5 2" 
-	for c in $C; do
+	[[ $# -eq 4 ]] && C="$@"
+	for (( c=1; c<5; c++ )); do
 		BG[$c]="${B}${i}m"
 		FG[$c]="${F}${i}m"
 	done

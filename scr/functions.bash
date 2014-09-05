@@ -182,7 +182,7 @@ function kmp-aa ()
 function kmp-cc ()
 {
 	local green yellow cyan reset
-	if tty -s <&1
+	if [[ "$(tput colors)" -ge 8 ]]
 	then
 		green="\e[1;32m"
 		yellow="\e[1;33m"

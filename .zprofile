@@ -1,4 +1,4 @@
-# $Id: ~/.zprofile, 2013/06/26 08:04:40 -tclover Exp $
+# $Id: ~/.zprofile, 2014/08/31 08:04:40 -tclover Exp $
 
 export EDITOR=${EDITOR:-/bin/nano}
 export PAGER=${PAGER:-/usr/bin/less}
@@ -13,12 +13,7 @@ if [[ ${EUID} = 0 ]] || [[ ${USER} = root ]] {
 export PATH
 unset ROOTPATH
 
-export CDPATH='.:~:/var/src/git-src:/var/src/egit-src:/var/src/svn-src:/usr/src:/mnt'
-export ECORE_IMF_MODULE="xim"
-export GTK2_RC_FILES="$HOME/.gtkrc-2.0"
-export XMODIFIERS="@im=none"
-export XDG_CONFIG_HOME="$HOME/.config"
-export XDG_RUNTIME_DIR="/tmp/.private/$USER"
+if [[ -f ~/.Xprofile ]] { source ~/.Xprofile }
 
 for sh (/etc/profile.d/*.sh) if [[ -r ${sh} ]] { source ${sh} }
 unset sh

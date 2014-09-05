@@ -1,17 +1,21 @@
-# $Id: ~/.bash_login, 2014/07/06 10:15:47 -tclover Exp $
+# $Id: ~/.bash_login, 2014/08/31 10:15:47 -tclover Exp $
+
 # auto startx depending on the tty
 [[ -z $DISPLAY ]] && [[ $UID != 0 ]] && [[ $(tty | cut -c9) -le 3 ]] &&
 	startx 1>~/.log/xsession-errors 2>&1 &
+
 # start gnome-keyring
 if [[ -f $TMPDIR/keyring/env ]]; then
 	while read line; do
 		export $line
 	done <$TMPDIR/keyring/env
 fi
+
 if [[ -z $GNOME_KEYRING_PID ]]; then
 	eval $(gnome-keyring-daemon --daemonize --components=pkcs11,secrets,ssh,gpg)
 	echo -e SSH_AUTH_SOCK=$SSH_AUTH_SOCK\
 	    "\n"GPG_AGENT_INFO=$GPG_AGENT_INFO >$TMPDIR/keyring/env
 	export SSH_AUTH_SOCK GPG_AGENT_INFO
 fi
+
 # vim:fenc=utf-8:ci:pi:sts=0:sw=4:ts=4:

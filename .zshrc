@@ -8,11 +8,12 @@ if [[ -f ~/.dir_colors ]] {
 	eval $(dircolors -b /etc/DIR_COLORS) 
 } else { eval $(dircolors) }
 
-if [[ -e $ZSH/oh-my-zsh.sh ]] {
-	plugins=(vi-mode zsh-syntax-highlighting)
-	ZSH=$HOME/.oh-my-zsh
-	ZSH_THEME=clover
-	source $ZSH/oh-my-zsh.sh
+if [[ -f ~/.prezto/init.zsh ]] {
+	zstyle ':prezto:module:editor' key-bindings 'vi'
+	zstyle ':prezto:module:prompt' theme 'clover'
+	zstyle ':prezto:load' pmodule 'environment' 'terminal' \
+		'editor' 'prompt' 'syntax-highlighting'
+	source $ZSH/init.zsh
 }
 
 if [[ -f ~/.aliasrc ]] { source ~/.aliasrc }

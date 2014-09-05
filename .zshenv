@@ -2,7 +2,6 @@
 
 export ZDOTDIR=$HOME
 export ZLS_COLORS=${LS_COLORS}
-export FHPDIR=$(print $HOME/.mozilla/firefox/*.default(/) 2>/dev/null)
 
 if [[ -f ~/.Xprofile ]] { source ~/.Xprofile }
 

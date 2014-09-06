@@ -8,7 +8,7 @@
 # @USAGE: <string>
 function eerror()
 { 
-	echo -ne "${0##*/}: \e[1;31m \e[0m$@\n" >&2
+	echo -e "\e[1;31m* \e[0m${0##*/}: $@" >&2
 	[[ -n "$LOG" ]] && [[ -n "$facility" ]] &&
 	logger -p $facility "${0##*/}: $@"
 }
@@ -28,7 +28,7 @@ function die()
 # @USAGE: <string>
 function einfo()
 { 
-	echo -ne "${0##*/}: \e[1;32m \e[0m$@\n"
+	echo -e "\e[1;32m \e[0m${0##*/}: $@"
 	[[ -n "$LOG" ]] && [[ -n "$facility" ]] &&
 	logger -p $facility "${0##*/}: $@"
 }

@@ -39,7 +39,7 @@ function die()
 # define an initiliazation function
 function __init()
 {
-	comp="lz4 -1 -"
+	comp="lz4 -1"
 	while [[ $# > 0 ]]
 	case $1 in
 		(-h|--help)
@@ -89,10 +89,10 @@ function __init()
 	else
 		local decomp="${comp%% *}"
 		if [[ -f $tbl ]]; then
-			$decomp -cd $tbl $opt | tar -xp && touch $fhp/.unpacked ||
+			$decomp -cd $tbl | tar -xp && touch $fhp/.unpacked ||
 			die "failed to unpack the profile"
 		elif [[ -f $otb ]]; then
-			$decomp -cd $otb $opt | tar -xp && touch $fhp/.unpacked ||
+			$decomp -cd $otb | tar -xp && touch $fhp/.unpacked ||
 			die "failed to unpack the profile"
 		else
 			die "no tarball found"

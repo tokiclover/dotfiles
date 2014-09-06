@@ -10,7 +10,7 @@ function eerror()
 {
 	[[ -n $LOG ]] && [[ -n $facility ]] &&
 	logger -p $facility -t ${(%):-%1x}: $@
-	print -P "${(%):-%1x}: ${(%):-%1x}: %B%F{red}*%b%f $@" >&2
+	print -P "%F{red}*%f ${(%):-%1x}: $@" >&2
 }
 
 # @FUNCTION: die
@@ -19,7 +19,7 @@ function eerror()
 function die()
 {
 	local ret=$?
-	print -P "%F{red}*%f $@"
+	error $@
 	return $ret
 }
 
@@ -30,7 +30,7 @@ function einfo()
 {
 	[[ -n $LOG ]] && [[ -n $facility ]] &&
 	logger -p $facility -t ${(%):-%1x}: $@
-	print -P "${(%):-%1x}: %B%F{green}*%b%f $@"
+	print -P "%F{green}*%f ${(%):-%1x}: $@"
 }
 
 # @FUNCTION: mktmp

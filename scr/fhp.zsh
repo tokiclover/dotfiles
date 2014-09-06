@@ -25,7 +25,14 @@
 # you should have this one already, just put it to tmpfs with something like:
 # /etc/fstab: tmp	/tmp	tmpfs	mode=1777,size=256M,noatime	0 0
 
-source ~/scr/functions.zsh || return 1
+function fhp {
+
+# define a little helper to handle errors
+function die {
+	local ret=$?
+	print -P "%F{red}*%f ${(%):-%1x}: $@" >&2
+	return $ret
+}
 
 # use an anonymous function to initialize
 function {
@@ -43,7 +50,7 @@ function {
 
 	local fhp=${1:-$FHP}
 :	${fhp:=${$(print ~/.mozzila/firefox/*.default(/) 2>/dev/null):t}}
-	[[ $fhp ]] || die "fhp: no firefox profile dir found"
+	[[ $fhp ]] || die "no firefox profile dir found"
 	[[ ${fhp%.default} == $fhp ]] && fhp+=.default
 	local ext=${comp[(w)1]}
 
@@ -56,45 +63,38 @@ function {
 	if [[ ! -f $FHPDIR.tar.$ext ]] || [[ ! -f $FHPDIR.old.tar.$ext ]] {
 		pushd -q $FHPDIR:h || die
 		tar -Ocp $fhp | ${=comp} $fhp.tar.$ext  ||
-		die "fhp: failed to pack a new tarball"
+		die "failed to pack a new tarball"
 		popd -q
 	}
 
 	local mnt
 	[[ -n $ZRAMDIR ]] && mnt=$(mktemp -d $ZRAMDIR/fhp-XXXXXX) ||
         mnt=$(mktemp -d $TMPDIR/fhp-XXXXXX)
-	sudo mount --bind $FHPDIR $mnt || die "fhp: failed to mount $mnt"
+	sudo mount --bind $FHPDIR $mnt || die "failed to mount $mnt"
  } $@
  
- function fhp() {
+ 	# and finaly maintain firefox home profile
  	local dir=$FHPDIR:h ext=$comp[(w)1] fhp=$FHPDIR:t
 	local tbl=$fhp.tar.$ext otb=$fhp.old.tar.$ext
 	
 	pushd -q $dir
 	if [[ -f $fhp/.unpacked ]] {
-		mv -f $tbl $otb || die "fhp: failed to override the old tarball"
+		mv -f $tbl $otb || die "failed to override the old tarball"
 		tar -X $fhp/.unpacked -Ocp $fhp | ${=comp} $tbl ||
-		die "fhp: failed to repack a new tarball"
+		die "failed to repack a new tarball"
 	} else {
-		local decomp=$comp[(w)1] opt
-		case $decomp in
-			(lz4)
-				opt=-;;
-			(bzip2|gzip|lzip|lzop|xz)
-				opt=-c;;
-		esac
-
+		local decomp=$comp[(w)1]
 		if [[ -f $tbl ]] {
-			${=decomp} -d $tbl $opt | tar -xp && touch $fhp/.unpacked ||
-			die "fhp: failed to unpack the profile"
+			$decomp -cd $tbl | tar -xp && touch $fhp/.unpacked ||
+			die "failed to unpack the profile"
 		} elif [[ -f $otb ]] {
-			${=decomp} -d $otb $opt | tar -xp && touch $fhp/.unpacked ||
-			die "fhp: failed to unpack the profile"
-		} else { die "fhp: no tarball found" }
+			$decomp -cd $otb | tar -xp && touch $fhp/.unpacked ||
+			die "failed to unpack the profile"
+		} else { die "no tarball found" }
 	}
 	popd -q
 }
 
-fhp
+fhp $@
 
 # vim:fenc=utf-8:ft=zsh:ci:pi:sts=0:sw=4:ts=4:

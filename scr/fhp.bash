@@ -8,16 +8,16 @@
 # @OPTIONS: [-h|--help] [-c|--comp 'gzip -1']
 # @DESCRIPTION: set compressor, default to lz4
 #
-# And maybe something like: */30 * * * * $USER ~/scr/fhp.bash
+# And maybe something like: */30 * * * * $USER /path/to/fhp.zsh
 # in cron job to keep track of changes is necessary.
-# lz4 compressed is required, or else, use -c|-comp 'lzop -1'
+# lz4 compressor is required, or else, use -c|--comp 'lzop -1'
 
 # @ENV_VARIABLE: FHP
 # @DESCRIPTION: Firefox profile dir to handle
 # @EXEMPLE: FHP=abc123
 # which correspond to '~/.mozilla/firefox/$FHP.default' profile
 
-# @ENV_VARIABLE: ZRAMDIR:=/mnt/zram
+# @ENV_VARIABLE: ZRAMDIR
 # @DESCRIPTION: Zram block device backed FS to use for firefox profile
 
 # @ENV_VARIABLE: TMPDIR:-/tmp/.private/$USER
@@ -26,7 +26,7 @@
 # /etc/fstab: tmp	/tmp	tmpfs	mode=1777,size=256M,noatime	0 0
 
 function fhp() {
-	local n=/dev/null
+	local comp dir ext fhp n=/dev/null FHPDIR
 
 # define a little helper to handle errors
 function die()
@@ -39,31 +39,37 @@ function die()
 # define an initiliazation function
 function __init()
 {
-	comp="lz4 -1"
+	local usage='cat <<-EHO
+usage: fhp [options] [firefox-profile]
+  -c|--comp "lzop -1"  set lzop comprssor instead of lz4
+  -h|--help            print this help message and exit
+EOH
+return'
+
 	while [[ $# > 0 ]]
 	case $1 in
 		(-h|--help)
-			echo "usage: fhp [-c|--comp 'lzop -1'] [profile]"
-			return;;
+			$usage;;
 		(-c|--comp)
-			comp=${2:-$comp}
+			comp="$2"
 			shift 2;;
 		(*) break;;
 	esac
 
-	local fhp=${1:-$FHP}
-:	${fhp:=$(basename $(ls -d ~/.mozzila/firefox/*.default 2>$n) 2>$n)}
-	[[ $fhp ]] || die "no firefox profile dir found"
+:	${comp:="lz4 -1"}
+:	${ext="${comp%% *}"}
+:	${fhp:=${FHP:-$(basename $(ls -d ~/.mozzila/firefox/*.default 2>$n) 2>$n)}}
+	[[ "$fhp" ]] || die "no firefox profile dir found"
 	[[ ${fhp%.default} == $fhp ]] && fhp+=.default
-	local ext="${comp%% *}"
-
 :	${FHPDIR:=~/.mozilla/firefox/$fhp}
-:	${TMPDIR:=/tmp/.private/$USER}
-	[[ $ZRAMDIR]] || [[ -d $TMPDIR ]] || mkdir -p -m1700 $TMPDIR
+:	${TMPDIR:=/tmp/.private/"$USER"}
+:	${dir="${FHPDIR%/*}"}
 
-	grep -q $FHPDIR /proc/mounts && return
+	[[ "$ZRAMDIR" ]] || [[ -d "$TMPDIR" ]] || ( mkdir -p -m1700 "$TMPDIR" || die )
+
+	grep -q "$FHPDIR" /proc/mounts && return
 	
-	local dir="${FHPDIR%/*}" fhp="${FHPDIR##*/}" mnt
+	local mnt
 	if [[ ! -f "$FHPDIR.tar.$ext" ]] || [[ ! -f "$FHPDIR.old.tar.$ext" ]]; then
 		pushd "$dir" >$n 2>&1 || die
 		tar -Ocp $fhp | $comp $fhp.tar.$ext  ||
@@ -78,7 +84,6 @@ function __init()
 };	__init "$@"
 
 	# and finaly handle firefox home profile
-	local dir="${FHPDIR%/*}" ext="${comp%% *}" fhp="${FHPDIR##*/}"
 	local tbl=$fhp.tar.$ext otb=$fhp.old.tar.$ext
 	
 	pushd "$dir" >$n 2>&1

@@ -115,11 +115,10 @@ function bash_prompt()
 	done
 
 	# Check PWD length
-	local PROMPT LENGTH NPWD=${PWD/HOME/\~} TTY=$(tty | cut -b6-)
+	local PROMPT LENGTH TTY=$(tty | cut -b6-)
 	PROMPT="---($USER$(uname -n):${TTY}---()---"
 	if [[ $COLUMNS -lt $((${#PROMPT}+${#NPWD}+13)) ]]; then
-		LENGTH=$((${COLUMNS}-${#PROMPT}-16))
-		NPWD=...${NPWD:COLUMNS-LENGTH:LENGTH}
+		PROMPT_DIRTRIM=$((${COLUMNS}-${#PROMPT}-16))
 	fi
 
 	# And the prompt
@@ -127,13 +126,13 @@ function bash_prompt()
 	*xterm*|*rxvt*)
 		PS1="${FG[2]}┌${FB[bold]}$FG[1]}(${FG[4]}\$${FG[1]}${FG[4]}\h:$TTY\
 		${FG[1]}⋅\D{%m/%d}⋅${FG[4]}\t${FG[4]})${FB[bold]}${FG[1]}\
-		(${FG[4]}$NPWD${FG[1]})${FB[bold]}${FG[1]}
+		(${FG[4]}\w${FG[1]})${FB[bold]}${FG[1]}
 		\n${FG[2]}${FB[bold]}${FG[1]}${FG[3]}${FB[reset]}-» "
 		PS2="${FG[1]}-» ${FB[reset]}"
-		TITLEBAR="\$:${NPWD}"
+		TITLEBAR="\$:\w"
 	;;
 	*)
-		PS1="${FG[1]}(${FG[4]}\$${FG[1]}\D{%m/%d}${FG[4]}\h:$TTY:$NPWD\
+		PS1="${FG[1]}(${FG[4]}\$${FG[1]}\D{%m/%d}${FG[4]}\h:$TTY:\w\
 		${FG[1]}${FG[4]}${FG[1]})${FB[reset]} "
 		PS2="${FG[1]}-» ${FB[reset]}"
 	;;

@@ -5,19 +5,19 @@
 #
 # @DESCRIPTION: set firefox profile dir to tmpfs or zram backed fs
 # @USAGE: [OPTIONS] [profile]
-# @OPTIONS: [-h|--help] [-c|--comp 'gzip -1']
+# @OPTIONS: [-h|--help] [-c|--comp 'gzip -1'] [-z|--zshexit-hook]
 # @DESCRIPTION: set compressor, default to lz4
 #
-# And maybe something like: */30 * * * * $USER ~/scr/fhp.zsh
+# And maybe something like: */30 * * * * $USER /path/to/fhp.zsh
 # in cron job to keep track of changes is necessary.
-# lz4 compressed is required, or else, use -c|-comp 'lzop -1'
+# lz4 compressor is required, or else, use -c|--comp 'lzop -1'
 
 # @ENV_VARIABLE: FHP
 # @DESCRIPTION: Firefox profile dir to handle
 # @EXEMPLE: FHP=abc123
 # which correspond to '~/.mozilla/firefox/$FHP.default' profile
 
-# @ENV_VARIABLE: ZRAMDIR:=/mnt/zram
+# @ENV_VARIABLE: ZRAMDIR
 # @DESCRIPTION: Zram block device backed FS to use for firefox profile
 
 # @ENV_VARIABLE: TMPDIR:-/tmp/.private/$USER
@@ -26,7 +26,7 @@
 # /etc/fstab: tmp	/tmp	tmpfs	mode=1777,size=256M,noatime	0 0
 
 function fhp {
-
+	local comp ext fhp FHPDIR
 # define a little helper to handle errors
 function die {
 	local ret=$?
@@ -36,27 +36,36 @@ function die {
 
 # use an anonymous function to initialize
 function {
-	comp="lz4 -1 -"
+	local usage='cat <<-EHO
+usage: fhp [options] [firefox-profile]
+  -c|--comp "lzop -1"  set lzop comprssor instead of lz4
+  -z|--zshexit-hook    add fhp function to zshexit hook
+  -h|--help            print this help message and exit
+EOH
+return'
+
 	while [[ $# > 0 ]]
 	case $1 in
 		(-h|--help)
-			print "usage: fhp [-c|--comp 'lzop -1'] [profile]"
-			return;;
+			${=usage};;
 		(-c|--comp)
-			comp=${2:-$comp}
+			comp=$2
 			shift 2;;
+		(-z|--zshexit-hook)
+			autoload -Uz add-zsh-hook
+			add-zsh-hook zshexit fhp;;
 		(*) break;;
 	esac
 
-	local fhp=${1:-$FHP}
-:	${fhp:=${$(print ~/.mozzila/firefox/*.default(/) 2>/dev/null):t}}
+:	${comp:="lz4 -1"}
+:	${ext=$comp[(w)1]}
+:	${fhp:=${1:-${FHP:-${$(print ~/.mozzila/firefox/*.default(/) 2>/dev/null):t}}}}
 	[[ $fhp ]] || die "no firefox profile dir found"
 	[[ ${fhp%.default} == $fhp ]] && fhp+=.default
-	local ext=${comp[(w)1]}
-
 :	${FHPDIR:=~/.mozilla/firefox/$fhp}
 :	${TMPDIR:=/tmp/.private/$USER}
-	[[ $ZRAMDIR]] || [[ -d $TMPDIR ]] || mkdir -p -m1700 $TMPDIR
+
+	[[ $ZRAMDIR ]] || [[ -d $TMPDIR ]] || ( mkdir -p -m1700 $TMPDIR || die )
 
 	grep -q $FHPDIR /proc/mounts && return
 	
@@ -74,8 +83,7 @@ function {
  } $@
  
  	# and finaly maintain firefox home profile
- 	local dir=$FHPDIR:h ext=$comp[(w)1] fhp=$FHPDIR:t
-	local tbl=$fhp.tar.$ext otb=$fhp.old.tar.$ext
+ 	local dir=$FHPDIR:h tbl=$fhp.tar.$ext otb=$fhp.old.tar.$ext
 	
 	pushd -q $dir
 	if [[ -f $fhp/.unpacked ]] {

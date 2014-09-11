@@ -19,7 +19,6 @@ pcm.plugbs2b {
 	path /usr/lib/ladspa
 	plugins [
 	{
-		id 4221
 		label bs2b
 		input { controls [ 700 4.5 ] }
 	}

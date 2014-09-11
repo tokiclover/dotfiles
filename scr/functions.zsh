@@ -48,7 +48,7 @@ exit'
 	[[ $# == 0 ]] && ${=usage}
 
 	local type mode owner group tmp TMP=${TMPDIR:-/tmp}
-	while [[ $# -ge 1 ]] {
+	for (( ; $# >= 1; ))
 		case $1 in
 			-d|--dir) type=dir; shift;;
 			-f|--file) type=file; shift;;
@@ -58,7 +58,6 @@ exit'
 			-g|-group) group=$2; shift 2;;
 		 	*) tmp=$1; shift;;
 		esac
-	}
 
 	[[ -n $tmp ]] && TMP+=/$tmp-XXXXXX ||
 	die "mktmp: no $tmp TEMPLATE provided"

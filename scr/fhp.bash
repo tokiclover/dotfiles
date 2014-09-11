@@ -1,7 +1,9 @@
 #!/bin/bash
 #
-# $Id: fhp.bash,v 2.0 2014/08/31 21:09:26 -tclover Exp $
-# $License: MIT (or 2-clause/new/simplified BSD)   Exp $
+# $Header: fhp.bash                                     Exp $
+# $Aythor: (c) 2011-014 -tclover <tokiclover@gmail.com> Exp $
+# $License: MIT (or 2-clause/new/simplified BSD)        Exp $
+# $Version: 2.0 2014/09/09 21:09:26                     Exp $
 #
 # @DESCRIPTION: set firefox profile dir to tmpfs or zram backed fs
 # @USAGE: [OPTIONS] [profile]
@@ -25,40 +27,46 @@
 # you should have this one already, just put it to tmpfs with something like:
 # /etc/fstab: tmp	/tmp	tmpfs	mode=1777,size=256M,noatime	0 0
 
-function fhp() {
-	local comp dir ext fhp n=/dev/null FHPDIR
+function fhp {
+	local n=/dev/null
 
 # define a little helper to handle errors
-function die()
-{
+function die {
 	local ret=$?
 	echo -e "\e[1;31m* \e[0m${0##*/}: $@\n" >&2
 	return $ret
 }
 
 # define an initiliazation function
-function __init()
-{
-	local usage='cat <<-EHO
+function __init {
+
+function usage {
+	cat <<-EOH
 usage: fhp [options] [firefox-profile]
-  -c|--comp "lzop -1"  set lzop comprssor instead of lz4
-  -h|--help            print this help message and exit
+  -c, --comp 'lzop -1'  set lzop comprssor instead of lz4
+  -h, --help            print this help message and exit
 EOH
-return'
+}
 
-	while [[ $# > 0 ]]
-	case $1 in
-		(-h|--help)
-			$usage;;
-		(-c|--comp)
-			comp="$2"
-			shift 2;;
-		(*) break;;
-	esac
+	while (( $# > 0 )); do
+		case $1 in
+			(-h|--help)
+				usage
+				return 128;;
+			(-c|--comp)
+				comp="$2"
+				shift 2;;
+			(*) break;;
+		esac
+	done
 
-:	${comp:="lz4 -1"}
+:	${comp:="lz4 -1 -"}
 :	${ext="${comp%% *}"}
-:	${fhp:=${FHP:-$(basename $(ls -d ~/.mozzila/firefox/*.default 2>$n) 2>$n)}}
+:	${fhp:=${1:-$FHP}}
+	if [[ -z "$fhp" ]]; then
+		FHPDIR="$(ls -d ~/.mozilla/firefox/*.default 2>$n)"
+		fhp="${FHPDIR##*/}"
+	fi
 	[[ "$fhp" ]] || die "no firefox profile dir found"
 	[[ ${fhp%.default} == $fhp ]] && fhp+=.default
 :	${FHPDIR:=~/.mozilla/firefox/$fhp}
@@ -67,7 +75,7 @@ return'
 
 	[[ "$ZRAMDIR" ]] || [[ -d "$TMPDIR" ]] || ( mkdir -p -m1700 "$TMPDIR" || die )
 
-	grep -q "$FHPDIR" /proc/mounts && return
+	( mount | grep -q "$FHPDIR" ) && return
 	
 	local mnt
 	if [[ ! -f "$FHPDIR.tar.$ext" ]] || [[ ! -f "$FHPDIR.old.tar.$ext" ]]; then
@@ -82,6 +90,9 @@ return'
 
 	sudo mount --bind $FHPDIR $mnt || die "failed to mount $mnt"
 };	__init "$@"
+
+	# check whether -h|--help was passed
+	(( $? == 128 )) && return
 
 	# and finaly handle firefox home profile
 	local tbl=$fhp.tar.$ext otb=$fhp.old.tar.$ext
@@ -104,6 +115,7 @@ return'
 		fi
 	fi
 	popd >$n 2>&1
+	unset comp dir ext fhp FHPDIR
 }
 
 fhp "$@"

@@ -1,4 +1,4 @@
-# $Id: ~/.zshrc, 2014/08/31 22:01:25 -tclover Exp $
+# $Id: ~/.zshrc, 2014/09/09 22:01:25 -tclover Exp $
 
 setopt extended_glob
 
@@ -14,6 +14,12 @@ if [[ -f ~/.prezto/init.zsh ]] {
 	zstyle ':prezto:load' pmodule 'environment' 'terminal' \
 		'editor' 'prompt' 'syntax-highlighting'
 	source ~/.prezto/init.zsh
+}
+
+autoload -Uz promptinit
+promptinit
+if [[ -e ~/.prezto/modules/prompt/functions/prompt_clover_setup ]] {
+	source ~/.prezto/modules/prompt/functions/prompt_clover_setup
 }
 
 if [[ -f ~/.aliasrc ]] { source ~/.aliasrc }

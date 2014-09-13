@@ -8,19 +8,21 @@ if [[ -f ~/.dir_colors ]] {
 	eval $(dircolors -b /etc/DIR_COLORS) 
 } else { eval $(dircolors) }
 
-if [[ -f ~/.prezto/init.zsh ]] {
-	zstyle ':prezto:module:editor' key-bindings 'vi'
-	zstyle ':prezto:module:prompt' theme 'clover'
-	zstyle ':prezto:load' pmodule 'environment' 'terminal' \
-		'editor' 'prompt' 'syntax-highlighting'
-	source ~/.prezto/init.zsh
+if [[ -f ~/.zprezto/init.zsh ]] {
+#	zstyle ':prezto:module:editor' key-bindings 'vi'
+#	zstyle ':prezto:module:prompt' theme 'clover'
+#	zstyle ':prezto:load' pmodule 'environment' 'terminal' \
+ # 	'editor' 'prompt' 'syntax-highlighting'
+	source ~/.zprezto/init.zsh
 }
 
 autoload -Uz promptinit
 promptinit
-if [[ -e ~/.prezto/modules/prompt/functions/prompt_clover_setup ]] {
-	source ~/.prezto/modules/prompt/functions/prompt_clover_setup
+if [[ -e ~/.zprezto/modules/prompt/functions/prompt_clover_setup ]] {
+	source ~/.zprezto/modules/prompt/functions/prompt_clover_setup
 }
+
+if [[ -f ~/key-bindings.zsh ]] { source ~/key-bindings.zsh }
 
 if [[ -f ~/.aliasrc ]] { source ~/.aliasrc }
 if [[ -f ~/scr/functions.zsh ]] { source ~/scr/functions.zsh }

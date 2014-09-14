@@ -1,13 +1,16 @@
 #!/bin/sh
-# $Id: /etc/acpi/default.sh, 2014/08/08 14:22:59 -tclover Exp $
+#
+# $Header: /etc/acpi/default.sh                          Exp $
+# $Aythor: (c) 2012-2014 -tclover <tokiclover@gmail.com> Exp $
+# $License: MIT (or 2-clause/new/simplified BSD)         Exp $
+# $Version: 2014/09/09 21:09:26                          Exp $
+#
 
-log()
-{
+log() {
 	logger -p daemon "ACPI: $*"
 }
 
-uhd()
-{
+uhd() {
 	log "event unhandled: $*"
 }
 
@@ -49,7 +52,7 @@ case $group in
 			lid)
 				case "$id" in
 					close) hibernate-ram;;
-					open) :;;
+					open) hprofile power;;
 					*) uhd $*;;
 				esac
 				;;
@@ -68,8 +71,7 @@ case $group in
 		;;
 	cd)
 		case $action in
-			play|stop|next) [ $mpris ] && $mpris $action;;
-			prev) [ $mpris ] && $mpris previous:;;
+			play|stop|next|prev) :;;
 			*) uhd $*;;
 		esac
 		;;

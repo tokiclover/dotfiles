@@ -27,7 +27,7 @@ another _dotfiles_ repository
 * functions: functions for bash and zsh, almost only die() helper;
 * hdu: is a simple script which ease updating '$Header:...$' or '$Id:...$' update;
 * ips: is a script which can be used to retrieve IP block lists to be added to iptables rules;
-* ipr: is script to generate ip[6]tables net rules;
+* ipr: is script to generate statefull ip[6]tables net rules;
 * kvm: is a script to ease kvm loadind with a few default option;
 * lbd: is a script to add/remove loop back devices;
 * mkstage4: a stage4 maker scripts with squashed (system and/or local) directories support;

@@ -1,18 +1,16 @@
-# $Id: functions, 2014/08/31 11:59:26 -tclover   Exp $
+# $Id: functions, 2014/09/09 11:59:26 -tclover   Exp $
 # $License: MIT (or 2-clause/new/simplified BSD) Exp $
 #
 
 # @FUNCTION: genpwd
 # @DESCRIPTION: generate a random password using openssl to stdout
-function genpwd()
-{
+function genpwd {
 	openssl rand -base64 48
 }
 
-# @FUNCTION: xkc
-# @DESCRIPTION: simple Xev KeyCode
-function xkc()
-{
+# @FUNCTION: xev-key-code
+# @DESCRIPTION: simple xev key code
+function xev-key-code {
 	xev | grep -A2 --line-buffered '^KeyRelease' | \
 	sed -nre '/keycode /s/^.*keycode ([0-9]*).* (.*, (.*)).*$/\1 \2/p'
 }

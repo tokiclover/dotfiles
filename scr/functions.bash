@@ -1,4 +1,4 @@
-# $Id: functions.bash, 2014/08/31 12:59:26 -tclover Exp $
+# $Id: functions.bash, 2014/09/09 12:59:26 -tclover Exp $
 # $License: MIT (or 2-clause/new/simplified BSD)    Exp $
 
 [[ -f ~/scr/functions ]] && source ~/scr/functions
@@ -6,8 +6,7 @@
 # @FUNCTION: die
 # @DESCRIPTION: hlper function, print error message to stdout
 # @USAGE: <string>
-function eerror()
-{ 
+function eerror {
 	echo -e "\e[1;31m* \e[0m${0##*/}: $@" >&2
 	[[ -n "$LOG" ]] && [[ -n "$facility" ]] &&
 	logger -p $facility "${0##*/}: $@"
@@ -16,8 +15,7 @@ function eerror()
 # @FUNCTION: die
 # @DESCRIPTION: hlper function, print message and exit
 # @USAGE: <string>
-function die()
-{
+function die {
 	local ret=$?
 	error "$@"
 	return $ret
@@ -26,8 +24,7 @@ function die()
 # @FUNCTION: into
 # @DESCRIPTION: hlper function, print info message to stdout
 # @USAGE: <string>
-function einfo()
-{ 
+function einfo {
 	echo -e "\e[1;32m \e[0m${0##*/}: $@"
 	[[ -n "$LOG" ]] && [[ -n "$facility" ]] &&
 	logger -p $facility "${0##*/}: $@"
@@ -36,8 +33,7 @@ function einfo()
 # @FUNCTION: mktmp
 # @DESCRIPTION: make tmp dir or file in ${TMPDIR:-/tmp}
 # @ARG: [-d|-f] [-m <mode>] [-o <owner[:group]>] [-g <group>] TEMPLATE
-function mktmp()
-{
+function mktmp {
 	usage='cat <<-EOF
 usage: mktmp [options] TEMPLATE
   -d, --dir           create a directory
@@ -89,8 +85,7 @@ SGR07=(reset bold faint italic underline sblink rblink inverse)
 # @USAGE: bash_prompt [4-color]
 # if 256 colors is suported, color can be in [0-255] range check out
 # ref: http://www.calmar.ws/vim/256-xterm-24bit-rgb-color-chart.html
-function bash_prompt()
-{
+function bash_prompt {
 	# Initialize colors arrays
 	declare -A BG FG FB
 	local B C CLR=$(tput colors) E="\e[" F
@@ -142,10 +137,9 @@ function bash_prompt()
 # @DESCRIPTION: bash prompt command
 PROMPT_COMMAND=bash_prompt
 
-# @FUNCTION: kmp-aa
+# @FUNCTION: kmod-pa
 # @DESCRIPTION: little helpter to retrieve Kernel Module Parameters
-function kmp-aa () 
-{ 
+function kmod-pa {
 	local c d line m mc mod md de n=/dev/null o
 	c=$(tput op) o=$(echo -en "\n$(tput setaf 2)-*- $(tput op)")
 	if [[ -n "$*" ]]
@@ -176,10 +170,9 @@ function kmp-aa ()
 }
 
 
-# @FUNCTION: kmp-cc
+# @FUNCTION: kmod-pc
 # @DESCRIPTION: colorful helper to retrieve Kernel Module Parameters
-function kmp-cc ()
-{
+function kmod-pc {
 	local green yellow cyan reset
 	if [[ "$(tput colors)" -ge 8 ]]
 	then

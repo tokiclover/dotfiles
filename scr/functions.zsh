@@ -1,4 +1,4 @@
-# $Id: functions.zsh, 2014/08/31 11:59:26 -tclover Exp $
+# $Id: functions.zsh, 2014/09/09 11:59:26 -tclover Exp $
 # $License: MIT (or 2-clause/new/simplified BSD)   Exp $
 
 if [[ -f ~/scr/functions ]] { source ~/scr/functions }
@@ -76,9 +76,9 @@ exit'
 	print "$TMP"
 }
 
-# @FUNCTION: kmp-aa
+# @FUNCTION: kmod-pa
 # @DESCRIPTION: little helpter to retrieve Kernel Module Parameters
-function kmp-aa { 
+function kmod-pa {
 	local c d line m mc mod md de n=/dev/null o
 	c=$(tput op) o=$(print -P "\n$(tput setaf 2)-*- $(tput op)")
 	if [[ -n "$*" ]] {
@@ -107,7 +107,7 @@ function kmp-aa {
 
 # @FUNCTION: kmp-color
 # @DESCRIPTION: colorful helper to retrieve Kernel Module Parameters
-function kmp-cc {
+function kmod-pc {
 	local green yellow cyan reset
 	autoload colors zsh/terminfo
 	if [[ $terminfo[colors] -ge 8 ]] { colors }

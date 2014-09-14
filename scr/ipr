@@ -1,7 +1,10 @@
 #!/bin/sh
 #
-# $Id: ipr,v 2.3 2014/08/31 15:11:10 -tclover    Exp $
-# $License: MIT (or 2-clause/new/simplified BSD) Exp $
+# $Header: ipr                                           Exp $
+# $Aythor: (c) 2011-2014 -tclover <tokiclover@gmail.com> Exp $
+# $License: MIT (or 2-clause/new/simplified BSD)         Exp $
+# $Version: 2.4 2014/09/09 21:09:26                      Exp $
+#
 
 usage() {
 cat <<-EOF
@@ -27,8 +30,6 @@ cat <<-EOF
 EOF
 exit $?
 }
-
-[[ $# = 0 ]] && usage
 
 opt=$(getopt -o ?46I::b:i:e:d::m::S::s:h -l block:,ext:,jabber::,icq::,ipset:: \
 	-l mpd::,msn::,torrent::,int:,ipv:,dhcp::,module::,mpd,save::,srv: \
@@ -67,6 +68,26 @@ done
 awk="$(which awk)"
 ifc="$(which ifconfig)"
 grp="$(which grep)"
+sed="$(which sed)"
+
+for cmd in "$awk" "$ifc" "$grp" "$sed"; do
+	if [ -z "$cmd" ]; then
+		echo "basic commands not found"
+		exit 1
+	fi
+done
+
+if [ -z "$ext" ] && [ -z "$int" ]; then
+	ext="$($ifc | $sed -nre '/RUNNING/s/(^[we].*):.*/\1/p')"
+	ext="${ext%% *}"
+
+	if [ -z "$ext" ]; then
+		echo "no running interface found, nothing to do"
+		exit 2
+	fi
+fi
+
+[ -z "$ipv4" ] && [ -z "$ipv6" ] && ipv4=true
 
 bck+=,0:1,13,98,111,137:139,161:162,445,517:518,520,1214,1999,3049,4329
 bck+=,6346,3128,8000,12345,65535,98,512:515,6112,1427,9000

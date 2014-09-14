@@ -1,8 +1,8 @@
-# $Id: ~/.aliasrc, 2014/07/20 13:31:48 -tclover Exp $
+# $Id: ~/.aliasrc, 2014/09/09 13:31:48 -tclover Exp $
 
-alias ipr='~/scripts/ipr'
-alias iru='~/scripts/iru'
-alias lbd='~/scripts/lbd'
+alias ipr='~/scr/ipr'
+alias iru='~/scr/iru'
+alias lbd='~/scr/lbd'
 
 alias pu=pushd
 alias po=popd
@@ -63,13 +63,5 @@ alias qu=quse
 alias qx=qxpack
 
 alias ydl=youtube-dl
-
-#alias bs='bscan --mode=1-bit --page=Letter --comp=lzw'
-#alias bl='bscan --mode=1-bit --page=Legal --comp=lzw'
-#alias BS='bscan --mode=8-bit --shades=2 --page=Letter --comp=lzw'
-#alias BL='bscan --mode=8-bit --shades=2 --page=Legal --comp=lzw'
-#alias CB='bscan --mode=color --shades=32 --page=Letter --comp=lzw'
-#alias CL='bscan --mode=color --shades=32 --page=Legal --comp=lzw'
-#alias bt='bscan --mode=color --shades=truecolor --page=Letter --comp=lzw' 
 
 # vim:fenc=utf-8:ci:pi:sts=0:sw=2:ts=2:

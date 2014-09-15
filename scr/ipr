@@ -3,12 +3,12 @@
 # $Header: ipr                                           Exp $
 # $Aythor: (c) 2011-2014 -tclover <tokiclover@gmail.com> Exp $
 # $License: MIT (or 2-clause/new/simplified BSD)         Exp $
-# $Version: 2.4 2014/09/09 21:09:26                      Exp $
+# $Version: 2.4 2014/09/15 21:09:26                      Exp $
 #
 
 usage() {
 cat <<-EOF
-	usage: ${0##*/} -ewlan0 [-ieth0] -4 [OPTIONS]
+	usage: ${0##*/} [-ewlan]0 [-ieth0] [-4|-6] [OPTIONS]
 
 	-b, --block 1863,ntp         block service or port 1863,ntp
 	-i, --int=eth0               use eth0 internal interface
@@ -63,14 +63,15 @@ while [[ $# > 0 ]]; do
 	esac
 done
 
-[ -n "$(echo $LC_ALL) | grep utf8)" ] || export LC_ALL="en_US.utf8"
+[ "${LC_ALL%.UTF-8}" = "$LC_ALL" ] || [ "${LC_ALL%.utf-8}" = "$LC_ALL" ] ||
+	export LC_ALL="en_US.utf8"
 
 awk="$(which awk)"
-ifc="$(which ifconfig)"
 grp="$(which grep)"
+ifc="$(which ifconfig)"
 sed="$(which sed)"
 
-for cmd in "$awk" "$ifc" "$grp" "$sed"; do
+for cmd in "$awk" "$grp" "$ifc" "$sed"; do
 	if [ -z "$cmd" ]; then
 		echo "basic commands not found"
 		exit 1
@@ -93,18 +94,22 @@ bck+=,0:1,13,98,111,137:139,161:162,445,517:518,520,1214,1999,3049,4329
 bck+=,6346,3128,8000,12345,65535,98,512:515,6112,1427,9000
 srv+=,git,domain,ssh,http,http-alt,https,ftp,ftp-data,ftps,ipp,imap2,imap3,imaps,mail
 srv+=,time,rsync,ircd,ircs,hkp,telnets,ftp,ftp-data,ntp
+
 for i in $bck; do
-	[[ -n "$(echo -- $srv | $grp $i)" ]] && srv=${srv/,$i/} || srv+=,$i
+	[ "${srv/$i}" = "$srv" ] && srv+=",$i" || srv="${srv/,$i/}"
 done
 
-if [[ -n "$kmod" ]]; then
-	for mod in ip_nat_{ftp,irc} ip_conntrack_{ftp,irc} iptable_{filter,mangle,raw} \
-		nf_conntrack_ipv4 iptable_nat ipt_{MASQUERADE,REDIRECT,REJECT,LOG} $module
-	do modprobe $mod; done
-	if [ -n "$ipv6" ]; then
-		for mod in ip6table_{filter,mangle,raw} nf_conntrack_ipv6 ip6t_{LOG,REJECT} 
-		do modprobe $mod; done
-	fi
+for mod in ip_nat_{ftp,irc} ip_conntrack_{ftp,irc} iptable_{filter,mangle,raw} \
+	nf_conntrack_ipv4 iptable_nat ipt_{MASQUERADE,REDIRECT,REJECT,LOG} $module
+do
+	$grp -q "$mod" /proc/modules || modprobe "$mod"
+done
+
+if [ -n "$ipv6" ]; then
+	for mod in ip6table_{filter,mangle,raw} nf_conntrack_ipv6 ip6t_{LOG,REJECT} 
+	do
+		$grp -q "$mod" /proc/modules || modprobe "$mod"
+	done
 fi
 
 if [ -n "$ipv4" ]; then
@@ -251,27 +256,27 @@ doif() {
 	local bc icmp if=$1 lbdif=lo lbdmsk lbdnet msk net ip icmp ipt
 	if [ -n "$ipv4" ]; then
 		icmp=icmp ipt="$(which iptables) --modprobe=$(which modprobe)"
-		ip="$( $ifc $ext | $grp 'inet ' | $awk '{print $2}')"
-		bc="$( $ifc $ext | $grp 'inet ' | $awk '{print $6}')"
-		msk="$($ifc $ext | $grp 'inet ' | $awk '{print $4}')"
-		lbdip="$( $ifc  $lbdif | $grp 'inet ' | $awk '{print $2}')"
-		lbdmsk="$($ifc  $lbdif | $grp 'inet ' | $awk '{print $4}')"
+		ip="$( $ifc $ext | $awk '/inet / {print $2}')"
+		bc="$( $ifc $ext | $awk '/inet / {print $6}')"
+		msk="$($ifc $ext | $awk '/inet / {print $4}')"
+		lbdip="$( $ifc  $lbdif | $awk '/inet / {print $2}')"
+		lbdmsk="$($ifc  $lbdif | $awk '/inet / {print $4}')"
 		lbdnet="loop back iface: $lbdip/$lbdmsk"
 		net="$ip/$msk"
 		echo "ipr: ip=$ip bc=$bc msk=$msk net=$net"
 		$ipt -F; $ipt -X
 		doipr
-		[[ -n "$save" ]] && $ipt-save >$save
+		[ -n "$save" ] && $ipt-save >$save
 	fi
 	if [ -n "$ipv6" ]; then
 		icmp=icmpv6 ipt="$(which ip6tables) --modprobe=$(which modprobe)"
-		ip="$($ifc  $if | $grp 'inet6 ' | $awk '{print $2}')"
-		lbdip="$($ifc  $lbdif | $grp inet6 | $awk '{print $2}')"
+		ip="$($ifc  $if | $awk '/inet6 / {print $2}')"
+		lbdip="$($ifc  $lbdif $awk '/inet6 / {print $2}')"
 		echo "ipr: ip=$ip lbdip=$lbdip"
 		unset -v ipv4 {,lbd}{bc,msk,net}
 		$ipt -F; $ipt -X
 		doipr
-		[[ -n "$fsave" ]] && $ipt-save >${save/ipt/ip6t}
+		[ -n "$fsave" ] && $ipt-save >${save/ipt/ip6t}
 	fi
 }
 

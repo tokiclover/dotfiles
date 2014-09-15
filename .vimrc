@@ -38,7 +38,6 @@ set ruler
 
 filetype off
 
-filetype plugin indent on
 syntax on
 set shell=zsh
 
@@ -81,8 +80,9 @@ set tags=./.tags;/
 set viminfo="NONE"
 
 " formating
+filetype plugin indent on
 set autoindent    " automatically indent lines
-set expandtab     " use spaces to indent
+"set expandtab     " use spaces to indent
 set shiftwidth=4  " number of spaces for indent
 set smarttab      " backspace over tabs
 set softtabstop=0 " tab = softtabstop * spaces

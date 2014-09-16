@@ -24,4 +24,7 @@ x11-misc/xbindkeys
 x11-misc/vdpauinfo
 x11-misc/xbindkeys
 x11-misc/xdg-user-dirs
+x11-apps/xcmsdb
+x11-libs/libvdpau-va-gl
+x11-misc/vdpauinfo
 

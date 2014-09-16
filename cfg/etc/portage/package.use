@@ -11,8 +11,8 @@ media-libs/mesa openmax openvg xa
 dev-libs/apr-util ldap
 net-nds/openldap sasl
 sys-kernel/git-sources:3.14.12 -aufs -bfq bfs ck fbcondecor -gentoo -hardened optimization reiser4 toi uksm
-sys-kernel/git-sources:3.12.24 -aufs -bfq bfs ck fbcondecor -gentoo -hardened optimization reiser4 toi uksm
-sys-kernel/mkinitramfs-ll bash btrfs cryptsetup dmraid jfs mdadm reiserfs squashfs xfs zfs zram zsh 
+sys-kernel/git-sources:3.16.2 -aufs bfq bfs ck fbcondecor -gentoo -hardened -optimization reiser4 toi uksm
+sys-kernel/mkinitramfs-ll aufs bash btrfs dm-crypt dmraid jfs mdadm reiserfs squashfs xfs zfs zram zsh
 dev-libs/cyrus-sasl ldapdb
 sys-fs/cryptsetup -gcrypt
 sys-apps/busybox mdev
@@ -34,9 +34,7 @@ gnome-base/gvfs archive blurey mtp udisks
 sys-apps/lm_sensors sensord
 x11-themes/e-gtk-theme -gnome minimal openbox
 media-video/mpv bluray bs2b dvdnav encode vaapi vf-dlopen
-media-video/mplayer2 bluray bs2b md5sum mmxext pnm tga yuv4mpeg
-media-video/ffmpeg cdio faac frei0r mmxext schroedinger sse4 vaapi vpx x265
-media-video/libav cdio faac frei0r mmxext schroedinger vaapi vpx
+media-video/ffmpeg bluray cdio faac frei0r mmxext schroedinger sse4 vaapi vpx x265
 
 media-libs/libpng apng
 media-sound/ncmpcpp taglib visualizer
@@ -196,4 +194,24 @@ sys-apps/util-linux abi_x86_32
 dev-libs/dbus-glib abi_x86_32
 x11-proto/printproto abi_x86_32
 dev-libs/libxml2 abi_x86_32
+
 net-wireless/hostapd madwifi
+net-print/gutenprint foomaticdb gimp ppds
+>net-print/cnijfilter-3.90 abi_x86_32 backends -drivers gtk
+<net-print/cnijfilter-2.90 drivers abi_x86_32 -gtk ip90
+gnome-extra/nm-applet bluetooth
+sys-fs/aufs-standalone -pax_kernel
+sys-fs/aufs-util kernel-builtin
+
+dev-lang/python doc
+app-shell/zsh doc
+x11-apps/intel-gpu-tools python_single_target_python3_3
+sys-apps/openrc -netifrc
+
+x11-apps/intel-gpu-tools -python
+dev-libs/popt abi_x86_32
+virtual/libintl abi_x86_32
+virtual/libudev abi_x86_32
+net-misc/connman bluetooth tools
+
+

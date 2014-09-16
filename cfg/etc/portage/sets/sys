@@ -2,6 +2,7 @@ app-admin/logrotate
 app-admin/syslog-ng
 app-editors/nano
 app-editors/vim
+dev-util/patchutils
 sys-apps/ethtool
 sys-apps/gptfdisk
 sys-apps/gradm
@@ -13,8 +14,10 @@ sys-apps/lm_sensors
 sys-apps/usbutils
 sys-boot/grub:2
 sys-devel/gdb
+sys-fs/extundelete
 sys-power/acpid
 sys-power/pmtools
+sys-process/at
 sys-process/fcron
 sys-process/ftop
 sys-process/htop
@@ -23,5 +26,9 @@ net-firewall/iptables
 net-misc/bridge-utils
 net-misc/dhcpcd
 net-misc/openntpd
+net-wireless/bluez
 net-wireless/iw
+net-wireless/wpa_supplicant
 
+net-dns/openresolv
+net-dns/dnsmasq

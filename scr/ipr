@@ -13,17 +13,14 @@ cat <<-EOF
 	usage: ${0##*/} [-ewlan]0 [-ieth0] [-4|-6] [OPTIONS]
 
 	-b, --block 1863,ntp         block service or port 1863,ntp
-	-i, --int=eth0               use eth0 internal interface
-	-e, --ext=wlan0              use wlan0 external interface
+	-i, --int-iface=eth0         use eth0 internal interface
+	-e, --ext-iface=wlan0        use wlan0 external interface
 	-d, --dhcp=[<server_ip>]     enable dhcp, use dhcp server IP
 	-4, --ipv=4                  short hand for --ipv=4
 	-6, --ipv=6                  short hand for --ipv=6
 	-m, --module=[<modules>]     insert kernel coma separated list of kernel modules
 	    --mpd=[6600]             allow in/outbound from loop back device src for mpd
-	    --msn=[1863]             short hand of '-s 1863'
-	    --icq=[5190]             short hand of '-s 5190'
-	    --jabber=[5222]          short hand of '-s 5222'
-	    --yahoo=[5050]           short hand of '-s 5050'
+	    --jabber=[5222,5269]     enable XMPP-client/server, short hand of '-s5222,5269'
 	    --torrent=[50550:50555]  enable torrent traffic on those ports   
 	-s, --srv=pop3,pop3s         allow in/outbound for named services or ports
 	-S, --save=[ipt-rules]       save ip[6]tables rules to file, default to ipt-rules
@@ -40,24 +37,21 @@ die() {
 }
 
 
-opt=$(getopt -o ?46I::b:i:e:d::m::S::s:h -l block:,ext:,jabber::,icq::,ipset:: \
-	-l mpd::,msn::,torrent::,int:,ipv:,dhcp::,module::,mpd,save::,srv: \
-	-l usage,yahoo:: -n ${0##*/} -- "$@" || usage)
+opt=$(getopt -o ?46I::b:i:e:d::m::S::s:h -l block:,ext-iface:,jabber::,,ipset:: \
+	-l mpd::,torrent::,int-iface:,ipv:,dhcp::,module::,mpd,save::,srv: \
+	-l help -n ${0##*/} -- "$@" || usage)
 eval set -- "$opt"
 
 while [ $# > 0 ]; do
 	case $1 in
-		-e|--ext) ext=$2; shift 2;;
-		-i|--int) int=$2; shift 2;;
+		-e|--ext-iface) ext=$2; shift 2;;
+		-i|--int-iface) int=$2; shift 2;;
 		-4) ipv4=true ipv+=" ipv4"; shift;;
 		-6) ipv6=true ipv+=" ipv6"; shift;;
 		--mpd) mpd=${2:-6600}; shift 2;;
 		-b|--block) bck+=,$2,; shift 2;;
 		-I|--ipset) ipb+=,${2:-IPBlock}; shift 2;;
-		--msn) srv+=,${2:-1853}; shift 2;;
-		--icq) srv+=,${2:-5190}; shift 2;;
-		--jabber) srv+=,${2:-5222}; shift 2;;
-		--yahoo) srv+=,${2:-5050}; shift 2;;
+		--jabber) srv+=,${2:-5222,5269}; shift 2;;
 		-d|--dhcp) dhcp=true dsr=${2}; shift 2;;
 		-m|--module) kmod=y module+=" $2"; shift 2;;
 		--ipv)
@@ -156,7 +150,6 @@ doipr() {
 	$ipt -A badtcp  -p tcp -m conntrack --ctstate INVALID -j badtcp
 	$ipt -A badtcp  -p tcp --tcp-flags SYN,ACK SYN,ACK -m conntrack --ctstate NEW -j REJECT --reject-with tcp-reset
 	$ipt -A badtcp  -p tcp ! --syn -m conntrack --ctstate NEW -j badtcp
-	# Filter bad tcp right at the bat
 	# Add IPSet sets while at it if enabled
 	for b in $(echo "$ipb" | sed -e 's/,/ /g'); do
 		$ipt -I INPUT -m set --match-set $b src,dst -j drop
@@ -180,7 +173,7 @@ doipr() {
 		if [ "$ipv4" ]; then
 			dv="--sport 67:68 --dport 67:68"
 		elif [ "$ipv6" ]; then
-			dv="--sport dhcpv6-server --dport dhcpv6-server"
+			dv="--sport 546:547 --dport 546:547"
 		fi
 		$ipt -A INPUT  -p udp -i $ext $dv ${dsr:+-s $dsr} -j ACCEPT
 		$ipt -A OUTPUT -p udp -o $ext $dv ${dsr:+-s $dsr} -j ACCEPT

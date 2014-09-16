@@ -1,9 +1,11 @@
 #!/bin/sh
 #
+# A handy sh script to generate statefull IPTables rules
+#
 # $Header: ipr                                           Exp $
 # $Aythor: (c) 2011-2014 -tclover <tokiclover@gmail.com> Exp $
 # $License: MIT (or 2-clause/new/simplified BSD)         Exp $
-# $Version: 2.4 2014/09/15 21:09:26                      Exp $
+# $Version: 2.5 2014/09/16 21:09:26                      Exp $
 #
 
 usage() {
@@ -13,30 +15,37 @@ cat <<-EOF
 	-b, --block 1863,ntp         block service or port 1863,ntp
 	-i, --int=eth0               use eth0 internal interface
 	-e, --ext=wlan0              use wlan0 external interface
-	-d, --dhcp [<server_ip>]     enable dhcp, use dhcp server IP
+	-d, --dhcp=[<server_ip>]     enable dhcp, use dhcp server IP
 	-4, --ipv=4                  short hand for --ipv=4
 	-6, --ipv=6                  short hand for --ipv=6
-	-m, --module [<modules>]     insert kernel coma separated list of kernel modules
-	    --mpd  [6600]            allow in/outbound from loop back device src for mpd
-	    --msn  [1863]            short hand of '-s 1863'
-	    --icq  [5190]            short hand of '-s 5190'
-	    --jabber [5222]          short hand of '-s 5222'
-	    --yahoo  [5050]          short hand of '-s 5050'
-	    --torrent [50550:50555]  enable torrent traffic on those ports   
-	-s, --srv pop3,pop3s         allow in/outbound for named services or ports
-	-S, --save [ipt-rules]       save ip[6]tables rules to file, default to ipt-rules
-	-I, --ipset [<IPBlock>]      enable IPSet set, default to adding IPBlock
+	-m, --module=[<modules>]     insert kernel coma separated list of kernel modules
+	    --mpd=[6600]             allow in/outbound from loop back device src for mpd
+	    --msn=[1863]             short hand of '-s 1863'
+	    --icq=[5190]             short hand of '-s 5190'
+	    --jabber=[5222]          short hand of '-s 5222'
+	    --yahoo=[5050]           short hand of '-s 5050'
+	    --torrent=[50550:50555]  enable torrent traffic on those ports   
+	-s, --srv=pop3,pop3s         allow in/outbound for named services or ports
+	-S, --save=[ipt-rules]       save ip[6]tables rules to file, default to ipt-rules
+	-I, --ipset=[IPBlock]        enable IPSet set, default to adding IPBlock
 	-?, -h, --help               print this help and exit
 EOF
 exit $?
 }
+
+die() {
+	local ret=$?
+	echo -e "\e[1;31m* \e[0m${0##*/}: $@" >&2
+	exit $ret
+}
+
 
 opt=$(getopt -o ?46I::b:i:e:d::m::S::s:h -l block:,ext:,jabber::,icq::,ipset:: \
 	-l mpd::,msn::,torrent::,int:,ipv:,dhcp::,module::,mpd,save::,srv: \
 	-l usage,yahoo:: -n ${0##*/} -- "$@" || usage)
 eval set -- "$opt"
 
-while [[ $# > 0 ]]; do
+while [ $# > 0 ]; do
 	case $1 in
 		-e|--ext) ext=$2; shift 2;;
 		-i|--int) int=$2; shift 2;;
@@ -64,7 +73,7 @@ while [[ $# > 0 ]]; do
 done
 
 [ "${LC_ALL%.UTF-8}" = "$LC_ALL" ] || [ "${LC_ALL%.utf-8}" = "$LC_ALL" ] ||
-	export LC_ALL="en_US.utf8"
+	export LC_ALL="en_US.UTF-8"
 
 awk="$(which awk)"
 grp="$(which grep)"
@@ -72,31 +81,24 @@ ifc="$(which ifconfig)"
 sed="$(which sed)"
 
 for cmd in "$awk" "$grp" "$ifc" "$sed"; do
-	if [ -z "$cmd" ]; then
-		echo "basic commands not found"
-		exit 1
-	fi
+	[ "$cmd" ] || die "basic command utilities not found"
 done
 
-if [ -z "$ext" ] && [ -z "$int" ]; then
+if [ -z "$ext" -a -z "$int" ]; then
 	ext="$($ifc | $sed -nre '/RUNNING/s/(^[we].*):.*/\1/p')"
-	ext="${ext%% *}"
+	[ "$ext" ] || die "no running interface found"
 
-	if [ -z "$ext" ]; then
-		echo "no running interface found, nothing to do"
-		exit 2
-	fi
+	[ "$ipv4" ] || [ "$ipv6" ] || ipv4=true
+:	${dhcp:=true}
 fi
-
-[ -z "$ipv4" ] && [ -z "$ipv6" ] && ipv4=true
 
 bck+=,0:1,13,98,111,137:139,161:162,445,517:518,520,1214,1999,3049,4329
 bck+=,6346,3128,8000,12345,65535,98,512:515,6112,1427,9000
 srv+=,git,domain,ssh,http,http-alt,https,ftp,ftp-data,ftps,ipp,imap2,imap3,imaps,mail
 srv+=,time,rsync,ircd,ircs,hkp,telnets,ftp,ftp-data,ntp
 
-for i in $bck; do
-	[ "${srv/$i}" = "$srv" ] && srv+=",$i" || srv="${srv/,$i/}"
+for i in $srv; do
+	[ "${bck/$i}" = "$bck" ] || bck="${bck/,$i/}"
 done
 
 for mod in ip_nat_{ftp,irc} ip_conntrack_{ftp,irc} iptable_{filter,mangle,raw} \
@@ -105,14 +107,14 @@ do
 	$grp -q "$mod" /proc/modules || modprobe "$mod"
 done
 
-if [ -n "$ipv6" ]; then
+if [ "$ipv6" ]; then
 	for mod in ip6table_{filter,mangle,raw} nf_conntrack_ipv6 ip6t_{LOG,REJECT} 
 	do
 		$grp -q "$mod" /proc/modules || modprobe "$mod"
 	done
 fi
 
-if [ -n "$ipv4" ]; then
+if [ "$ipv4" ]; then
 	echo 1 >/proc/sys/net/ipv4/tcp_syncookies
 	echo 1 >/proc/sys/net/ipv4/icmp_echo_ignore_broadcasts
 	echo 1 >/proc/sys/net/ipv4/ip_dynaddr
@@ -174,10 +176,10 @@ doipr() {
 	done
 	echo ""
 	
-	if [ -n "$dhcp" ]; then 
-		if [ -n "$ipv4" ]; then
+	if [ "$dhcp" ]; then 
+		if [ "$ipv4" ]; then
 			dv="--sport 67:68 --dport 67:68"
-		elif [ -n "$ipv6" ]; then
+		elif [ "$ipv6" ]; then
 			dv="--sport dhcpv6-server --dport dhcpv6-server"
 		fi
 		$ipt -A INPUT  -p udp -i $ext $dv ${dsr:+-s $dsr} -j ACCEPT
@@ -192,14 +194,14 @@ doipr() {
 	done
 	echo ""
 	
-	if [ -n "$mpd" ]; then
+	if [ "$mpd" ]; then
 		echo "Opening TCP Output over $lbdip:$mpd for MPD"
 		$ipt -A INPUT  -p tcp --dport $mpd -s $lbdip --syn -m conntrack --ctstate NEW -j ACCEPT
 		$ipt -A OUTPUT -p tcp --dport $mpd -s $lbdip --syn -m conntrack --ctstate NEW -j ACCEPT
 
 	fi
 	
-	if [[ -n "$torrent" ]]; then
+	if [ "$torrent" ]; then
 		# turning off DHT tracking for torrent
 		echo "ipr: disabling tracking on ${torrent#*:}-udp-port PREROUTING and OUTPUT"
 		$ipt -t raw -A PREROUTING -i $ext -p udp --dport ${torrent#*:} -j NOTRACK
@@ -227,13 +229,13 @@ doipr() {
 	# Allow to ping out
 	$ipt -A OUTPUT  -o $ext  -p $icmp  --$icmp-type 8 -m conntrack --ctstate NEW -j ACCEPT
 
-	if [[ -n "$int" ]]; then
+	if [ "$int" ]; then
 		$ipt -A INPUT    -i $int -s $msk -j ACCEPT
 		$ipt -A FORWARD  -o $int -s $msk -j ACCEPT
 		$ipt -A OUTPUT   -o $int -s $msk -j ACCEPT
 	fi
 
-	if [ -n "$ipv4" ]; then
+	if [ "$ipv4" ]; then
 		# NAT I/O
 		$ipt -A PREROUTING  -t nat -j ACCEPT
 		$ipt -A POSTROUTING -t nat -j ACCEPT
@@ -254,7 +256,7 @@ doipr() {
 
 doif() {
 	local bc icmp if=$1 lbdif=lo lbdmsk lbdnet msk net ip icmp ipt
-	if [ -n "$ipv4" ]; then
+	if [ "$ipv4" ]; then
 		icmp=icmp ipt="$(which iptables) --modprobe=$(which modprobe)"
 		ip="$( $ifc $ext | $awk '/inet / {print $2}')"
 		bc="$( $ifc $ext | $awk '/inet / {print $6}')"
@@ -266,9 +268,9 @@ doif() {
 		echo "ipr: ip=$ip bc=$bc msk=$msk net=$net"
 		$ipt -F; $ipt -X
 		doipr
-		[ -n "$save" ] && $ipt-save >$save
+		[ "$save" ] && $ipt-save >$save
 	fi
-	if [ -n "$ipv6" ]; then
+	if [ "$ipv6" ]; then
 		icmp=icmpv6 ipt="$(which ip6tables) --modprobe=$(which modprobe)"
 		ip="$($ifc  $if | $awk '/inet6 / {print $2}')"
 		lbdip="$($ifc  $lbdif $awk '/inet6 / {print $2}')"
@@ -276,13 +278,13 @@ doif() {
 		unset -v ipv4 {,lbd}{bc,msk,net}
 		$ipt -F; $ipt -X
 		doipr
-		[ -n "$fsave" ] && $ipt-save >${save/ipt/ip6t}
+		[ "$fsave" ] && $ipt-save >${save/ipt/ip6t}
 	fi
 }
 
-if [ -n "$ext" ]; then
+if [ "$ext" ]; then
 	doif "$ext"
-elif [ -n "$int" ]; then
+elif [ "$int" ]; then
 	ext=$int int= && doif "$ext"
 else 
 	usage
@@ -290,4 +292,6 @@ fi
 
 unset -v awk bck dhcp dsr ext i ipv ipv4 ipv6 ifc int ipt grp kmod module srv
 
+#
 # vim:fenc=utf-8:ci:pi:sts=0:sw=4:ts=4:
+#

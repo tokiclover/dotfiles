@@ -9,10 +9,6 @@ if [[ -f ~/.dir_colors ]] {
 } else { eval $(dircolors) }
 
 if [[ -f ~/.zprezto/init.zsh ]] {
-#	zstyle ':prezto:module:editor' key-bindings 'vi'
-#	zstyle ':prezto:module:prompt' theme 'clover'
-#	zstyle ':prezto:load' pmodule 'environment' 'terminal' \
- # 	'editor' 'prompt' 'syntax-highlighting'
 	source ~/.zprezto/init.zsh
 }
 

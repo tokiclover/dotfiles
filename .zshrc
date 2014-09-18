@@ -10,6 +10,11 @@ if [[ -f ~/.dir_colors ]] {
 
 if [[ -f ~/.zprezto/init.zsh ]] {
 	source ~/.zprezto/init.zsh
+	if [[ -e ~/.zprezto/customs/key-bindings.zsh ]] {
+		source ~/.zprezto/customs/key-bindings.zsh
+	}
+} elif [[ -f ~/key-bindings.zsh ]] {
+	source ~/key-bindings.zsh
 }
 
 autoload -Uz promptinit
@@ -18,7 +23,6 @@ if [[ -e ~/.zprezto/modules/prompt/functions/prompt_clover_setup ]] {
 	source ~/.zprezto/modules/prompt/functions/prompt_clover_setup
 }
 
-if [[ -f ~/key-bindings.zsh ]] { source ~/key-bindings.zsh }
 
 if [[ -f ~/.aliasrc ]] { source ~/.aliasrc }
 if [[ -f ~/scr/functions.zsh ]] { source ~/scr/functions.zsh }

@@ -3,6 +3,8 @@ app-admin/syslog-ng
 app-editors/nano
 app-editors/vim
 dev-util/patchutils
+dev-util/quilt
+dev-util/valgrind
 sys-apps/ethtool
 sys-apps/gptfdisk
 sys-apps/gradm
@@ -25,6 +27,7 @@ net-firewall/ipset
 net-firewall/iptables
 net-misc/bridge-utils
 net-misc/dhcpcd
+net-misc/dhcpcd-ui
 net-misc/openntpd
 net-wireless/bluez
 net-wireless/iw

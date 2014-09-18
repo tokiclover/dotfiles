@@ -1,11 +1,11 @@
-# $Id: ~/.xinitrc, 2014/08/08 15:32:37 -tclover Exp $
+# $Id: ~/.xinitrc, 2014/09/09 15:32:37 -tclover Exp $
 
 launch="dbus-launch --sh-syntax --exit-with-session"
-$launch nm-applet --sm-disable &
 $launch gcm-session &
 eval $(gnome-keyring-daemon --daemonize --components=pkcs11,secrets,ssh,gpg)
-echo -e SSH_AUTH_SOCK=$SSH_AUTH_SOCK\
-  "\n"GPG_AGENT_INFO=$GPG_AGENT_INFO >$TMPDIR/keyring/env
+echo -e \
+	"\nSSH_AUTH_SOCK=$SSH_AUTH_SOCK" \
+	"\nGPG_AGENT_INFO=$GPG_AGENT_INFO" >"$TMPDIR"/keyring/env
 export SSH_AUTH_SOCK GPG_AGENT_INFO
 /usr/libexec/polkit-gnome-authentication-agent-1 &
 
@@ -13,6 +13,7 @@ xset s off
 xset fp+ /usr/share/fonts/artwiz-latin1
 xset fp+ /usr/share/fonts/terminus
 xset fp rehash
+
 [ -s ~/.Xresources ] && xrdb -load ~/.Xresources
 xbacklight -set 20
 #setxkbmap -model pc105 -layout fr -variant ,oss,latin9,oss_latin9 \
@@ -22,7 +23,9 @@ xbacklight -set 20
 #[ -s ~/.color/x/sj-bright ] && xrdb -merge ~/.color/x/sj-bright
 #[ -s ~/.color/icc/sRGB_v4_ICC_preference_displayclass.icc ] &&
 #xcalib -gc 1.0 -b 0.0 -co 100.0 ~/.color/icc/sRGB_v4_ICC_preference_displayclass.icc
+
 unclutter -idle 8 -noevents &
+dhcpcd-gtk >/dev/null 2>&1 &
 ladi-system-tray > ~/.log/ladi/ladi.log 2>&1 &
 urxvtd -q -o -f &
 
@@ -32,5 +35,6 @@ case $(tty | cut -b9-) in
 	2) exec $launch lxsession          ;;
 	3) exec $launch openbox-session    ;;
 esac
+unset launch
 
 # vim:fenc=utf-8:ft=sh:ci:pi:sts=2:sw=2:ts=2:

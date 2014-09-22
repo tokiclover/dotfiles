@@ -73,9 +73,9 @@ EOH
 :	${TMPDIR:=/tmp/.private/"$USER"}
 :	${dir="${FHPDIR%/*}"}
 
-	[[ "$ZRAMDIR" ]] || [[ -d "$TMPDIR" ]] || ( mkdir -p -m1700 "$TMPDIR" || die )
+	[[ "$ZRAMDIR" ]] || [[ -d "$TMPDIR" ]] || mkdir -p -m1700 "$TMPDIR" || die
 
-	( mount | grep -q "$FHPDIR" ) && return
+	mount | grep -q "$FHPDIR" && return
 	
 	local mnt
 	if [[ ! -f "$FHPDIR.tar.$ext" ]] || [[ ! -f "$FHPDIR.old.tar.$ext" ]]; then

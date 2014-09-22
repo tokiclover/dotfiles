@@ -74,9 +74,9 @@ EOH
 :	${FHPDIR:=~/.mozilla/firefox/$fhp}
 :	${TMPDIR:=/tmp/.private/$USER}
 
-	[[ -n $ZRAMDIR ]] || [[ -d $TMPDIR ]] || ( mkdir -p -m1700 $TMPDIR || die )
+	[[ -n $ZRAMDIR ]] || [[ -d $TMPDIR ]] || mkdir -p -m1700 $TMPDIR || die
 
-	( mount | grep -q $FHPDIR ) && return
+	mount | grep -q $FHPDIR && return
 	
 	if [[ ! -f $FHPDIR.tar.$ext ]] || [[ ! -f $FHPDIR.old.tar.$ext ]] {
 		pushd -q $FHPDIR:h || die

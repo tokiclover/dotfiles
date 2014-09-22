@@ -7,7 +7,7 @@
 #
 
 log() {
-	logger -p daemon "ACPI: $*"
+	logger -p daemon.notice "acpi: $*"
 }
 
 uhd() {
@@ -31,19 +31,14 @@ mpris=$(which mpris-remote 2>/dev/null)
 case $group in
 	ac_adapter)
 		case $value in
-			*0) log "switching to power.bat power profile"
-				hprofile power.bat;;
-			*1) log "switching to power.adp power profile"
-				hprofile power.adp;;
+			*0) hprofile power.bat;;
+			*1) hprofile power.adp;;
 			*) uhd $*;;
 		esac
 		;;
 	battery)
 		case $value in
-			*0) log "switching to power.adp power profile"
-				hprofile power.adp;;
-			*1) log "switching to power.adp power profile"
-				hprofile power.adp;;
+			*0|*1) hprofile power.adp;;
 			*) uhd $*;;
 		esac
 		;;

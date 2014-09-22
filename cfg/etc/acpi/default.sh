@@ -26,8 +26,6 @@ value=$4
 amixer="amixer -q set Master"
 ossmix="ossmix -- vmix0-outvol"
 
-mpris=$(which mpris-remote 2>/dev/null)
-
 case $group in
 	ac_adapter)
 		case $value in

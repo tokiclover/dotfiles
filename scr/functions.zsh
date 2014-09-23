@@ -78,8 +78,7 @@ return
 	if [[ $type == "dir" ]] {
 		mkdir -p ${mode:+-m$mode} "$tmp" || die "mktmp: failed to make $tmp"
 	} else {
-		mkdir -p "$tmp:h" &&
-		touch "$tmp" || die "mktmp: failed to make $tmp"
+		mkdir -p "$tmp:h" && touch "$tmp" || die "mktmp: failed to make $tmp"
 		(( $+mode )) && chmod $mode "$tmp"
 	}
 

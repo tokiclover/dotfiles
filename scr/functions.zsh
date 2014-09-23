@@ -34,7 +34,8 @@ function einfo {
 # @DESCRIPTION: make tmp dir or file in ${TMPDIR:-/tmp}
 # @ARG: [-d|-f] [-m <mode>] [-o <owner[:group]>] [-g <group>] TEMPLATE
 function mktmp {
-	usage='cat <<-EOF
+	function usage {
+	cat <<-EOH
 usage: mktmp [OPTIONS] TEMPLATE
   -d, --dir           create a directory
   -f, --file          create a file
@@ -42,38 +43,49 @@ usage: mktmp [OPTIONS] TEMPLATE
   -g, --group <name>  group name
   -m, --mode <1700>   octal mode
   -h, --help          help/exit
-EOF
-exit'
+EOH
+return
+}
+	test $# -ge 1 -a -n "$1" || die "nothing to do"
 
-	[[ $# == 0 ]] && ${=usage}
+	local type mode owner group tmp tmpdir=${TMPDIR:-/tmp}
+	for (( ; $# > 1; ))
+		case $1 {
+			(-d|--dir)
+				type=dir
+				shift;;
+			(-f|--file)
+				type=file
+				shift;;
+			(-h|--help)
+				usage;;
+			(-m|--mode)
+				mode=$2
+				shift 2;;
+			(-o|--owner)
+				owner="$2"
+				shift 2;;
+			(-g|-group)
+				group="$2"
+				shift 2;;
+		 	(*)
+		 		die
+		 		shift;;
+		}
 
-	local type mode owner group tmp TMP=${TMPDIR:-/tmp}
-	for (( ; $# >= 1; ))
-		case $1 in
-			-d|--dir) type=dir; shift;;
-			-f|--file) type=file; shift;;
-			-h|--help) ${=usage};;
-			-m|--mode) mode=$2; shift 2;;
-			-o|--owner) owner=$2; shift 2;;
-			-g|-group) group=$2; shift 2;;
-		 	*) tmp=$1; shift;;
-		esac
-
-	[[ -n $tmp ]] && TMP+=/$tmp-XXXXXX ||
-	die "mktmp: no $tmp TEMPLATE provided"
+	[[ -n "$1" ]] && local tmp="$tmpdir/$1" || die "null TEMPLATE"
 
 	if [[ $type == "dir" ]] {
-		mkdir -p ${mode:+-m$mode} $TMP ||
-		die "mktmp: failed to make $TMP"
+		mkdir -p ${mode:+-m$mode} "$tmp" || die "mktmp: failed to make $tmp"
 	} else {
-		mkdir -p $TMP:h &&
-		touch $TMP || die "mktmp: failed to make $TMP"
-		[[ -n $mode ]] && chmod $mode $TMP
+		mkdir -p "$tmp:h" &&
+		touch "$tmp" || die "mktmp: failed to make $tmp"
+		(( $+mode )) && chmod $mode "$tmp"
 	}
 
-	[[ -n $owner ]] && chown $owner $TMP
-	[[ -n $group ]] && chgrp $group $TMP
-	print "$TMP"
+	(( $+owner )) && chown $owner $tmp
+	(( $+group )) && chgrp $group $tmp
+	print "$tmp"
 }
 
 # @FUNCTION: kmod-pa

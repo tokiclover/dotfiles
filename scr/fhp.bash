@@ -77,7 +77,7 @@ EOH
 
 	mount | grep -q "$FHPDIR" && return
 	
-	local mnt
+	local mntdir
 	if [[ ! -f "$FHPDIR.tar.$ext" ]] || [[ ! -f "$FHPDIR.old.tar.$ext" ]]; then
 		pushd "$dir" >$n 2>&1 || die
 		tar -Ocp $fhp | $comp $fhp.tar.$ext  ||
@@ -85,10 +85,10 @@ EOH
 		popd >$n 2>&1
 	fi
 
-	[[ -n "$ZRAMDIR" ]] && mnt="$(mktemp -d $ZRAMDIR/$USER/fhp-XXXXXX)" ||
-        mnt="$(mktemp -d $TMPDIR/fhp-XXXXXX)"
+	[[ -n "$ZRAMDIR" ]] && mnt="$(mktemp -d "$ZRAMDIR/$USER"/fhp-XXXXXX)" ||
+		mntdir="$(mktemp -d $TMPDIR/fhp-XXXXXX)"
 
-	sudo mount --bind $FHPDIR $mnt || die "failed to mount $mnt"
+	sudo mount --bind "$mntdir" "$FHPDIR" || die "failed to mount $mntdir"
 };	__init "$@"
 
 	# check whether -h|--help was passed

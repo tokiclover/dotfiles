@@ -85,10 +85,10 @@ EOH
 		popd -q
 	}
 
-	local mnt
-	[[ -n $ZRAMDIR ]] && mnt=$(mktemp -d $ZRAMDIR/fhp-XXXXXX) ||
-        mnt=$(mktemp -d $TMPDIR/fhp-XXXXXX)
-	sudo mount --bind $FHPDIR $mnt || die "failed to mount $mnt"
+	local mntdir
+	[[ -n $ZRAMDIR ]] && mntdir=$(mktemp -d $ZRAMDIR/fhp-XXXXXX) ||
+		mntdir=$(mktemp -d $TMPDIR/fhp-XXXXXX)
+	sudo mount --bind "$mntdir" "$FHPDIR" || die "failed to mount $mntdir"
 } "$@"
 	
 	# check whether -h|--help was passed

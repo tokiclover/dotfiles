@@ -3,10 +3,10 @@
 
 [[ -f ~/scr/functions ]] && source ~/scr/functions
 
-# @FUNCTION: die
+# @FUNCTION: error
 # @DESCRIPTION: hlper function, print error message to stdout
 # @USAGE: <string>
-function eerror {
+function error {
 	echo -e "\e[1;31m* \e[0m${0##*/}: $@" >&2
 	[[ -n "$LOG" ]] && [[ -n "$facility" ]] &&
 	logger -p $facility "${0##*/}: $@"
@@ -24,7 +24,7 @@ function die {
 # @FUNCTION: into
 # @DESCRIPTION: hlper function, print info message to stdout
 # @USAGE: <string>
-function einfo {
+function info {
 	echo -e "\e[1;32m \e[0m${0##*/}: $@"
 	[[ -n "$LOG" ]] && [[ -n "$facility" ]] &&
 	logger -p $facility "${0##*/}: $@"
@@ -36,7 +36,7 @@ function einfo {
 function mktmp {
 	function usage {
 	cat <<-EOH
-usage: mktmp [options] TEMPLATE
+usage: mktmp [-d|-f] [-m <mode>] [-o <owner[:group]>] [-g <group>] TEMPLATE
   -d, --dir           create a directory
   -f, --file          create a file
   -o, --owner <name>  owner naame
@@ -47,9 +47,14 @@ EOH
 return
 }
 	
-	[[ $# == 0 ]] && $usage
+	(( $# == 0 )) && usage
+	test $# -ge 1 -a -n "$1"
+	if (( $? )); then
+		die "invalid/null TEMPLATE"
+		return
+	fi
 	
-	local type mode owner group tmp TMP=${TMPDIR:-/tmp}
+	local type mode owner group tmp tmpdir=${TMPDIR:-/tmp}
 	while [[ $# -gt 1 ]]; do
 		case $1 in
 			(-d|--dir)
@@ -75,12 +80,27 @@ return
 		esac
 	done
 
-	[[ -n "$1" ]] && local tmp="$tmpdir/$1" || die "null TEMPLATE"
+	local temp=-XXXXXX
+	test -n "$1" -a "${1%$temp}" != "$1"
+	if (( $? )); then
+		die "invalid/null TEMPLATE"
+		return
+	fi
+	local cmd=$(type -p uuidgen)
+	[[ -n "$cmd" ]] && temp=$($cmd --random)
+	tmp=$tmpdir/${1%$temp}-$(echo "$temp" | cut -c-6)
 
 	if [[ "$type" == "dir" ]]; then
-		mkdir -p ${mode:+-m$mode} "$tmp" || die "mktmp: failed to make $tmp"
+		mkdir -p ${mode:+-m$mode} "$tmp"
+		if (( $? )); then
+			die "mktmp: failed to make $tmp"
+		fi
 	else
-		mkdir -p "${tmp%/*}" && touch "$tmp" || die "mktmp: failed to make $tmp"
+		mkdir -p "${tmp%/*}" && touch "$tmp"
+		if (( $? )); then
+			die "mktmp: failed to make $tmp"
+			return
+		fi
 		[[ "$mode" ]] && chmod $mode "$tmp"
 	fi
 	[[ "$owner" ]] && chown "$owner" "$tmp"
@@ -101,19 +121,18 @@ SGR07=(reset bold faint italic underline sblink rblink inverse)
 function bash_prompt {
 	# Initialize colors arrays
 	declare -A BG FG FB
-	local B C CLR=$(tput colors) E="\e[" F
-	if [[ "$CLR" -ge 256 ]]; then
+	local B C E="\e[" F
+	if (( $(tput colors) >= 256 )); then
 		B="${E}48;5;"
 		F="${E}1;38;5;"
 		C="57 77 69 124"
-
 	else
 		B="${E}4"
 		F="${E}1;3"
 		C="4 6 5 2"
 	fi
 
-	[[ $# -eq 4 ]] && C="$@"
+	(( $# >= 4 )) && C="$@"
 	for (( c=1; c<5; c++ )); do
 		BG[$c]="${B}${i}m"
 		FG[$c]="${F}${i}m"
@@ -125,23 +144,22 @@ function bash_prompt {
 	# Check PWD length
 	local PROMPT LENGTH TTY=$(tty | cut -b6-)
 	PROMPT="---($USER$(uname -n):${TTY}---()---"
-	if [[ $COLUMNS -lt $((${#PROMPT}+${#NPWD}+13)) ]]; then
+	if (( ${COLUMNS:-0} <= (${#PROMPT}+${#NPWD}+13) )); then
 		PROMPT_DIRTRIM=$((${COLUMNS}-${#PROMPT}-16))
 	fi
 
 	# And the prompt
 	case $TERM in
-	*xterm*|*rxvt*)
-		PS1="${FG[2]}┌${FB[bold]}$FG[1]}(${FG[4]}\$${FG[1]}${FG[4]}\h:$TTY\
-		${FG[1]}⋅\D{%m/%d}⋅${FG[4]}\t${FG[4]})${FB[bold]}${FG[1]}\
-		(${FG[4]}\w${FG[1]})${FB[bold]}${FG[1]}
-		\n${FG[2]}${FB[bold]}${FG[1]}${FG[3]}${FB[reset]}-» "
+	(*xterm*|*rxvt*|linux|*term*)
+		PS1="${FB[bold]}${FG[2]}-${FG[1]}(${FG[4]}\$·${FG[1]}${FG[4]}\h:$TTY${FG[1]}·\D{%m/%d}·${FG[4]}\t${FG[4]})${FG[1]}\
+		(${FG[4]}\w${FG[1]})${FB[bold]}${FG[1]}${FG[2]}${FB[bold]}${FG[1]}${FG[3]}${FB[reset]}-» "
+
 		PS2="${FG[1]}-» ${FB[reset]}"
 		TITLEBAR="\$:\w"
 	;;
-	*)
-		PS1="${FG[1]}(${FG[4]}\$${FG[1]}\D{%m/%d}${FG[4]}\h:$TTY:\w\
-		${FG[1]}${FG[4]}${FG[1]})${FB[reset]} "
+	(*)
+		PS1="${FG[1]}(${FG[4]}\$·${FG[1]}\D{%m/%d}${FG[4]}\h:$TTY:\w${FG[1]}${FG[4]}${FG[1]})${FB[reset]} "
+	
 		PS2="${FG[1]}-» ${FB[reset]}"
 	;;
 	esac
@@ -244,4 +262,4 @@ function kmod-pc {
 	done
 }
 
-# vim:fenc=utf-8:ft=zsh:ci:pi:sts=0:sw=2:ts=2:
+# vim:fenc=utf-8:ft=sh:ci:pi:sts=2:sw=2:ts=2:

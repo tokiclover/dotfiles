@@ -1,0 +1,8 @@
+[Desktop Entry]
+Name=urxvt-client
+Type=Application
+Comment=rxvt clone with xft and unicode support
+Exec=urxvtc
+TryExec=urxvtc
+Icon=utilities-terminal
+Categories=System;TerminalEmulator;

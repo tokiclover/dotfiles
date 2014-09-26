@@ -28,9 +28,10 @@ if [[ -f ~/.zprezto/init.zsh ]] {
 }
 
 if [[ -f ~/.aliasrc ]] { source ~/.aliasrc }
-if [[ -f ~/scr/functions.zsh ]] { source ~/scr/functions.zsh }
 
-for scr (~/scr/*.zsh)
-	if [[ -x $scr ]] { alias ${${scr:t}%.zsh}='~/scr/'${scr:t} }
+if [[ -d ~/.zprezto/customs/helpers ]] {
+	fpath=(~/.zprezto/customs/helpers $fpath)
+#	autoload -Uz precompile && precompile
+}
 
 # vim:fenc=utf-8:ft=zsh:ci:pi:sts=0:sw=2:ts=2:

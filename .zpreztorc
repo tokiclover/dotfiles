@@ -10,7 +10,7 @@
 #
 
 # Set case-sensitivity for completion, history lookup, etc.
-# zstyle ':prezto:*:*' case-sensitive 'yes'
+zstyle ':prezto:*:*' case-sensitive 'yes'
 
 # Color output (auto set to 'no' on dumb terminals).
 zstyle ':prezto:*:*' color 'yes'
@@ -23,8 +23,12 @@ zstyle ':prezto:*:*' color 'yes'
 
 # Set the Prezto modules to load (browse modules).
 # The order matters.
-zstyle ':prezto:load' pmodule \
-  'editor' 'prompt'
+zpmodules=(precompile environment editor prompt helper utility)
+if [[ ${TTY/tty} == $TTY ]] && [[ $EUID != 0 ]] {
+  zpmodules=($zpmodules firefox-profile)
+}
+zstyle ':prezto:load' pmodule $zpmodules
+unset zpmodules
 
 #
 # Editor
@@ -109,18 +113,18 @@ zstyle ':prezto:module:prompt' theme 'clover'
 
 # Set syntax highlighters.
 # By default, only the main highlighter is enabled.
-# zstyle ':prezto:module:syntax-highlighting' highlighters \
-#   'main' \
-#   'brackets' \
-#   'pattern' \
-#   'cursor' \
-#   'root'
-#
+zstyle ':prezto:module:syntax-highlighting' highlighters \
+  'main' \
+  'brackets' \
+  'pattern' \
+  'cursor' \
+  'root'
+
 # Set syntax highlighting styles.
-# zstyle ':prezto:module:syntax-highlighting' styles \
-#   'builtin' 'bg=blue' \
-#   'command' 'bg=blue' \
-#   'function' 'bg=blue'
+zstyle ':prezto:module:syntax-highlighting' styles \
+  'builtin' 'fg=magenta' \
+  'command' 'fg=blue' \
+  'function' 'fg=yellow'
 
 #
 # Terminal
@@ -144,3 +148,4 @@ zstyle ':prezto:module:prompt' theme 'clover'
 
 # Auto start a session when Zsh is launched in a SSH connection.
 # zstyle ':prezto:module:tmux:auto-start' remote 'yes'
+

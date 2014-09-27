@@ -27,7 +27,7 @@ zpmodules=(precompile environment editor prompt helper utility)
 if [[ ${TTY/tty} == $TTY ]] && [[ $EUID != 0 ]] {
   zpmodules=($zpmodules firefox-profile)
 }
-zstyle ':prezto:load' pmodule $zpmodules
+zstyle ':prezto:load' pmodule ${(qq)zpmodules}
 unset zpmodules
 
 #

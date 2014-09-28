@@ -7,6 +7,10 @@ if zstyle -t ':prezto:module:editor' key-bindings 'emacs' 'vi'; then
     bindkey -M "$keymap" "\EOy" up-line-or-history
     bindkey -M "$keymap" "\EOs" down-line-or-history
 
+    bindkey -M "$keymap" "\EOn" backward-delete-char
+    bindkey -M "$keymap" "\EOp" overwrite-mode
+    bindkey -M "$keymap" "\EOu" delete-char
+
     bindkey -M "$keymap" "\EOd" backward-word
     bindkey -M "$keymap" "\EOc" forward-word
     bindkey -M "$keymap" "\EOa" up-line-or-history

@@ -39,7 +39,6 @@ usage: fhp [options] [firefox-profile]
 EOH
 }
 
-setopt EXTENDED_GLOB
 typeset -A fhpinfo
 
 # Use an anonymous function to initialize
@@ -60,10 +59,12 @@ function {
 			break;;
 	esac
 
+	setopt LOCAL_OPTIONS EXTENDED_GLOB
+
 	(( $+fhpinfo[fhp] )) && [[ -d $HOME/.mozzila/firefox/$fhpinfo[fhp] ]] ||
 		fhpinfo[fhp]=
 :	${fhpinfo[fhp]:=${1:-$FHP}}
-:	${fhpinfo[fhp]:=${$(print ~/.mozilla/firefox/*.default(/N) 2>/dev/null):t}}
+:	${fhpinfo[fhp]:=$(print $HOME/.mozilla/firefox/*.default(/N:t))}
 
 	[[ -z $fhpinfo[fhp] ]] && die "no firefox profile dir found"
 	[[ ${fhpinfo[fhp]%.default} == $fhpinfo[fhp] ]] && fhpinfo[fhp]+=.default

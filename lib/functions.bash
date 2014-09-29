@@ -1,15 +1,15 @@
-# $Id: functions.bash, 2014/09/09 12:59:26 -tclover Exp $
-# $License: MIT (or 2-clause/new/simplified BSD)    Exp $
-
-[[ -f ~/scr/functions ]] && source ~/scr/functions
+#
+# $Header: functions.bash, 2014/09/28 12:59:26 -tclover Exp $
+# $License: MIT (or 2-clause/new/simplified BSD)        Exp $
+#
 
 # @FUNCTION: error
 # @DESCRIPTION: hlper function, print error message to stdout
 # @USAGE: <string>
 function error {
 	echo -e "\e[1;31m* \e[0m${0##*/}: $@" >&2
-	[[ -n "$LOG" ]] && [[ -n "$facility" ]] &&
-	logger -p $facility "${0##*/}: $@"
+
+	[[ "$LOGGER" ]] && [[ "$facility" ]] && logger -p $facility "${0##*/}: $@"
 }
 
 # @FUNCTION: die
@@ -26,8 +26,8 @@ function die {
 # @USAGE: <string>
 function info {
 	echo -e "\e[1;32m \e[0m${0##*/}: $@"
-	[[ -n "$LOG" ]] && [[ -n "$facility" ]] &&
-	logger -p $facility "${0##*/}: $@"
+
+	[[ "$LOGGER" ]] && [[ "$facility" ]] && logger -p $facility "${0##*/}: $@"
 }
 
 # @FUNCTION: mktmp
@@ -262,4 +262,19 @@ function kmod-pc {
 	done
 }
 
+# @FUNCTION: genpwd
+# @DESCRIPTION: generate a random password using openssl to stdout
+function genpwd {
+	openssl rand -base64 48
+}
+
+# @FUNCTION: xev-key-code
+# @DESCRIPTION: simple xev key code
+function xev-key-code {
+	xev | grep -A2 --line-buffered '^KeyRelease' | \
+	sed -nre '/keycode /s/^.*keycode ([0-9]*).* (.*, (.*)).*$/\1 \2/p'
+}
+
+#
 # vim:fenc=utf-8:ft=sh:ci:pi:sts=2:sw=2:ts=2:
+#

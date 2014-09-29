@@ -1,7 +1,10 @@
 #!/bin/sh
 #
-# $Id: bfd-plugins,v 2.0 2014/08/31 21:09:26 -tclover Exp $
-# $License: MIT (or 2-clause/new/simplified BSD)      Exp $
+# switch ld plugin beetwen LLVMgold.so and GCC liblto_plugin.so
+#
+# $Header: bfd-plugins,v 2.0 2014/08/31 21:09:26 -tclover Exp $
+# $License: MIT (or 2-clause/new/simplified BSD)          Exp $
+#
 
 cd /usr/x86_64-pc-linux-gnu/binutils-bin/lib/bfd-plugins || exit
 rm *
@@ -11,4 +14,6 @@ else
 	ln -s {../../../../libexec/gcc/x86_64-pc-linux-gnu/4.8.3/,}liblto_plugin.so.0.0.0
 fi
 
+#
 # vim:fenc=utf-8:ft=sh:ci:pi:sts=0:sw=4:ts=4:
+#

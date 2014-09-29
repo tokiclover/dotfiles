@@ -1,11 +1,13 @@
 #!/bin/sh
 #
-# $Id: soundon.user, 2014/08/31 12:57:40 -tclover Exp $
-# $License: MIT (or 2-clause/new/simplified BSD)  Exp $
+# a user soundon script for ossv4
+#
+# $Header: soundon.user, 2014/08/31 12:57:40 -tclover Exp $
+# $License: MIT (or 2-clause/new/simplified BSD)      Exp $
 #
 
 grep -q oss /proc/modules || modprobe -a oss_{{audio,midi}loop,hdaudio,midimix}
-( lspci | grep -q -i cmi878 ) && modprobe oss_cmi878x
+lspci | grep -q -i cmi878 && modprobe oss_cmi878x
 
 ossdetect -diu
 ossdevlinks 
@@ -31,4 +33,6 @@ fi
 
 unset pcm
 
+#
 # vim:fenc=utf-8:ft=sh:ci:pi:sts=0:sw=2:ts=2:
+#

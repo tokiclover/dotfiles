@@ -1,4 +1,6 @@
-# $Id: ~/.bash_login, 2014/09/26 10:15:47 -tclover Exp $
+#
+# $Header: ~/.bash_login, 2014/09/28 10:15:47 -tclover Exp $
+#
 
 # auto startx depending on the tty
 if [[ -z "$DISPLAY" ]] && [[ "$EUID" != 0 ]]; then
@@ -20,4 +22,6 @@ else
 	export SSH_AUTH_SOCK GPG_AGENT_INFO
 fi
 
+#
 # vim:fenc=utf-8:ft=sh:ci:pi:sts=2:sw=2:ts=2:
+#

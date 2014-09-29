@@ -1,4 +1,6 @@
-# $Id: ~/.zlogin, 2014/09/26 08:40:49 -tclover Exp $
+#
+# $Header: ~/.zlogin, 2014/09/28 08:40:49 -tclover Exp $
+#
 
 # auto startx depending on the tty
 if [[ -z $DISPLAY ]] && [[ $EUID != 0 ]] {
@@ -18,4 +20,6 @@ if [[ -f $TMPDIR/keyring/env ]] {
 	export SSH_AUTH_SOCK GPG_AGENT_INFO
 }
 
+#
 # vim:fenc=utf-8:ci:pi:sts=2:sw=2:ts=2:
+#

@@ -1,4 +1,6 @@
-# $Id: ~/.zshrc, 2014/09/09 22:01:25 -tclover Exp $
+#
+# $Header: ~/.zshrc, 2014/09/28 22:01:25 -tclover Exp $
+#
 
 setopt extended_glob
 
@@ -17,21 +19,23 @@ if [[ -f ~/.zprezto/init.zsh ]] {
 		source ~/.zprezto/modules/prompt/functions/prompt_clover_setup
 	}
 } else {
-	if [[ -f ~/key-bindings.zsh ]] {
-		source ~/key-bindings.zsh
+	if [[ -f ~/lib/key-bindings.zsh ]] {
+		source ~/lib/key-bindings.zsh
 	}
-	if [[ -e ~/prompt_clover_setup ]] {
+	if [[ -e ~/lib/prompt_clover_setup ]] {
 		autoload -Uz promptinit
 		promptinit
-		source ~/prompt_clover_setup
+		source ~/lib/prompt_clover_setup
 	}
 }
 
-if [[ -f ~/.aliasrc ]] { source ~/.aliasrc }
+if [[ -f ~/lib/aliasrc ]] { source ~/lib/aliasrc }
 
 if [[ -d ~/.zprezto/customs/helpers ]] {
 	fpath=(~/.zprezto/customs/helpers $fpath)
 #	autoload -Uz precompile && precompile
 }
 
+#
 # vim:fenc=utf-8:ft=zsh:ci:pi:sts=0:sw=2:ts=2:
+#

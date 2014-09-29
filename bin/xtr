@@ -1,11 +1,12 @@
 #!/bin/sh
 #
-# $Id: xtr,v 2.0 2014/08/31 14:00:26 -tclover        Exp $
-# $License: MIT (or 2-clause/new/simplified BSD) Exp $
+# $Header: xtr,v 2.0 2014/08/31 14:00:26 -tclover Exp $
+# $License: MIT (or 2-clause/new/simplified BSD)  Exp $
 #
 # @SCRIPT: xtr
 # @DESCRIPTION: simple and short script to eXTRact archives or tarball archives
 # @USAGE: [-c|--comp <comp-opt>] [-g|--gpg <gpg-opt>] <file> <file> <...>
+#
 
 usage() {
    echo "usage:  xtr [option] <file> <file> <...>"
@@ -14,9 +15,9 @@ usage() {
    exit
 }
 
-[ $# == 0 ] && usage
+(( $# == 0 )) && usage
 
-while [ $# -ge 1 ]; do
+while (( $# >= 1 )); do
 	arg="$1"
 	case "$arg" in
 		*.gpg) gpg=gpg;;
@@ -61,4 +62,6 @@ done
 
 unset cmp gpg arg c_opt g_opt ret
 
-# vim:fenc=utf-8:ft=sh:ci:pi:sts=0:sw=4:ts=4:
+#
+# vim:fenc=utf-8:ft=sh:ci:pi:sts=2:sw=2:ts=2:
+#

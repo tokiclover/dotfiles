@@ -1,12 +1,14 @@
 #!/bin/bash
 #
+# terminal 256 colors display script
+#
 # $Header: term256colors.bash, 2014/09/22 -tclover          Exp $
 # $License: MIT (or 2-clause/new/simplified BSD)            Exp $
 # $Screenhots: https://imgur.com/EqE6iOz.png                Exp $
 #
 # $Original: http://frexx.de/xterm-256-notes/data/colortable16.sh
 
-printline() {
+function printline {
     echo "     >------------------------------------------<"
 }
 

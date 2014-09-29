@@ -19,10 +19,9 @@ another _dotfiles_ repository
 * and then exec your shell with `% exec $SHELL`
 * another alternative is to clone this repository with *--recurse-submodules* passed to *git*
 
-## Scripts extra info (/scr):
+## Scripts extra info (/bin):
 
 * fhp: is a simple script which put firefox profile into tmpfs/zram backed FS (dep: functions.$shell);
-* functions: functions for bash and zsh, almost only die() helper;
 * hdu: is a simple script which ease updating '$Header:...$' or '$Id:...$' update;
 * ips: is a script which can be used to retrieve IP block lists to be added to iptables rules;
 * ipr: is script to generate statefull ip[6]tables net rules;
@@ -31,13 +30,22 @@ another _dotfiles_ repository
 * mkstage4: a stage4 maker scripts with squashed (system and/or local) directories support;
 * soundon.user: an oss4 user soundon script;
 * term256colors: terminal colors display scripts;
-* zram.initd: a init service to initialize zram devices.
-* zramdir.initd: an init svc which can put several directories (var/{log,run,lock}..) into zram backed fs.
 * xtr: stand for eXtract TaRball, just run with a list of tarball to extract;
 * bfd-plugins: switch ld plugin beetwen LLVMgold.so and GCC liblto_plugin.so,
   beware to switch to bfd or gold beforehand (using: binutils-config --linker bfd).
 
-## Scripts/Functions in .zprezto/customs (zsh specific):
+## Functions extra info (/lib):
+
+* functions.bash: a few helpers not fully tested...
+* functions.zsh: look at .zprezto/customs/helpers those can be used with adding
+  this path to fpath and then use autoload -Uz $helpers when need be.
+* zram.initd: a init service to initialize zram devices.
+* zramdir.initd: an init svc which can put several directories
+  (var/{log,run,lock}..) into zram backed fs.
+
+## Scripts/Functions in .zprezto/customs/customs (zsh specific):
+
+Those helpers are availaible in /lib/functions.bash minus precompile.
 
 * kmod-pc: list kernel module paramaters of passed args or all modules found;
 * mktmp: a cheaper variant of mktemp (without the randomness of it, yes cheap);

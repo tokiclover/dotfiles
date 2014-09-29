@@ -1,8 +1,11 @@
 #!/bin/sh
 #
-# $Id: lbd, 2014/07/31 10:56:24 -tclover         Exp $
+# add/remove loop back devices
+#
+# $Header: lbd, 2014/07/31 10:56:24 -tclover     Exp $
 # $License: MIT (or 2-clause/new/simplified BSD) Exp $
 #
+
 for i in $(seq ${2:-16} ${3:-32}); do
   case $1 in
    -d|--del) rm -f /dev/loop$i;;
@@ -14,4 +17,6 @@ for i in $(seq ${2:-16} ${3:-32}); do
   esac
 done
 
+#
 # vim:fenc=utf-8:ci:pi:sts=0:sw=4:ts=4:
+#

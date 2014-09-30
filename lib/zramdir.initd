@@ -1,10 +1,15 @@
 #!/sbin/openrc-run
 # Copyright 1999-2014 Gentoo Foundation
 # Distributed under the terms of the 2-clause BSD or GPL-2 license
-# $Header: zramdir.initd,v 3.1 2014/09/21 13:05:23 -tclover Exp $
+# $Header: zramdir.initd,v 3.2 2014/09/30 -tclover Exp $
 
 conf_file="/etc/conf.d/${RC_SVCNAME}"
 description="use zram and optional tarball archive for directories /var/{log,...}"
+
+extra_commands="restore save"
+
+:	${compressor:=lz4 -1 -}
+extension=".tar.${compressor%% *}"
 
 depend()
 {
@@ -15,53 +20,84 @@ start()
 {
 	local IFS=":${IFS}"
 	
-	if ! grep -q $zram_root /proc/mounts; then
+	if ! grep -q "${zramdir_root}" /proc/mounts; then
 		eend "${?}" "no suitable zram backed root dir found"
-		return
+		return 0
 	fi
 	
-	for dir in ${compressed_dir}; do
+	# Check if archives exist for compressed directory-ies
+	for dir in ${uncompressed_dir}; do
 		chkdir "${dir}"
 	done
 	
 	for dir in ${compressed_dir} ${uncompressed_dir}; do
-		mkdir -p ${zram_root}${dir}
-		mount --bind ${dir} ${zram_root}${dir}
-	
-		if [ -f ${dir}.tar.lz4 ]; then
-			deflate "${dir}" "${zram_root}"
-		fi
+		mkdir -p "${zramdir_root}${dir}"
+		mount --bind "${zramdir_root}${dir}" "${dir}"
 	done
+
+	# Restor saved/archived directory-ies if any
+	restore
+
+	return 0
 }
 
 stop()
 {
-	local IFS=":${IFS}"
-	for dir in ${compressed_dir}; do
-		inflate "${dir}" "${zram_root}"
-	done
+	# Save saved/archived directory-ies if any
+	save
+
+	return 0
 }
 
 chkdir()
 {
-	[ -e ${1}.tar.lz4 ] && return
-	[ -d "${1}" ] && inflate "${1}"
+	[ -e "${1}${extension}" ] && return
+	[ -d "${1}" ] && save "${1}" || mkdir -p "${1}"
 }
 
-deflate()
+restore()
 {
-	pushd "${2}${1%/*}" >/dev/null 2>&1
-	lz4c -d $1.tar.lz4 - | tar -xp
-	eend "${?}" "failed to deflate ${1}"
-	popd > /dev/null 2>&1
+	local IFS=":${IFS}"
+	local swd="$(pwd)"
+	local decompress="${compressor%% *}"
+	local tarball
+
+	for dir in ${1:-${compressed_dir}}; do
+		cd "${dir%/*}" > /dev/null 2>&1
+
+		if [ -f "${dir}${extension}" ]; then
+		:	tarball="${dir}${extension}"
+		elif [ -f "${dir}.old${extension}" ]; then
+		:	tarball="${dir}.old${extension}"
+		else
+			eend "${?}" "no tarball found for ${dir}"
+			continue
+		fi
+		${decompress} -cd "${tarball}" | tar -xp
+		eend "${?}" "failed to deflate ${dir}"
+
+		cd "${swd}" > /dev/null 2>&1
+	done
 }
 
-inflate()
+save()
 {
-	pushd "${2}${1%/*}" > /dev/null 2>&1
-	tar -Ocp ${1##*/} | lz4c -1 - $1.tar.lz4
-	eend "${?}" "failed to inflate ${1}"
-	popd > /dev/null 2>&1
+	local IFS=":${IFS}"
+	local swd="$(pwd)"
+
+	for dir in ${1:-${compressed_dir}}; do
+		cd "${dir%/*}" > /dev/null 2>&1
+
+		if [ -f "${dir}${extension}" ]; then
+			mv -f "${dir}${extension}" "${dir}.old${extension}"
+		fi
+		tar -Ocp ${dir##*/} | ${compressor} "${dir}${extension}"
+		eend "${?}" "failed to inflate ${dir}"
+
+		cd "${swd}" > /dev/null 2>&1
+	done
 }
 
+#
 # vim:fenc=utf-8:ft=gentoo-init-d:ci:pi:sts=0:sw=4:ts=4:
+#

@@ -101,24 +101,27 @@ function fhp {
 	pushd "$HOME/.mozilla/firefox" >/dev/null 2>&1 || die
 	if [[ -f ${fhpinfo[fhp]}/.unpacked ]]; then
 		if [[ -f ${fhpinfo[fhp]}$ext ]]; then
-			mv -f ${fhpinfo[fhp]}{,.old}$ext || die "failed to override the old tarball"
+			mv -f ${fhpinfo[fhp]}{,.old}$ext ||
+			die "failed to override the old tarball"
 		fi
+
 		tar -X ${fhpinfo[fhp]}/.unpacked -Ocp ${fhpinfo[fhp]} | \
 			${fhpinfo[compressor]} ${fhpinfo[fhp]}$ext ||
 			die "failed to repack a new tarball"
 	else
 		local decompress="${fhpinfo[compressor]%% *}"
+
 		if [[ -f ${fhpinfo[fhp]}$ext ]]; then
-			$decompress -cd ${fhpinfo[fhp]}$ext | tar -xp &&
-				touch ${fhpinfo[fhp]}/.unpacked ||
-				die "failed to unpack the profile"
+			local tarball=${fhpinfo[fhp]}$ext
 		elif [[ -f ${fhpinfo[fhp]}.old$ext ]]; then
-			$decompress -cd ${fhpinfo[fhp]}.old$ext | tar -xp &&
-				touch ${fhpinfo[fhp]}/.unpacked ||
-				die "failed to unpack the profile"
+			local tarball=${fhpinfo[fhp]}.old$ext 
 		else
 			die "no tarball found"
 		fi
+
+		$decompress -cd $tarball | tar -xp &&
+			touch ${fhpinfo[fhp]}/.unpacked ||
+			die "failed to unpack the profile"
 	fi
 	popd >/dev/null 2>&1
 }

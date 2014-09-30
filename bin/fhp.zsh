@@ -3,7 +3,7 @@
 # $Header: fhp.zsh                                      Exp $
 # $Aythor: (c) 2011-014 -tclover <tokiclover@gmail.com> Exp $
 # $License: MIT (or 2-clause/new/simplified BSD)        Exp $
-# $Version: 2.1 2014/09/09 21:09:26                     Exp $
+# $Version: 2.1 2014/09/30                              Exp $
 #
 # @DESCRIPTION: set firefox profile dir to tmpfs or zram backed fs
 # @USAGE: [OPTIONS] [profile]
@@ -105,19 +105,19 @@ function fhp {
 			die "failed to repack a new tarball"
 	} else {
 		if [[ -f $fhpinfo[fhp]$ext ]] {
-			${fhpinfo[compressor][(w)1]} -cd $fhpinfo[fhp]$ext | tar -xp &&
-				touch $fhpinfo[fhp]/.unpacked ||
-				die "failed to unpack the profile"
+			local tarball=$fhpinfo[fhp]$ext
 		} elif [[ -f $fhp.old$ext ]] {
-		${fhpinfo[compressor][(w)1]} -cd $fhpinfo[fhp].old$ext | tar -xp &&
+			local tarball=$fhpinfo[fhp].old$ext
+		} else { die "no tarball found" }
+
+		${fhpinfo[compressor][(w)1]} -cd $tarball | tar -xp &&
 			touch $fhpinfo[fhp]/.unpacked ||
 			die "failed to unpack the profile"
-		} else { die "no tarball found" }
 	}
 	popd -q
 }
 
-if [[ ${(%):-%1x} == fhp(.zsh)# ]] {
+if [[ ${(%):-%1x} == fhp(|.zsh) ]] {
 	fhp
 	unset fhpinfo
 }

@@ -3,7 +3,7 @@
 # $Header: fhp.bash                                     Exp $
 # $Aythor: (c) 2011-014 -tclover <tokiclover@gmail.com> Exp $
 # $License: MIT (or 2-clause/new/simplified BSD)        Exp $
-# $Version: 2.2 2014/09/09 21:09:26                     Exp $
+# $Version: 2.2 2014/09/30                              Exp $
 #
 # @DESCRIPTION: set firefox profile dir to tmpfs or zram backed fs
 # @USAGE: [OPTIONS] [profile]

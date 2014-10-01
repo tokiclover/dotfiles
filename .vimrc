@@ -152,12 +152,16 @@ nnoremap <c-l> <c-w>l
 " extended keyboard (numeric pad) mapping
 noremap Ot <Left>
 noremap Ox <Up>
+noremap Oy <PageUp>
 noremap Ov <Right>
 noremap Or <Down>
+noremap Os <PageDown>
 noremap Ow <Home>
 noremap Oq <End>
 noremap Op <Insert>
+"noremap On <Del>
 noremap Ou <Del>
+
 noremap Oa <C-U>
 noremap Ob <C-D>
 noremap Oc <S-E>

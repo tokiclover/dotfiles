@@ -1,8 +1,10 @@
-# $Id: ~/.aliasrc, 2014/09/09 13:31:48 -tclover Exp $
+#
+# $Header: ~/.aliasrc, 2014/09/30 -tclover Exp $
+#
 
 alias ipr='~/bin/ipr'
-alias iru='~/bin/iru'
 alias lbd='~/bin/lbd'
+alias xtr='~/bin/xtr'
 
 alias pu=pushd
 alias po=popd
@@ -64,4 +66,6 @@ alias qx=qxpack
 
 alias ydl=youtube-dl
 
-# vim:fenc=utf-8:ci:pi:sts=0:sw=2:ts=2:
+#
+# vim:fenc=utf-8:ft=sh:ci:pi:sts=0:sw=2:ts=2:
+#

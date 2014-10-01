@@ -149,4 +149,18 @@ nnoremap <c-j> <c-w>j
 nnoremap <c-k> <c-w>k
 nnoremap <c-l> <c-w>l
 
+" extended keyboard (numeric pad) mapping
+noremap Ot <Left>
+noremap Ox <Up>
+noremap Ov <Right>
+noremap Or <Down>
+noremap Ow <Home>
+noremap Oq <End>
+noremap Op <Insert>
+noremap Ou <Del>
+noremap Oa <C-U>
+noremap Ob <C-D>
+noremap Oc <S-E>
+noremap Od <S-B>
+
 " vim:fenc=utf-8:tw=80:sw=2:sts=2:ts=2:

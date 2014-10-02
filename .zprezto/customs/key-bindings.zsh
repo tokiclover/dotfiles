@@ -22,14 +22,14 @@ for keymap in 'emacs' 'viins' 'vicmd'; do
 	bindkey -M "$keymap" "\EOn" backward-delete-char
 	bindkey -M "$keymap" "\EOp" vi-cmd-mode
 	bindkey -M "$keymap" "\EOu" delete-char
-#	bindkey -M "$keymap" "\EOM"
+	bindkey -M "$keymap" "\EOM" accept-line
 
 	bindkey -M "$keymap" "\E[a" copy-earlier-word
 	bindkey -M "$keymap" "\E[b" backward-kill-line
 	bindkey -M "$keymap" "\E[c" backward-kill-word
 	bindkey -M "$keymap" "\E[d" kill-word
-#	bindkey -M "$keymap" "\EOa" backward-kill-word
-#	bindkey -M "$keymap" "\EOb" kill-word
+	bindkey -M "$keymap" "\EOa" undo
+	bindkey -M "$keymap" "\EOb" redo
 	bindkey -M "$keymap" "\EOc" forward-word
 	bindkey -M "$keymap" "\EOd" backward-word
 done

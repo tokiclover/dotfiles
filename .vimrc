@@ -1,8 +1,10 @@
-" $Id: ~/.vimrc, 2014/07/31 -tclover Exp $
-" ------------------------------------------------- HEAD
+" -------------------------------------------------- HEADER
+" Header: $HOME/.vimrc, 2014/10/01 -tclover          Exp
+" -------------------------------------------------- DESCRIPTION
 " simple and sane vimrc based on https://github.com/W4RH4WK/dotVim/
 " gentoo has a rich app-vim category, so take a look at
 " cfg/etc/portage/sets/vim for my sets of vim plugins
+" -------------------------------------------------- CODE
 
 set nocompatible
 
@@ -149,7 +151,7 @@ nnoremap <c-j> <c-w>j
 nnoremap <c-k> <c-w>k
 nnoremap <c-l> <c-w>l
 
-" extended keyboard (numeric pad) mapping
+" extended keyboard (numeric pad) mapping when num lk is unset
 noremap Ot <Left>
 noremap Ox <Up>
 noremap Oy <PageUp>
@@ -159,12 +161,22 @@ noremap Os <PageDown>
 noremap Ow <Home>
 noremap Oq <End>
 noremap Op <Insert>
-"noremap On <Del>
+noremap On <ESC>
 noremap Ou <Del>
+noremap OM <CR>
 
-noremap Oa <C-U>
-noremap Ob <C-D>
-noremap Oc <S-E>
-noremap Od <S-B>
+" those key code are combination of <C>+<Left>|<Up>|<Right>|<Down>
+" on a funky keyboard
+noremap Oa <C-Up>
+noremap Ob <C-Down>
+noremap Oc <C-Left>
+noremap Od <C-Right>
+
+" those key code are combination of <S>+<Left>|<Up>|<Right>|<Down>
+" on a funky keyboard
+noremap [a <S-Up>
+noremap [b <S-Down>
+noremap [c <S-Left>
+noremap [d <S-Right>
 
 " vim:fenc=utf-8:tw=80:sw=2:sts=2:ts=2:

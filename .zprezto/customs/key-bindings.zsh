@@ -1,27 +1,38 @@
 #
+# This is an extended numeric pad keys mapping when <num_lock> is unset.
+# The last are combination of <Right_S>|<Right_C>+<Left>|<Up>|<Right>|<Down>
+#
 # key-bindings.zsh
 #
 
-if zstyle -t ':prezto:module:editor' key-bindings 'emacs' 'vi'; then
-  for keymap in 'emacs' 'viins' 'vicmd'; do
-    bindkey -M "$keymap" "\EOw" beginning-of-line
-    bindkey -M "$keymap" "\EOq" end-of-line
-    bindkey -M "$keymap" "\EOt" backward-char
-    bindkey -M "$keymap" "\EOv" forward-char
+autoload -Uz copy-earlier-word
+zle -N copy-earlier-word
 
-    bindkey -M "$keymap" "\EOr" down-line-or-history
-    bindkey -M "$keymap" "\EOs" end-of-history
-    bindkey -M "$keymap" "\EOx" up-line-or-history
-    bindkey -M "$keymap" "\EOy" beginning-of-history
+for keymap in 'emacs' 'viins' 'vicmd'; do
+	bindkey -M "$keymap" "\EOw" beginning-of-line
+	bindkey -M "$keymap" "\EOq" end-of-line
+	bindkey -M "$keymap" "\EOt" backward-char
+	bindkey -M "$keymap" "\EOv" forward-char
 
-    bindkey -M "$keymap" "\EOn" backward-delete-char
-    bindkey -M "$keymap" "\EOp" overwrite-mode
-    bindkey -M "$keymap" "\EOu" delete-char
+	bindkey -M "$keymap" "\EOr" down-line-or-history
+	bindkey -M "$keymap" "\EOs" end-of-history
+	bindkey -M "$keymap" "\EOx" up-line-or-history
+	bindkey -M "$keymap" "\EOy" beginning-of-history
 
-    bindkey -M "$keymap" "\EOd" backward-word
-    bindkey -M "$keymap" "\EOc" forward-word
-  done
-fi
+	bindkey -M "$keymap" "\EOn" backward-delete-char
+	bindkey -M "$keymap" "\EOp" vi-cmd-mode
+	bindkey -M "$keymap" "\EOu" delete-char
+#	bindkey -M "$keymap" "\EOM"
+
+	bindkey -M "$keymap" "\E[a" copy-earlier-word
+	bindkey -M "$keymap" "\E[b" backward-kill-line
+	bindkey -M "$keymap" "\E[c" backward-kill-word
+	bindkey -M "$keymap" "\E[d" kill-word
+#	bindkey -M "$keymap" "\EOa" backward-kill-word
+#	bindkey -M "$keymap" "\EOb" kill-word
+	bindkey -M "$keymap" "\EOc" forward-word
+	bindkey -M "$keymap" "\EOd" backward-word
+done
 unset keymap
 
 #

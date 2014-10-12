@@ -1,60 +1,132 @@
 #!/bin/zsh
 #
-# $Id: mkstage4.zsh,v 2.0 2014/08/31 13:08:56 -tclover Exp $
-# $License: MIT (or 2-clause/new/simplified BSD)       Exp $
+# $Header: mkstage4.zsh,v 2.0 2014/08/31 13:08:56 -tclover Exp $
+# $License: MIT (or 2-clause/new/simplified BSD)           Exp $
 #
-usage() {
-  cat <<-EOF
-  usage: ${(%):-%1x} [OPTIONS...]
-  -c, -comp               compression command to use, default is 'gzip'
-  -e, -exclude<files>     files/dirs to exclude from the tarball archive
-  -g, -gpg                encrypt and/or sign the final tarball[.gpg]
-      -cipher<aes>        cipher to use when encypting the tarball archive
-      -encrypt            encrypt, may be combined with -symmetric/-sign
-      -recipient<u-id>    encrypt the final tarball using <user-id> public key
-      -sign               sign the tarball using <user-id>, require -recipient
-      -symmetric          encrypt with a symmetric cipher using a passphrase
-  -p, -prefix[3.3]        prefix scheme to name the tarball, default is $(uname -r | cut -c-3).
-  -t, -tarball<stg4>      sufix scheme to name the tarball,default is 'stg4'
-  -r, -root[/]            root directory for the backup, default is '/'
-  -R, -restore<dir>       restore the stage4 backup from optional <dir>
-  -q, -sdr                use sdr script to squash squashed directories
-      -sdr-root[/aufs]    squashed directory-ies root directory tree
-      -sdr-sys<:dir>      system squashed dirs that require 'sdr -update' option
-      -sdr-dir<:dir>      local squashed dirs that do not require 'sdr -update'
-  -d, -dir<dir>           stage4 dircteroy, location to store/save the tarball
-  -s, -split<bytes>       size of byte to split the tarball archive
-  -h, -help               print this help/usage and exit
-EOF
+
+function usage {
+  cat <<-EOH
+  usage: ${(%):-%1x} [OPTIONS]
+
+  -c, --compressor=lzop    compression command to use, default is 'gzip'
+  -X, --exclude=<files>    files/dirs to exclude from the tarball archive
+  -g, --gpg                encrypt and/or sign the final tarball[.gpg]
+  -C, --cipher=<aes>       cipher to use when encypting the tarball archive
+  -e, --encrypt            encrypt, may be combined with --symmetric/--sign
+      --recipient <u-id>   encrypt the final tarball using <user-id> public key
+  -S, --sign               sign the tarball using <user-id>, require --recipient
+      --symmetric          encrypt with a symmetric cipher using a passphrase
+  -p, --prefix=<3.3>       prefix scheme to name the tarball, default is $(uname -r | cut -c-3).
+  -t, --tarball=<stg4>     suffix scheme to name the tarball,default is 'stg4'
+  -r, --root=</>           root directory for the backup, default is '/'
+  -R, --restore=[<dir>]    restore the stage4 backup from optional <dir>
+  -q, --sdr                use sdr script to squash squashed directories
+      --sdr-root=<dir>     squashed directory-ies root directory tree
+      --sdr-sys=<:dir>     system squashed dirs that require 'sdr --update' option
+      --sdr-dir=<:dir>     local squashed dirs that do not require 'sdr --update'
+  -d, --dir=<dir>          stage4 dircteroy, location to save the tarball
+  -s, --split <bytes>      size of byte to split the tarball archive
+  -h, --help, -?           print this help/usage and exit
+EOH
 exit
 }
 
-error() {
-	print -P "%B%F{red}*%b%f $@" >&2
+function error {
+	print -P "%B%F{red}*%b %1x:%f $@" >&2
 }
 
-die() {
-	error $@
-	exit
+function die {
+	local ret=$?
+	error $argv
+	exit $ret
 }
-alias die='die "%F{yellow}%1x:%U${(%):-%I}%u:%f" $@'
 
-zmodload zsh/zutil
-zparseopts -E -D -K -A opts b c: e+: g q p: r: s: d: t: h cipher: comp: dir: \
-	exclude+: gpg sdr recipient: root: R:: restore:: split: sdr-dir+: sdr-root: \
-	encrypt sign symmetric sdr-sys+: tarball: help || usage
+typeset -A opts
+typeset -a exclude gpg opt
+opt=(
+	"-o" "?C:c:d:ehqR::r:Ss:t:X:"
+	"-l" "exclude:,cipher:,compressor:,dir:,encrypt,gpg,help"
+	"-l" "sdr,sdr-root:,sdr-dir:,sdr-sys:,root,tarball"
+	"-l" "recipient:,symmetric,sign,restore"
+	"-n" "${(%):-%1x}"
+)
 
-if [[ -n ${(k)opts[-h]} ]] || [[ -n ${(k)opts[-help]} ]] { usage }
-if [[ -z ${opts[*]} ]] { typeset -A opts }
-:	${opts[-comp]:=${opts[-c]:-gzip}}
-: 	${opts[-prefix]:=${opts[-p]:-$(uname -s)-$(uname -m)-$(uname -r | cut -d- -f1)}}
-:	${opts[-root]:=${opts[-r]:-/}}
-:	${opts[-dir]:=${opts[-d]:-/mnt/bak/$(uname -m)}}
-: 	${opts[-tarball]:=${opts[-t]:-stage4}}
+opt=($(getopt ${opt} -- ${argv} || usage))
+eval set -- ${opt}
+opt=()
+
+for (( ; $# > 0; ))
+	case $1 {
+		(-q|--sdr)
+			(( $+commands[sdr] )) && sdr=$commands[sdr] || sdr=$HOME/bin/sdr.zsh
+			[[ -x $sdr ]] || die
+			shift;;
+		(-S|--sign)
+			gpg+=(--sign)
+			shift;;
+		(-e|--encrypt)
+			gpg+=(--encrypt)
+			shift;;
+		(-C|--cipher)
+			gpg+=(--cipher-algo $2)
+			shift 2;;
+		(--recipient)
+			gpg+=(--recipient $2)
+			shift 2;;
+		(-g|--gpg)
+			gpg=(gpg $gpg)
+			shift;;
+		(-X|--exclude)
+			exclude+=(${2//:/ })
+			shift 2;;
+		(--symmetric)
+			gpg+=(--symmetric)
+			shift;;
+		(-p|--prefix)
+			opts[-prefix]=$2
+			shift 2;;
+		(-d|--dir)
+			opts[-dir]=$2
+			shift 2;;
+		(-c|--compressor)
+			opts[-compressor]=$2
+			shift 2;;
+		(--sdr-dir)
+			opts[-sdr-dir]+=:$2
+			shift 2;;
+		(-s|--split)
+			opts[-split]=$2
+			shift 2;;
+		(-t|--tarball)
+			opts[-tarball]=$2
+			shift 2;;
+		(--sdr-root)
+			opts[-sdr-root]=$2
+			shift 2;;
+		--sdr-sys)
+			opts[-sdr-sys]+=:$2
+			shift 2;;
+		(-r|--root)
+			opts[-root]=$2
+			shift 2;;
+		(-R|--restore)
+			opts[-restore]=$2
+			shift 2;;
+		(--)
+			shift
+			break;;
+		(-?|-h|--help|*) usage;;
+	}
+
+:	${opts[-compressor]:=gzip}
+: ${opts[-prefix]:=$(uname -s)-$(uname -m)-$(uname -r | cut -d- -f1)}
+:	${opts[-root]:=/}
+:	${opts[-dir]:=/mnt/bak/$(uname -m)}
+: ${opts[-tarball]:=stage4}
 :	${opts[-sdr-root]:=/aufs}
 
-opts[-tarball]=${opts[-dir]}/${opts[-prefix]:l}.${opts[-tarball]}
-case ${opts[-comp]} in
+opts[-tarball]=${opts[-dir]}/${opts[-prefix]:l}-${opts[-tarball]}
+case ${opts[-compressor]} in
 	bzip2)	opts[-tarball]+=.tar.bz2;;
 	xz) 	opts[-tarball]+=.tar.xz;;
 	gzip) 	opts[-tarball]+=.tar.gz;;
@@ -66,93 +138,94 @@ esac
 setopt NULL_GLOB
 setopt EXTENDED_GLOB
 
-build()
-{
+function mkstage {
+
 print -P "%F{green}>>> building ${opts[-tarball]} stage4 tarball...%f"
 pushd ${opts[-root]} || die "invalid root directory"
 
-EXCLUDE=(
-	${(pws,:,)opts[-exclude]}
-	${opts[-tarball]}
-	boot/iso/*.i{mg,so}
-	mnt media home
-	dev proc sys tmp run
-	lib$(getconf LONG_BIT)/splash/cache
+exclude+=(
+	$opts[-tarball]
+	boot/**/*.i{mg,so}
+	{mnt,media,home}
+	{dev,proc,sys,tmp,run}
 	var/{run,lock,pkg,src,tmp}
 )
 
-for file ($EXCLUDE[@])
-	if [[ -f ${file} ]] {
-		opts[-opt]+=" --exclude=${file}"
-	} elif [[ -d ${file} ]] {
-		opts[-opt]+=" --exclude=${file}/*"
+for file (${exclude})
+	if [[ -d ${file} ]] {
+		opt+=(--exclude=${file}/'*')
+	} else {
+		opt+=(--exclude=${file})
 	}
 
-if [[ -n ${(k)opts[-sdr]} ]] || [[ -n ${(k)opts[-q]} ]] {
-	which sdr &>/dev/null || die "there's no sdr script in PATH"
-	if [[ -n ${opts[-sdr-sys]} ]] {
-		sdr.zsh -r${opts[-sdr-root]} -o0 -U -d${opts[-sdr-sys]}
+if (( ${+sdr} )) {
+	if (( ${+opts[-sdr-sys]} )) {
+		${sdr} -r${opts[-sdr-root]} -o0 -U -d${opts[-sdr-sys]}
 	}
-	if [[ -n ${opts[-squashd]} ]] {
-		sdr.zsh -r${opts[-sdr-root]} -o0    -d${opts[-sdr-dir]}
+	if (( ${+opts[-squashd]} )) {
+		${sdr} -r${opts[-sdr-root]} -o0    -d${opts[-sdr-dir]}
 	}
 	for file (${opts[-sdr-root]}/**/*.squashfs) {
-		opts[-opt]+=" --exclude=${file} --exclude=${file%.sfs}/rr/*"
-		opts[-opt]+=" --exclude=${${file%.sfs}#${opts[-sdr-root]}/}"
+		opt+=(
+			--exclude=${file} --exclude=${file%.sfs}/rr/'*'
+			--exclude=${${file%.sfs}#${opts[-sdr-root]}/}
+		)
 		rsync -avuR ${file} ${opts[-dir]}/${opts[-sdr-root]:t}-${${opts[-prefix]}#*-}
 	}
 }
 
-opts[-opt]+=" --wildcards --create --absolute-names --${opts[-comp]} --verbose --totals"
+opt+=(--create --absolute-names --${opts[-compressor]} --verbose --totals)
 
-if [[ -n ${(k)opts[-gpg]} ]] || [[ -n ${(k)opts[-g]} ]] { 
-	for opt (cipher encrypt recipient sign symmetric) {
-		if [[ -n ${(k)opts[-${opt}]} ]] {
-			opts[-gpg]+=" --${opt} ${opts[-${opt}]:+${(qq)opts[-${opt}]}}"
-		}
+if (( ${+opts[gpg]} )) { 
+	for o (cipher encrypt recipient sign symmetric) {
+		(( ${+opts[-${o}]} )) && opts[-gpg]+=" --${o} ${opts[-${o}]}"
 	}
-	opts[-opt]+=" ${opts[-root]} | gpg ${opts[-gpg]} --output ${opts[-tarball]}.gpg"
 	opts[-tarball]+=.gpg
+	opt+=(${opts[-root]} '|' gpg ${opts[-gpg]} --output ${opts[-tarball]})
 } else {
-	opts[-opt]+=" --file ${opts[-tarball]} ${opts[-root]}"
+	opt+=(--file ${opts[-tarball]} ${opts[-root]})
 }
 
-tar ${=opts[-opt]} || die "failed to backup"
+eval tar ${opt} || die "failed to backup"
 
-if [[ -n ${opts[-split]} ]] || [[ -n ${opts[-s]} ]] {
-:	${opts[-s]:=${opts[-split]}}
-	split --bytes=${opts[-s]} ${opts[-tarball]}, ${opts[-tarball]}.
+if (( ${+opts[-split]} )) {
+	split --bytes=${opts[-split]} ${opts[-tarball]}, ${opts[-tarball]}.
 }
 
-print -P "%F{green}>>> successfuly built ${opts[-tarball],} stage4 tarball%f"
+print -P "%F{green}>>> successfuly built ${opts[-tarball]:l} stage4 tarball%f"
+
 }
 
-if [[ -n ${(k)opts[-restore]} ]] || [[ -n ${(k)opts[-R]} ]] {
+if (( ${+opts[-restore]} )) {
 	opts[-opt]="--extract --verbose --preserve --directory ${opts[-root]}"
 	print -P "%F{green}>>> restoring ${opts[-tarball],} stage4 tarball...%f"
-:	${opts[-restore]:-${opts[-R]:-${opts[-dir]}}}
+:	${opts[-restore]:-${opts[-dir]}}
 
-	if [[ -n ${(k)opts[-sdr]} ]] || [[ -n ${(k)opts[-q]} ]] {
+	if (( ${+sdr} )) {
 		rsync -avuR ${opts[-dir]}/./${opts[-sdr-root]:t}-${opts[-prefix]} ${opts[-root]}/
 	}
 
-	if [[ -n ${(k)opts[-gpg]} ]] || [[ -n ${(k)opts[-g]} ]] { 
+	if (( ${+opts[-gpg]} )) { 
 		opts[-gpg]="gpg --decrypt ${opts[-tarball]}.gpg |"
 	} else {
-		opts[-opt]+=" --file ${opts[-tarball]}"
+		opt+=(--file ${opts[-tarball]})
 		opts[-gpg]=
 	}
 
-	${=opts[-gpg]} tar ${opts[-opt]} || die "failed to restore"
+	eval ${=opts[-gpg]} tar ${opt} || die "failed to restore"
 
-	sed -e 's:^\#.*(.*)::g' -e 's:SUBSYSTEM.*".*"::g' \
-	    -i /etc/udev/rules.d/*persistent-cd.rules \
-		-i /etc/udev/rules.d/*persistent-net.rules
+	print >/etc/udev/rules.d/*persistent-cd.rules \
+	print >/etc/udev/rules.d/*persistent-net.rules
 
 	print -P "%F{green}>>> successfuly restored ${opts[-tarball]} stage4 tarball%f"
-} else { build }
+	exit
+}
 
-unset -v opts EXCLUDE
+mkstage
+
+unset -v opts exclude
 popd
 
-# vim:fenc=utf-8:ci:pi:sts=0:sw=4:ts=4:
+#
+# vim:fenc=utf-8:ci:pi:sts=2:sw=2:ts=2:
+#

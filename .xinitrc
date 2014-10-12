@@ -1,4 +1,6 @@
-# $Id: ~/.xinitrc, 2014/09/09 15:32:37 -tclover Exp $
+#
+# $Header: ~/.xinitrc, 2014/10/10 15:32:37 -tclover Exp $
+#
 
 launch="dbus-launch --sh-syntax --exit-with-session"
 $launch gcm-session &
@@ -31,10 +33,12 @@ urxvtd -q -o -f &
 
 launch="ck-launch-session $launch"
 case $(tty | cut -b9-) in
-	1) exec $launch enlightenment_start;;
-	2) exec $launch lxsession          ;;
-	3) exec $launch openbox-session    ;;
+	(1) exec $launch enlightenment_start;;
+	(2) exec $launch lxsession          ;;
+	(3) exec $launch openbox-session    ;;
 esac
 unset launch
 
+#
 # vim:fenc=utf-8:ft=sh:ci:pi:sts=2:sw=2:ts=2:
+#

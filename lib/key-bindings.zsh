@@ -23,11 +23,12 @@ bindkey "\C-P" paste-from-clipboard
 bindkey "\C-Y" copy-to-clipboard 
 bindkey "\E[Z" reverse-menu-complete
 
+bindkey "\E$terminfo[kbs]"   backward-delete-char
 bindkey "\E$terminfo[khome]" beginning-of-line
 bindkey "\E$terminfo[kend]"  end-of-line
 bindkey "\E$terminfo[kpp]"   up-line-or-history
 bindkey "\E$terminfo[knp]"   down-line-or-history
-bindkey "\E[3~" delete-char
+bindkey "\E$terminfo[kdch1]" delete-char
 bindkey "\C-L"  clear-screen
 bindkey "\C-Xl" screenclearx
 

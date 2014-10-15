@@ -164,11 +164,7 @@ exclue+=(
 )
 
 for file in "${exclue[@]}"; do
-	if [[ -d "${file}" ]]; then
-		opt+=("--exclude=${file}/*")
-	else
-		opt+=("--exclude=${file}")
-	fi
+	opt+=("--exclude=${file}")
 done
 
 if [[ "${sdr}" ]]; then
@@ -181,8 +177,8 @@ if [[ "${sdr}" ]]; then
 	for file in $(find "${opts[sdr-root]}" -type f -iname '*.squashfs'); do
 		dir=${file%.squashfs}
 		opt+=(
-			"--exclude=${file}" "--exclude=${dir}/rr/*"
-			"--exclude=${dir#${opts[sdr-root]}/}/*"
+			"--exclude=${file}" "--exclude=${dir}/rr"
+			"--exclude=${dir#${opts[sdr-root]}/}"
 		)
 		rsync -avuR "${file}" "${opts[dir]}/${dirname}-${opts[prefix]#*-}"
 	done

@@ -151,12 +151,7 @@ exclude+=(
 	var/{run,lock,pkg,src,tmp}
 )
 
-for file (${exclude})
-	if [[ -d ${file} ]] {
-		opt+=(--exclude=${file}/'*')
-	} else {
-		opt+=(--exclude=${file})
-	}
+for file (${exclude}) opt+=(--exclude=${file})
 
 if (( ${+sdr} )) {
 	if (( ${+opts[-sdr-sys]} )) {
@@ -167,7 +162,7 @@ if (( ${+sdr} )) {
 	}
 	for file (${opts[-sdr-root]}/**/*.squashfs) {
 		opt+=(
-			--exclude=${file} --exclude=${file%.sfs}/rr/'*'
+			--exclude=${file} --exclude=${file%.sfs}/rr
 			--exclude=${${file%.sfs}#${opts[-sdr-root]}/}
 		)
 		rsync -avuR ${file} ${opts[-dir]}/${opts[-sdr-root]:t}-${${opts[-prefix]}#*-}

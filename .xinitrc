@@ -4,11 +4,16 @@
 
 launch="dbus-launch --sh-syntax --exit-with-session"
 $launch gcm-session &
-eval $(gnome-keyring-daemon --daemonize --components=pkcs11,secrets,ssh,gpg)
-echo -e \
-	"\nSSH_AUTH_SOCK=$SSH_AUTH_SOCK" \
-	"\nGPG_AGENT_INFO=$GPG_AGENT_INFO" >"$TMPDIR"/keyring/env
-export SSH_AUTH_SOCK GPG_AGENT_INFO
+if [ -f "$TMPDIR"/keyring/env ]; then
+	while read line; do
+		export "$line"
+	done < "$TMPDIR"/keyring/env
+else
+	eval export $(gnome-keyring-daemon -r -d -c pkcs11,secrets,ssh,gpg)
+	echo -e SSH_AUTH_SOCK="$SSH_AUTH_SOCK"\
+			"\n"GNOME_KEYRING_CONTROL="$GNOME_KEYRING_CONTROL"\
+	    "\n"GPG_AGENT_INFO="$GPG_AGENT_INFO" > "$TMPDIR"/keyring/env
+fi
 /usr/libexec/polkit-gnome-authentication-agent-1 &
 
 xset s off

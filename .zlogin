@@ -1,5 +1,5 @@
 #
-# $Header: ~/.zlogin, 2014/09/28 08:40:49 -tclover Exp $
+# $Header: ~/.zlogin, 2014/10/10 08:40:49 -tclover Exp $
 #
 
 # auto startx depending on the tty
@@ -9,15 +9,16 @@ if [[ -z $DISPLAY ]] && [[ $EUID != 0 ]] {
 }
 
 # start gnome-keyring
-if [[ -f $TMPDIR/keyring/env ]] {
+if [[ -r $TMPDIR/keyring/env ]] {
 	while read line; do
 		export $line
 	done <$TMPDIR/keyring/env
 } else {
-	eval $(gnome-keyring-daemon --daemonize --components=pkcs11,secrets,ssh,gpg)
+	mkdir -m 700 -p $TMPDIR/keyring
+	eval export $(gnome-keyring-daemon -d -c pkcs11,secrets,ssh,gpg)
 	echo -e SSH_AUTH_SOCK=$SSH_AUTH_SOCK\
+			"\n"GNOME_KEYRING_CONTROL=$GNOME_KEYRING_CONTROL\
 	    "\n"GPG_AGENT_INFO=$GPG_AGENT_INFO >$TMPDIR/keyring/env
-	export SSH_AUTH_SOCK GPG_AGENT_INFO
 }
 
 #

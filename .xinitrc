@@ -4,11 +4,12 @@
 
 launch="dbus-launch --sh-syntax --exit-with-session"
 $launch gcm-session &
-if [ -f "$TMPDIR"/keyring/env ]; then
+if [ -r "$TMPDIR"/keyring/env ]; then
 	while read line; do
 		export "$line"
 	done < "$TMPDIR"/keyring/env
 else
+	mkdir -m 700 -p "$TMPDIR"/keyring
 	eval export $(gnome-keyring-daemon -r -d -c pkcs11,secrets,ssh,gpg)
 	echo -e SSH_AUTH_SOCK="$SSH_AUTH_SOCK"\
 			"\n"GNOME_KEYRING_CONTROL="$GNOME_KEYRING_CONTROL"\

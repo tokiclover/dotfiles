@@ -149,3 +149,6 @@ zstyle ':prezto:module:syntax-highlighting' styles \
 # Auto start a session when Zsh is launched in a SSH connection.
 # zstyle ':prezto:module:tmux:auto-start' remote 'yes'
 
+#
+# vim:fenc=utf-8:ft=zsh:tw=80:sw=2:sts=2:ts=2:
+#

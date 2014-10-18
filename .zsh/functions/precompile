@@ -1,10 +1,10 @@
 #
 # recompile zsh functions/scripts found in $fpath
 #
-# $Header: precompile/functions/precompile               Exp $
+# $Header: $HOME/.zsh/functions/precompile               Exp $
 # $Aythor: (c) 2014 -tclover <tokiclover@gmail.com>      Exp $
 # $License: MIT (or 2-clause/new/simplified BSD)         Exp $
-# $Version: 0.2 2014/09/25 11:09:26                      Exp $
+# $Version: 0.2 2014/10/10 11:09:26                      Exp $
 #
 
 function usage {

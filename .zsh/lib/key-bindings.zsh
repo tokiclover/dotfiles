@@ -2,7 +2,10 @@
 # This is an extended numeric pad keys mapping when <num_lock> is unset.
 # The last are combination of <Right_S>|<Right_C>+<Left>|<Up>|<Right>|<Down>
 #
-# key-bindings.zsh
+# $Header: $HOME/.zsh/lib/key-bindings.zsh              Exp $
+# $Aythor: (c) 2011-014 -tclover <tokiclover@gmail.com> Exp $
+# $License: MIT (or 2-clause/new/simplified BSD)        Exp $
+# $Version: 2014/10/10 21:09:26                         Exp $
 #
 
 bindkey -s '\EOa' '\C-[A'

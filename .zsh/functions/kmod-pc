@@ -1,5 +1,5 @@
 #
-# .zprezto/customs/functions/kmp-cp
+# $Header: $HOME/.zsh/functions/kmp-pc                  Exp $
 #
 
 function kmod-pc {

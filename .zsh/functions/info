@@ -1,5 +1,5 @@
 #
-# .zprezto/customs/functions/info
+# $Header: $HOME/.zsh/functions/info                    Exp $
 #
 
 (( $+LOGGER )) && (( $+facility )) && logger -p $facility -t "$argv"

@@ -1,8 +1,8 @@
 #
-# $Header: key-bindings.zsh                             Exp $
+# $Header: $HOME/.zsh/lib/editor.zsh                    Exp $
 # $Aythor: (c) 2011-014 -tclover <tokiclover@gmail.com> Exp $
 # $License: MIT (or 2-clause/new/simplified BSD)        Exp $
-# $Version: 2.1 2014/10/01 21:09:26                     Exp $
+# $Version: 2014/10/10 21:09:26                         Exp $
 #
 
 copy-to-clipboard () {
@@ -23,12 +23,13 @@ bindkey "\C-P" paste-from-clipboard
 bindkey "\C-Y" copy-to-clipboard 
 bindkey "\E[Z" reverse-menu-complete
 
-bindkey "\E$terminfo[kbs]"   backward-delete-char
-bindkey "\E$terminfo[khome]" beginning-of-line
-bindkey "\E$terminfo[kend]"  end-of-line
-bindkey "\E$terminfo[kpp]"   up-line-or-history
-bindkey "\E$terminfo[knp]"   down-line-or-history
-bindkey "\E$terminfo[kdch1]" delete-char
+bindkey "$terminfo[kbs]"   backward-delete-char
+bindkey "$terminfo[khome]" beginning-of-line
+bindkey "$terminfo[kend]"  end-of-line
+bindkey "$terminfo[kpp]"   up-line-or-history
+bindkey "$terminfo[knp]"   down-line-or-history
+bindkey "$terminfo[kdch1]" delete-char
+
 bindkey "\C-L"  clear-screen
 bindkey "\C-Xl" screenclearx
 

@@ -10,31 +10,25 @@ if [[ -f ~/.dir_colors ]] {
 	eval $(dircolors -b /etc/DIR_COLORS) 
 } else { eval $(dircolors) }
 
-if [[ -d ~/.zprezto/customs/helpers ]] {
-	fpath=(~/.zprezto/customs/helpers $fpath)
+if [[ -d ~/.zsh/functions ]] {
+	fpath=(~/.zsh/functions $fpath)
 }
 
 if [[ -f ~/.zprezto/init.zsh ]] {
 	source ~/.zprezto/init.zsh
-
-	if [[ -e ~/.zprezto/modules/prompt/functions/prompt_clover_setup ]] {
-		source ~/.zprezto/modules/prompt/functions/prompt_clover_setup
-	}
 } else {
-	if [[ -f ~/lib/key-bindings.zsh ]] {
-		source ~/lib/key-bindings.zsh
+	if [[ -f ~/.zsh/lib/editor.zsh ]] {
+		source ~/.zsh/lib/editor.zsh
 	}
-	if [[ -e ~/lib/prompt_clover_setup ]] {
+	if [[ -e ~/.zsh/functions/prompt_clover_setup ]] {
 		autoload -Uz promptinit
 		promptinit
-		source ~/lib/prompt_clover_setup
+		prompt clover
 	}
 	autoload -Uz precompile && precompile
 }
 
-if [[ -e ~/.zprezto/customs/key-bindings.zsh ]] {
-	source ~/.zprezto/customs/key-bindings.zsh
-}
+for file (~/.zsh/**/{key-bindings.zsh,prompt_clover_setup}(.N)) source $file
 
 if [[ -f ~/lib/aliasrc ]] { source ~/lib/aliasrc }
 

@@ -33,7 +33,7 @@ function prompt_clover_precmd {
 	# Truncate the path if it's too long
 	local offset width
 	case $TERM {
-		(xterm*|*rxvt*) offset=2;;
+		(xterm*|*rxvt*|*screen*) offset=2;;
 		(linux)         offset=1;;
 		(*)             offset=0;;
 	}
@@ -49,13 +49,6 @@ function prompt_clover_precmd {
 	}
 }
 
-function prompt_clover_preexec {
-	if [[ $TERM == "screen" ]] {
-		local cmd=${1[(wr)^(*=*|sudo|-*)]}
-		print -n "\ek$cmd\e\\"
-	}
-}
-
 function prompt_clover_setup {
 	typeset -A -g prompt_color
 
@@ -64,7 +57,6 @@ function prompt_clover_setup {
 
 	# Add required hook-functions
 	add-zsh-hook precmd  prompt_clover_precmd
-	add-zsh-hook preexec prompt_clover_preexec
 
 	for (( ; true; ))
 	case $1 in
@@ -84,14 +76,14 @@ function prompt_clover_setup {
 
 	# See if we can use colors.
 	autoload colors zsh/terminfo
-	if [[ $terminfo[colors] -ge 8 ]] { colors }
+	if (( $terminfo[colors] >= 8 )) { colors }
 	typeset -a color_arg
 	prompt_color[c0]="%{$terminfo[sgr0]%}"
 
-	if [[ $# == 8 ]] && [[ $terminfo[colors] -ge 256 ]] {
+	if (( $# == 8 && $terminfo[colors] >= 256 )) {
 		for (( i=1; i<=8; i++ ))
 			prompt_color[c$i]="%{$color[${(L)argv[$i]}]%}"
-	} elif [[ $# == 4 ]] {
+		} elif (( $# == 4 )) {
 		color_arg=($argv[@])
 	} else {
 		color_arg=(blue green magenta red)
@@ -128,13 +120,6 @@ function prompt_clover_setup {
 			prompt_color[titlebar]=''
 			;;
 		}
-
-	# Decide whether to set a screen title
-	if [[ $TERM == "screen" ]] {
-		prompt_color[screen]=$'%{\ekzsh\e\\%}'
-	} else {
-		prompt_color[screen]=''
-	}
 
 	# APM detection
 	(( $+prompt_color[apm] )) ||

@@ -43,6 +43,14 @@ for keymap in 'emacs' 'viins'; do
 done
 unset keymap
 
+if (( $+DISPLAY )); then
+	function run-term { urxvtc }
+else
+	function run-term { screen }
+fi
+zle -N run-term
+bindkey "$terminfo[kf12]" run-term
+
 #
 # vim:fenc=utf-8:tw=80:sw=2:sts=2:ts=2:
 #

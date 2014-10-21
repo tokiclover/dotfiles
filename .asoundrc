@@ -1,17 +1,52 @@
-# $Id: $HOME/.asoundrc, 2014/07/22 11:47:33 -tclover Exp $
 #
-#-*- HW -*-
+# $Header: $HOME/.asoundrc, 2014/10/10 11:47:33 -tclover Exp $
+#
+#-*- HW Card name -*-
+#
+ctl.lbd { type hw; card Loopback }
+pcm.lbd { type hw; card Loopback }
 ctl.hdi { type hw; card HDMI }
 pcm.hdi { type hw; card HDMI }
 ctl.pch { type hw; card PCH }
 pcm.pch { type hw; card PCH }
 ctl.ctl { type hw; card CMI8788 }
 pcm.cmi { type hw; card CMI8788; device 1 }
+#
+#-*- zita-a2j/j2a + Loopback -*-
+#  a=alsa c=capture p=playback lp=loop z=zita
+#
+pcm.pzlp { type plug; slave.pcm "hw:Loopback,1,0" }
+pcm.czlp {
+	type dsnoop
+	ipc_key 1048
+	slave.pcm "hw:Loopback,1,0"
+}
+pcm.palp { type plug; slave.pcm "hw:Loopback,1,1" }
+pcm.calp {
+	type dsnoop
+	ipc_key 1046
+	slave.pcm "hw:Loopback,1,1"
+}
+pcm.plp { type plug; slave.pcm "hw:Loopback,0,0" }
+pcm.clp {
+	type dsnoop
+	ipc_key 1046
+	slave.pcm "hw:Loopback,0,1"
+}
+# Full-Duplex variant using the previous devices
+pcm.dlp {
+	type asym
+	playback.pcm plp
+	capture.pcm clp
+}
+#
 #-*- DEFAULT -*-
-pcm.!default { type plug; slave.pcm dmixer }
-ctl.!default { type hw; card PCH }
+#
+pcm.!default { type plug; slave.pcm dlp }
+ctl.!default { type hw  ; card Loopback }
+#
 #-*- BS2B -*-
-ctl.bs2b { type plug; slave.ctl default }
+#
 pcm.bs2b { type plug; slave.pcm plugbs2b }
 pcm.plugbs2b {
 	type ladspa
@@ -24,8 +59,9 @@ pcm.plugbs2b {
 	}
 	]
 }
+#
 #-*- JACK -*-
-ctl.jack { type plug; slave.ctl default }
+#
 pcm.jack { type plug; slave.pcm jackplug }
 pcm.jackplug {
 	type jack
@@ -40,8 +76,9 @@ pcm.jackplug {
 		1 system:capture_2
 	}
 }
+#
 #-*- MBEQ -*-
-ctl.eq { type plug; slave.ctl default }
+#
 pcm.eq { type plug; slave.pcm plugeq }
 pcm.plugeq {
 	type ladspa
@@ -59,29 +96,36 @@ pcm.plugeq {
 	}
 	]
 }
+#
 #-*- DMIX -*-
-ctl.dmixer { type plug; slave.ctl default }
+#
 pcm.dmixer { type plug; slave.pcm dmixplug }
 pcm.dmixplug {
 	type dmix
+	ipc_key_add_uid true
 	ipc_key 1048
+	ipc_perm 0660
+	ipc_gid audio
 	slave {
 		pcm pch
+		rate 48000
 		period_time 0
 		period_size 1024
-		buffer_size 4096
-		rate 44100
+		buffer_size 8192
 	}
 	bindings {
 		0 0
 		1 1
 	}
 }
+#
 #-*- EQUALIZER -*-
-ctl.equal { type equal }
+#
 pcm.equal { type plug; slave.pcm plugequal }
 pcm.plugequal { type equal; slave.pcm dmixer }
+#
 #-*- OSS ALSA-EMU -*-
+#
 #pcm.alsa {
 #	type oss
 #	device /dev/oss/oss_cmi878x0/pcm1
@@ -90,8 +134,10 @@ pcm.plugequal { type equal; slave.pcm dmixer }
 #	type oss
 #	device /dev/oss/oss_cmi878x0/mix1
 #}
+#
 #-*- ALSA OSS-EMU -*-
-ctl.oss { type oss }
+#
 pcm.oss { type plug; slave.pcm dmixer }
 #
 # vim:fenc=utf-8:ci:pi:sts=0:sw=2:ts=2:
+#

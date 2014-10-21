@@ -1,0 +1,49 @@
+#!/bin/sh
+#
+# ALSA<->JACK: Using Loopback device zita-ajbridge for input/out
+# for better audio quality, low latency and eliminate xruns
+#
+
+alsa=false zita=false
+while [ $# -ge 1 ]; do
+	case "$1" in
+		(-a|--alsa) alsa=true; shift;;
+		(-z|--zita) zita=true; shift;;
+		(*)         break           ;;
+	esac
+done
+
+# alsa_in/out: looped-back signal at the other end
+if "$alsa"; then
+	capture="${1:-calp}" playback="${2:-palp}"
+
+	alsa_out -j "capture_$playback" -d "$playback" -q 1 > /dev/null 2>&1 &
+	alsa_in  -j "playback_$capture" -d "$capture"  -q 1 > /dev/null 2>&1 &
+
+	unset capture playback
+fi
+
+"$zita" || exit
+
+# To launch it (from qjackctl): loop2jack %r %p
+#   %r=<sampling rate> %p=Periods/Frames
+#   zita-a2j/j2a: loop-back signal at the other end
+
+rate="${1:-48000}" periodsize="$((${2:-512}/2))" device="hw:Loopback,${3:-1,0}"
+
+# Launch and configure the ALSA <-> JACK loop
+zita-j2a -d "$device" -r "$rate" -p "$periodsize" > /dev/null 2>&1 &
+zita-a2j -d "$device" -r "$rate" -p "$periodsize" > /dev/null 2>&1 &
+
+# Connect zita ports -> jack output ports 
+jack_connect zita-a2j:capture_1 system:playback_1
+jack_connect zita-a2j:capture_2 system:playback_2
+# Connect jack input ports -> zita ports  
+jack_connect system:capture_1 zita-j2a:playback_1
+jack_connect system:capture_2 zita-j2a:playback_2
+
+unset device periodsize rate
+
+#
+# vim:fenc=utf-8:ci:pi:sts=0:sw=4:ts=4:
+#

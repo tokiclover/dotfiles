@@ -27,6 +27,7 @@ another _dotfiles_ repository
 * ipr: is script to generate statefull ip[6]tables net rules;
 * kvm: is a script to ease kvm loadind with a few default option;
 * lbd: is a script to add/remove loop back devices;
+* loop2jack: a script to map loopback device to jack client (support zita-a2j/j2a or alsa_in/out);
 * mkstage4: a stage4 maker scripts with squashed (system and/or local) directories support;
 * soundon.user: an oss4 user soundon script;
 * term256colors: terminal colors display scripts;

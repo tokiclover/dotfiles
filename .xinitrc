@@ -4,18 +4,21 @@
 
 launch="dbus-launch --sh-syntax --exit-with-session"
 $launch gcm-session &
-if [ -r "$TMPDIR"/keyring/env ]; then
-	while read line; do
-		export "$line"
-	done < "$TMPDIR"/keyring/env
-else
-	mkdir -m 700 -p "$TMPDIR"/keyring
-	eval export $(gnome-keyring-daemon -d -c pkcs11,secrets,ssh,gpg)
-	echo -e SSH_AUTH_SOCK="$SSH_AUTH_SOCK"\
-			"\n"GNOME_KEYRING_CONTROL="$GNOME_KEYRING_CONTROL"\
-	    "\n"GPG_AGENT_INFO="$GPG_AGENT_INFO" > "$TMPDIR"/keyring/env
-fi
 /usr/libexec/polkit-gnome-authentication-agent-1 &
+
+if [ -r $TMPDIR/env ]; then
+	while read line; do
+		export $line
+	done <$TMPDIR/env
+else
+	eval export $(gpg-agent --daemon --sh)
+	eval export $(ssh-agent -s)
+	{
+		echo GPG_AGENT_INFO=$GPG_AGENT_INFO
+		echo SSH_AUTH_SOCK=$SSH_AUTH_SOCK
+		echo SSH_AGENT_PID=$SSH_AGENT_PID
+	} >$TMPDIR/env
+fi
 
 xset s off
 xset fp+ /usr/share/fonts/artwiz-latin1

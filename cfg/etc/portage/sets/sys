@@ -4,6 +4,7 @@ app-editors/nano
 app-editors/vim
 dev-util/patchutils
 dev-util/quilt
+dev-util/strace
 dev-util/valgrind
 sys-apps/ethtool
 sys-apps/gptfdisk
@@ -16,7 +17,9 @@ sys-apps/lm_sensors
 sys-apps/usbutils
 sys-boot/grub:2
 sys-devel/gdb
+sys-fs/bcache-tools
 sys-fs/extundelete
+sys-fs/dosfstools
 sys-power/acpid
 sys-power/pmtools
 sys-process/at

@@ -5,3 +5,10 @@ lxde-base/lxpolkit
 >gnome-extra/gnome-color-manager-3.0
 
 app-emulation/emul-linux-x86-*
+
+>dev-libs/boost-1.55.0-r1
+>www-client/firefox-32.0
+sys-libs/db:6.0
+>=dev-libs/efl-1.11.0
+>x11-wm/enlightenment-0.19.0
+>=app-admin/elektra-0.8.0

@@ -1,9 +1,9 @@
-sys-kernel/mkinitramfs-ll::bar **
+#sys-kernel/mkinitramfs-ll::bar **
 dev-perl/perl-URxvt::bar **
 media-video/mplayer2 **
 =media-sound/jack-audio-connection-kit-2.9999 **
-=app-office/libreoffice-4.2.9999 **
-=media-sound/ardour-2.9999 **
+=app-office/libreoffice-4.3.9999 **
+=media-sound/ardour-3.9999 **
 media-sound/ladish::bar **
 x11-themes/efenniht **
 sys-fs/aufs-standalone **
@@ -13,3 +13,5 @@ dev-python/mpris-remote **
 net-misc/connman **
 
 x11-themes/e-gtk-theme **
+x11-plugins/entrance **
+x11-plugins/ekbd **

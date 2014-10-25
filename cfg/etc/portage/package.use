@@ -28,7 +28,6 @@ x11-misc/tint2 battery tint2conf
 net-dialup/ppp eap-tls
 net-wireless/wpa_supplicant eap-sim gnutls
 net-dns/dnsmasq uth-dns dhcp-tools dnssec script
-net-misc/networkmanager bluetooth connection-sharing dhcpcd gnutls modemmanager -nss resolvconf
 gnome-base/gvfs archive blurey mtp udisks
 
 sys-apps/lm_sensors sensord
@@ -195,10 +194,23 @@ dev-libs/dbus-glib abi_x86_32
 x11-proto/printproto abi_x86_32
 dev-libs/libxml2 abi_x86_32
 
+dev-libs/popt abi_x86_32
+virtual/libintl abi_x86_32
+virtual/libudev abi_x86_32
+
+dev-libs/nettle abi_x86_32
+net-libs/gnutls abi_x86_32
+app-crypt/p11-kit abi_x86_32
+dev-libs/libtasn1 abi_x86_32
+dev-libs/gmp abi_x86_32
+dev-libs/libgcrypt abi_x86_32
+dev-libs/libgpg-error abi_x86_32
+sys-libs/readline abi_x86_32
+dev-lang/lua abi_x86_32
+
 net-wireless/hostapd madwifi
 net-print/gutenprint foomaticdb gimp ppds
->net-print/cnijfilter-3.90 abi_x86_32 backends -drivers gtk
-<net-print/cnijfilter-2.90 drivers abi_x86_32 -gtk ip90
+>net-print/cnijfilter-3.90 backends -drivers gtk
 gnome-extra/nm-applet bluetooth
 sys-fs/aufs-standalone -pax_kernel
 sys-fs/aufs-util kernel-builtin
@@ -209,9 +221,23 @@ x11-apps/intel-gpu-tools python_single_target_python3_3
 sys-apps/openrc -netifrc
 
 x11-apps/intel-gpu-tools -python
-dev-libs/popt abi_x86_32
-virtual/libintl abi_x86_32
-virtual/libudev abi_x86_32
 net-misc/connman bluetooth tools
 
 
+x11-plugins/entrance grub vkbd
+sys-devel/gdb -python_targets_python3_3 python_targets_python3_4
+media-sound/oss -pax_kernel
+media-sound/mpd faad wildmidi
+media-libs/lv2 plugins
+
+media-libs/aubio doc examples
+media-plugins/calf lv2
+media-sound/ardour lv2
+media-sound/patchage jack-session
+dev-qt/qtgui gtkstyle
+media-libs/lv2 plugins
+media-plugins/tap-plugins doc
+dev-util/lv2-c++-tools doc
+dev-util/cmake doc
+dev-vcs/git subversion
+dev-vcs/subversion -dso

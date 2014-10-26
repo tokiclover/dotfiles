@@ -1,0 +1,12 @@
+<?xml version="1.0" ?>
+<jack_mixer geometry="480x300">
+	<input_channel balance="0.000000" balance_midi_cc="12" name="Ch_0" type="stereo" volume="0.000000" volume_midi_cc="11"/>
+	<input_channel balance="0.000000" balance_midi_cc="14" name="CH_1" type="stereo" volume="0.000000" volume_midi_cc="13"/>
+	<input_channel balance="0.000000" balance_midi_cc="16" name="CH_2" type="stereo" volume="0.000000" volume_midi_cc="15"/>
+	<input_channel balance="0.000000" balance_midi_cc="18" name="CH_3" type="stereo" volume="0.000000" volume_midi_cc="17"/>
+	<input_channel balance="0.000000" balance_midi_cc="20" name="CH_4" type="stereo" volume="0.000000" volume_midi_cc="19"/>
+	<input_channel balance="0.000000" balance_midi_cc="22" name="CH_5" type="stereo" volume="0.000000" volume_midi_cc="21"/>
+	<input_channel balance="0.000000" balance_midi_cc="24" name="CH_6" type="stereo" volume="0.000000" volume_midi_cc="23"/>
+	<input_channel balance="0.000000" balance_midi_cc="26" name="CH_7" type="stereo" volume="0.000000" volume_midi_cc="25"/>
+	<main_mix_channel balance="0.000000" balance_midi_cc="8" volume="0.000000" volume_midi_cc="7"/>
+</jack_mixer>

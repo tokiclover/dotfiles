@@ -40,10 +40,9 @@ dhcpcd-gtk >/dev/null 2>&1 &
 ladi-system-tray > ~/.log/ladi/ladi.log 2>&1 &
 urxvtd -q -o -f &
 
-launch="ck-launch-session $launch"
 case $(tty | cut -b9-) in
 	(1) exec $launch enlightenment_start;;
-	(2) exec $launch lxsession          ;;
+	(2) exec $launch icewm-session      ;;
 	(3) exec $launch openbox-session    ;;
 esac
 unset launch

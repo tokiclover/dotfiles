@@ -95,4 +95,7 @@ video/webm=mpv.desktop
 audio/x-flac=mpv.desktop
 audio/x-vorbis+ogg=mpv.desktop
 video/x-ogm+ogg=mpv.desktop
+image/x-xpixmap=gpicview.desktop;
 
+[Default Applications]
+image/x-xpixmap=gpicview.desktop

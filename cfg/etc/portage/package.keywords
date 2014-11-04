@@ -5,6 +5,7 @@ media-video/mplayer2 **
 =app-office/libreoffice-4.3.9999 **
 =media-sound/ardour-3.9999 **
 media-sound/ladish::bar **
+media-sound/a2jmidid **
 x11-themes/efenniht **
 sys-fs/aufs-standalone **
 sys-fs/aufs-util **

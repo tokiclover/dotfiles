@@ -1,4 +1,5 @@
 app-admin/logrotate
+app-admin/sudo
 app-admin/syslog-ng
 app-editors/nano
 app-editors/vim

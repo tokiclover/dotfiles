@@ -1,10 +1,7 @@
 app-editors/gvim
 app-text/evince
-gnome-extra/polkit-gnome
 lxde-base/lxappearance
-lxde-base/lxpanel
 lxde-base/lxrandr
-lxde-base/lxsession
 x11-misc/pcmanfm
 media-gfx/gpicview
 media-gfx/pqiv

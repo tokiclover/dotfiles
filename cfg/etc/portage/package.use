@@ -10,7 +10,7 @@ sys-devel/llvm gold
 media-libs/mesa openmax openvg xa
 dev-libs/apr-util ldap
 net-nds/openldap sasl
-sys-kernel/git-sources:3.14.12 -aufs -bfq bfs ck fbcondecor -gentoo -hardened optimization reiser4 toi uksm
+sys-kernel/git-sources:3.17.2 -aufs -bfq -bfs -ck fbcondecor -gentoo hardened -optimization reiser4 -toi -uksm
 sys-kernel/git-sources:3.16.2 -aufs bfq bfs ck fbcondecor -gentoo -hardened -optimization reiser4 toi uksm
 sys-kernel/mkinitramfs-ll aufs bash btrfs dm-crypt dmraid jfs mdadm reiserfs squashfs xfs zfs zram zsh
 dev-libs/cyrus-sasl ldapdb
@@ -28,7 +28,7 @@ x11-misc/tint2 battery tint2conf
 net-dialup/ppp eap-tls
 net-wireless/wpa_supplicant eap-sim gnutls
 net-dns/dnsmasq uth-dns dhcp-tools dnssec script
-gnome-base/gvfs archive blurey mtp udisks
+gnome-base/gvfs archive bluray mtp
 
 sys-apps/lm_sensors sensord
 x11-themes/e-gtk-theme -gnome minimal openbox
@@ -56,7 +56,6 @@ dev-libs/efl drm fribidi harfbuzz jp2k physics sound xim -wayland -egl -gles
 x11-wm/enlightenment -wayland
 media-libs/elementary -wayland
 media-video/x264-encoder avs custom-cflags
-x11-libs/libfm udisks
 x11-themes/efenniht minimal
 x11-themes/ardoise-xcursor-theme minimal
 media-fonts/unifont utils
@@ -241,3 +240,4 @@ dev-util/lv2-c++-tools doc
 dev-util/cmake doc
 dev-vcs/git subversion
 dev-vcs/subversion -dso
+x11-wm/icewm bidi

@@ -2,9 +2,7 @@
 # $Header: ~/.xinitrc, 2014/10/10 15:32:37 -tclover Exp $
 #
 
-launch="dbus-launch --sh-syntax --exit-with-session"
-$launch gcm-session &
-/usr/libexec/polkit-gnome-authentication-agent-1 &
+gcm-session &
 
 if [ -r $TMPDIR/env ]; then
 	while read line; do
@@ -41,9 +39,9 @@ ladi-system-tray > ~/.log/ladi/ladi.log 2>&1 &
 urxvtd -q -o -f &
 
 case $(tty | cut -b9-) in
-	(1) exec $launch enlightenment_start;;
-	(2) exec $launch icewm-session      ;;
-	(3) exec $launch openbox-session    ;;
+	(1) exec enlightenment_start;;
+	(2) exec icewm-session      ;;
+	(3) exec openbox-session    ;;
 esac
 unset launch
 

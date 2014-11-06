@@ -2,8 +2,9 @@ app-editors/gvim
 app-text/evince
 lxde-base/lxappearance
 lxde-base/lxrandr
-x11-misc/pcmanfm
 media-gfx/gpicview
 media-gfx/pqiv
 media-gfx/qiv
 gnome-extra/gnome-color-manager
+sys-apps/udevil
+x11-misc/spacefm

@@ -1,3 +1,9 @@
 app-arch/rar
 app-arch/xarchiver
-
+app-cdr/cdrtools
+app-cdr/dvd+rw-tools
+virtual/cdrtools
+app-cdr/gaffitter
+app-cdr/burncenter
+app-cdr/cdemu
+app-cdr/cdw

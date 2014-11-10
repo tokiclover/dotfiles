@@ -5,13 +5,14 @@
 # $Header: ipr                                           Exp $
 # $Aythor: (c) 2011-2014 -tclover <tokiclover@gmail.com> Exp $
 # $License: MIT (or 2-clause/new/simplified BSD)         Exp $
-# $Version: 2.5 2014/09/16 21:09:26                      Exp $
+# $Version: 2.6 2014/11/11 21:09:26                      Exp $
 #
+
+[ -n "$ZSH_VERSION" ] && emulate sh
 
 usage() {
 cat <<-EOF
-	usage: ${0##*/} [-ewlan]0 [-ieth0] [-4|-6] [OPTIONS]
-
+ usage: ${0##*/} [-ewlan0] [-ieth0] [-4|-6] [OPTIONS]
 	-b, --block 1863,ntp         block service or port 1863,ntp
 	-i, --int-iface=eth0         use eth0 internal interface
 	-e, --ext-iface=wlan0        use wlan0 external interface
@@ -21,7 +22,7 @@ cat <<-EOF
 	-m, --module=[<modules>]     insert kernel coma separated list of kernel modules
 	    --mpd=[6600]             allow in/outbound from loop back device src for mpd
 	    --jabber=[5222,5269]     enable XMPP-client/server, short hand of '-s5222,5269'
-	    --torrent=[50550:50555]  enable torrent traffic on those ports   
+	-t, --torrent=[50550:50555]  enable torrent traffic on those ports
 	-s, --srv=pop3,pop3s         allow in/outbound for named services or ports
 	-S, --save=[ipt-rules]       save ip[6]tables rules to file, default to ipt-rules
 	-I, --ipset=[IPBlock]        enable IPSet set, default to adding IPBlock
@@ -36,8 +37,7 @@ die() {
 	exit $ret
 }
 
-
-opt=$(getopt -o ?46I::b:i:e:d::m::S::s:h -l block:,ext-iface:,jabber::,,ipset:: \
+opt=$(getopt -o '?46I::b:i:e:d::m::S::s:ht::' -l block:,ext-iface:,jabber::,ipset:: \
 	-l mpd::,torrent::,int-iface:,ipv:,dhcp::,module::,mpd,save::,srv: \
 	-l help -n ${0##*/} -- "$@" || usage)
 eval set -- "$opt"
@@ -59,7 +59,7 @@ while [ $# > 0 ]; do
 				ipv$i=true ipv=+" ipv$i"
 			done; shift 2;;
 		-S|--save) save=${2:-/var/lib/iptables/ipt-rules}; shift 2;;
-		--torrent) torrent=${2:-50550:50555}; shift 2;;
+		-t|--torrent) torrent=${2:-50550:50555}; shift 2;;
 		-s|--srv) srv+=,$2; shift 2;;
 		--) shift; break;;
 		-?|-h|--help|*) usage;;
@@ -81,10 +81,9 @@ done
 if [ -z "$ext" -a -z "$int" ]; then
 	ext="$($ifc | $sed -nre '/RUNNING/s/(^[we].*):.*/\1/p')"
 	[ "$ext" ] || die "no running interface found"
-
-	[ "$ipv4" ] || [ "$ipv6" ] || ipv4=true
-:	${dhcp:=true}
 fi
+:	${dhcp:=true}
+[ -n "$ipv4" ] || [ -n "$ipv6" ] || ipv4=true ipv6=true
 
 bck+=,0:1,13,98,111,137:139,161:162,445,517:518,520,1214,1999,3049,4329
 bck+=,6346,3128,8000,12345,65535,98,512:515,6112,1427,9000
@@ -95,20 +94,18 @@ for i in $srv; do
 	[ "${bck/$i}" = "$bck" ] || bck="${bck/,$i/}"
 done
 
-for mod in ip_nat_{ftp,irc} ip_conntrack_{ftp,irc} iptable_{filter,mangle,raw} \
-	nf_conntrack_ipv4 iptable_nat ipt_{MASQUERADE,REDIRECT,REJECT,LOG} $module
+[ -n "$ipv4" ] && module="$module iptable_filter iptable_mangle iptable_raw
+iptable_nat ipt_MASQUERADE ipt_REDIRECT ipt_REJECT"
+[ -n "$ipv6" ] && module="$module ip6table_filter ip6table_mangle ip6table_raw
+ip6table_nat ip6t_MASQUERADE ip6t_REDIRECT ip6t_REJECT"
+
+for mod in ip_nat_ftp ip_nat_irc ip_conntrack_ftp ipt_conntrack_irc ipt_LOG \
+	$module
 do
 	$grp -q "$mod" /proc/modules || modprobe "$mod"
 done
 
-if [ "$ipv6" ]; then
-	for mod in ip6table_{filter,mangle,raw} nf_conntrack_ipv6 ip6t_{LOG,REJECT} 
-	do
-		$grp -q "$mod" /proc/modules || modprobe "$mod"
-	done
-fi
-
-if [ "$ipv4" ]; then
+if [ -n "$ipv4" ]; then
 	echo 1 >/proc/sys/net/ipv4/tcp_syncookies
 	echo 1 >/proc/sys/net/ipv4/icmp_echo_ignore_broadcasts
 	echo 1 >/proc/sys/net/ipv4/ip_dynaddr
@@ -169,8 +166,8 @@ doipr() {
 	done
 	echo ""
 	
-	if [ "$dhcp" ]; then 
-		if [ "$ipv4" ]; then
+	if [ -n "$dhcp" ]; then
+		if [ -n "$ipv4" ]; then
 			dv="--sport 67:68 --dport 67:68"
 		elif [ "$ipv6" ]; then
 			dv="--sport 546:547 --dport 546:547"
@@ -187,14 +184,14 @@ doipr() {
 	done
 	echo ""
 	
-	if [ "$mpd" ]; then
+	if [ -n "$mpd" ]; then
 		echo "Opening TCP Output over $lbdip:$mpd for MPD"
 		$ipt -A INPUT  -p tcp --dport $mpd -s $lbdip --syn -m conntrack --ctstate NEW -j ACCEPT
 		$ipt -A OUTPUT -p tcp --dport $mpd -s $lbdip --syn -m conntrack --ctstate NEW -j ACCEPT
 
 	fi
 	
-	if [ "$torrent" ]; then
+	if [ -n "$torrent" ]; then
 		# turning off DHT tracking for torrent
 		echo "ipr: disabling tracking on ${torrent#*:}-udp-port PREROUTING and OUTPUT"
 		$ipt -t raw -A PREROUTING -i $ext -p udp --dport ${torrent#*:} -j NOTRACK
@@ -203,6 +200,8 @@ doipr() {
 		echo "Opening $torrent port for torrent"
 		$ipt -A INPUT -p tcp --dport $torrent -i $ext --syn -m conntrack --ctstate NEW -j ACCEPT
 		$ipt -A INPUT -p udp --dport $torrent -i $ext       -m conntrack --ctstate NEW -j ACCEPT
+		$ipt -A OUTPUT -p tcp -o $ext -j ACCEPT
+		$ipt -A OUTPUT -p udp -o $ext -j ACCEPT
 	fi
 
 	$ipt -A INPUT   -p tcp --dport auth --syn -m conntrack --ctstate NEW -j ACCEPT
@@ -222,13 +221,13 @@ doipr() {
 	# Allow to ping out
 	$ipt -A OUTPUT  -o $ext  -p $icmp  --$icmp-type 8 -m conntrack --ctstate NEW -j ACCEPT
 
-	if [ "$int" ]; then
+	if [ -n "$int" ]; then
 		$ipt -A INPUT    -i $int -s $msk -j ACCEPT
 		$ipt -A FORWARD  -o $int -s $msk -j ACCEPT
 		$ipt -A OUTPUT   -o $int -s $msk -j ACCEPT
 	fi
 
-	if [ "$ipv4" ]; then
+	if [ -n "$ipv4" ]; then
 		# NAT I/O
 		$ipt -A PREROUTING  -t nat -j ACCEPT
 		$ipt -A POSTROUTING -t nat -j ACCEPT
@@ -249,7 +248,7 @@ doipr() {
 
 doif() {
 	local bc icmp if=$1 lbdif=lo lbdmsk lbdnet msk net ip icmp ipt
-	if [ "$ipv4" ]; then
+	if [ -n "$ipv4" ]; then
 		icmp=icmp ipt="$(which iptables) --modprobe=$(which modprobe)"
 		ip="$( $ifc $ext | $awk '/inet / {print $2}')"
 		bc="$( $ifc $ext | $awk '/inet / {print $6}')"
@@ -260,10 +259,10 @@ doif() {
 		net="$ip/$msk"
 		echo "ipr: ip=$ip bc=$bc msk=$msk net=$net"
 		$ipt -F; $ipt -X
-		doipr
-		[ "$save" ] && $ipt-save >$save
+		[ -n "$msk" ] && doipr && ipv6=
+		[ -n "$save" ] && $ipt-save >$save
 	fi
-	if [ "$ipv6" ]; then
+	if [ -n "$ipv6" ]; then
 		icmp=icmpv6 ipt="$(which ip6tables) --modprobe=$(which modprobe)"
 		ip="$($ifc  $if | $awk '/inet6 / {print $2}')"
 		lbdip="$($ifc  $lbdif $awk '/inet6 / {print $2}')"
@@ -271,13 +270,13 @@ doif() {
 		unset -v ipv4 {,lbd}{bc,msk,net}
 		$ipt -F; $ipt -X
 		doipr
-		[ "$fsave" ] && $ipt-save >${save/ipt/ip6t}
+		[ -n "$fsave" ] && $ipt-save >${save/ipt/ip6t}
 	fi
 }
 
-if [ "$ext" ]; then
+if [ -n "$ext" ]; then
 	doif "$ext"
-elif [ "$int" ]; then
+elif [ -n "$int" ]; then
 	ext=$int int= && doif "$ext"
 else 
 	usage

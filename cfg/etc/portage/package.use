@@ -241,3 +241,4 @@ dev-util/cmake doc
 dev-vcs/git subversion
 dev-vcs/subversion -dso
 x11-wm/icewm bidi
+media-libs/libcanberra -sound

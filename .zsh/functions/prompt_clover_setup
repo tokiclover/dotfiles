@@ -4,7 +4,7 @@
 # $Header: $HOME/.zsh/functions/prompt_clover_setup              Exp $
 # $Authors: (c) 2011-2014 -tclover <tokiclover@gmail.com>        Exp $
 # $Licence: MIT or 2-clause/new/simplified BSD                   Exp $
-# $Version: 2.0 2014/10/10                                       Exp $
+# $Version: 2.0 2014/11/11                                       Exp $
 # $Screenshots: https://imgur.com/10w3Tzu.png                    Exp $
 #
 
@@ -113,13 +113,20 @@ function prompt_clover_setup {
 		(xterm*|*rxvt*)
 			prompt_color[titlebar]=$'%{\e]0;%#:%m:%y:%~:${COLUMNS}x${LINES}\a%}'
 			;;
-		(screen)
+		(*screen*)
 			prompt_color[titlebar]=$'%{\e_screen:\005(\005t):%#:%m:%y\a:%~:${COLUMNS}x${LINES}\a\e\\%}'
 			;;
 		(*)
 			prompt_color[titlebar]=''
 			;;
 		}
+
+	# Decide whether to set a screen title
+	if [[ $TERM == *screen* ]] {
+		prompt_color[screen]=$'%{\ekzsh\e\\%}'
+	} else {
+		prompt_color[screen]=''
+	}
 
 	# APM detection
 	(( $+prompt_color[apm] )) ||

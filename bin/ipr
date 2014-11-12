@@ -8,7 +8,10 @@
 # $Version: 2.6 2014/11/11 21:09:26                      Exp $
 #
 
-[ -n "$ZSH_VERSION" ] && emulate sh
+if [ -n "$ZSH_VERSION" ]; then
+	emulate sh
+	setopt SH_WORD_SPLIT
+fi
 
 usage() {
 cat <<-EOF

@@ -123,7 +123,7 @@ function prompt_clover_setup {
 
 	# Decide whether to set a screen title
 	if [[ $TERM == *screen* ]] {
-		prompt_color[screen]=$'%{\ekzsh\e\\%}'
+		prompt_color[screen]=$'%{\e\\%}'
 	} else {
 		prompt_color[screen]=''
 	}
@@ -137,25 +137,33 @@ function prompt_clover_setup {
 	} else { prompt_color[apm]='' }
 
 	# Finally, set up the prompt
-	PROMPT='$prompt_color[set]$prompt_color[screen]${(e)prompt_color[titlebar]}\
-$prompt_color[c6]$prompt_color[s-in]$prompt_color[ulc]$prompt_color[c2]$prompt_color[bar]\
-$prompt_color[s-out]($prompt_color[c5]%(!.$prompt_color[c7].$prompt_color[c3])%#$prompt_color[c5]\
-$prompt_color[c2]·$prompt_color[c5]%m:%l$prompt_color[c2]·$prompt_color[c5]\
-${(e)prompt_color[apm]}$prompt_color[c1]%D{%m/%d}$prompt_color[c6]·%D{%H:%M}$prompt_color[c2])$prompt_color[s-in]\
-$prompt_color[bar]$prompt_color[c5]$prompt_color[bar]${(%e)prompt_color[fil]}\
-$prompt_color[c2]$prompt_color[bar]$prompt_color[s-out]($prompt_color[c5]%\
-$prompt_color[len]<...<%~%<<$prompt_color[c1]${(%)vcs_info_msg_0_[1,15]}$prompt_color[c5]$prompt_color[c2]\
-)$prompt_color[s-in]$prompt_color[bar]$prompt_color[c6]$prompt_color[urc]$prompt_color[s-out]
-$prompt_color[c6]$prompt_color[s-in]$prompt_color[llc]$prompt_color[c2]$prompt_color[bar]$prompt_color[s-out]\
-%(!.$prompt_color[c7].$prompt_color[c3])»$prompt_color[c0] '
+	PROMPT=
+	PROMPT+='$prompt_color[set]$prompt_color[screen]${(e)prompt_color[titlebar]}'
+	PROMPT+='$prompt_color[c6]$prompt_color[s-in]$prompt_color[ulc]$prompt_color[c2]'
+	PROMPT+='$prompt_color[bar]$prompt_color[s-out]($prompt_color[c5]%(!.$prompt_color[c7]'
+	PROMPT+='.$prompt_color[c3])%#$prompt_color[c5]$prompt_color[c2]·$prompt_color[c5]'
+	PROMPT+='%m:%l$prompt_color[c2]·$prompt_color[c5]${(e)prompt_color[apm]}'
+	PROMPT+='$prompt_color[c1]%D{%m/%d}$prompt_color[c6]·%D{%H:%M}$prompt_color[c2])'
+	PROMPT+='$prompt_color[s-in]$prompt_color[bar]$prompt_color[c5]$prompt_color[bar]'
+	PROMPT+='${(%e)prompt_color[fil]}$prompt_color[c2]$prompt_color[bar]$prompt_color[s-out]'
+	PROMPT+='($prompt_color[c5]%$prompt_color[len]<...<%~%<<$prompt_color[c1]'
+	PROMPT+='${(%)vcs_info_msg_0_[1,15]}$prompt_color[c5]$prompt_color[c2])'
+	PROMPT+='$prompt_color[s-in]$prompt_color[bar]$prompt_color[c6]$prompt_color[urc]'
+	PROMPT+='$prompt_color[s-out]$prompt_color[c6]$prompt_color[s-in]
+'
+	PROMPT+='$prompt_color[llc]$prompt_color[c2]$prompt_color[bar]$prompt_color[s-out]'
+	PROMPT+='%(!.$prompt_color[c7].$prompt_color[c3])»$prompt_color[c0] '
 
-	RPROMPT=' %(?..$prompt_color[c2]$prompt_color[s-out]($prompt_color[c7]%?$prompt_color[c2]%))\
-«$prompt_color[s-in]$prompt_color[bar]$prompt_color[c6]$prompt_color[lrc]$prompt_color[s-out]$prompt_color[c0]'
+	RPROMPT=' '
+	RPROMPT+='%(?..$prompt_color[c2]$prompt_color[s-out]($prompt_color[c7]'
+	RPROMPT+='%?$prompt_color[c2]%))«$prompt_color[s-in]$prompt_color[bar]'
+	RPROMPT+='$prompt_color[c6]$prompt_color[lrc]$prompt_color[s-out]$prompt_color[c0]'
 
-	PS2='$prompt_color[c6]$prompt_color[s-in]$prompt_color[bar]$prompt_color[s-out]\
-$prompt_color[c2]$prompt_color[s-in]$prompt_color[bar]$prompt_color[s-out](\
-$prompt_color[c4]%_$prompt_color[c2])$prompt_color[s-in]$prompt_color[bar]$prompt_color[s-out]\
-$prompt_color[c6]$prompt_color[s-in]$prompt_color[bar]$prompt_color[s-out]$prompt_color[c0] '
+	PS2=
+	PS2+='$prompt_color[c6]$prompt_color[s-in]$prompt_color[bar]$prompt_color[s-out]'
+	PS2+='$prompt_color[c2]$prompt_color[s-in]$prompt_color[bar]$prompt_color[s-out]'
+	PS2+='($prompt_color[c4]%_$prompt_color[c2])$prompt_color[s-in]$prompt_color[bar]$prompt_color[s-out]'
+	PS2+='$prompt_color[c6]$prompt_color[s-in]$prompt_color[bar]$prompt_color[s-out]$prompt_color[c0] '
 }
 
 prompt_clover_setup "$@"

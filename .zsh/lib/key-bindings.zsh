@@ -44,12 +44,22 @@ done
 unset keymap
 
 if (( $+DISPLAY )); then
+	function print-screen {
+		import -window root ~/shot-$(date '+%Y-%m-%d-%H-%M-%S').png
+	}
 	function run-term { urxvtc }
 else
+	function print-screen {
+		fbgrab -c $TTY -z 9 ~/shot-$(date '+%Y-%m-%d-%H-%M-%S').png
+	}
 	function run-term { screen }
 fi
+
 zle -N run-term
 bindkey "$terminfo[kf12]" run-term
+
+zle -N print-screen
+bindkey "$terminfo[kf11]" print-screen
 
 #
 # vim:fenc=utf-8:tw=80:sw=2:sts=2:ts=2:

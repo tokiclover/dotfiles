@@ -27,7 +27,7 @@ pcm.calp {
 	ipc_key 1046
 	slave.pcm "hw:Loopback,1,1"
 }
-pcm.plp { type plug; slave.pcm "hw:Loopback,0,0" }
+pcm.plp { type plug; slave.pcm "hw:Loopback,0,1" }
 pcm.clp {
 	type dsnoop
 	ipc_key 1046
@@ -42,8 +42,8 @@ pcm.dlp {
 #
 #-*- DEFAULT -*-
 #
-pcm.!default { type plug; slave.pcm dmixer }
-ctl.!default { type hw  ; card PCH }
+pcm.!default { type plug; slave.pcm dlp }
+ctl.!default { type hw  ; card Loopback }
 #
 #-*- BS2B -*-
 #

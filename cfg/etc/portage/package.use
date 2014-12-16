@@ -1,17 +1,17 @@
 app-doc/doxygen dot
 app-text/docbook-sgml-utils jadetex
 x11-libs/libxcb xkb
-media-libs/mesa gbm
 app-portage/layman subversion
 dev-vcs/git subvervion
 sys-auth/pambase mktemp pam_krb5 pam_ssh
 sys-devel/gcc abi_x86_32 -awt fortran gcj objc objc++ objc-gc
 sys-devel/llvm gold
-media-libs/mesa openmax openvg xa
+media-libs/mesa gbm openmax xa
+dev-libs/DirectFB -egl -gles2
 dev-libs/apr-util ldap
 net-nds/openldap sasl
 sys-kernel/git-sources:3.17.2 -aufs -bfq -bfs -ck fbcondecor -gentoo hardened -optimization reiser4 -toi -uksm
-sys-kernel/git-sources:3.16.2 -aufs bfq bfs ck fbcondecor -gentoo -hardened -optimization reiser4 toi uksm
+sys-kernel/git-sources:3.16.2 aufs bfq bfs ck fbcondecor -gentoo -hardened -optimization reiser4 toi uksm
 sys-kernel/mkinitramfs-ll aufs bash btrfs dm-crypt dmraid jfs mdadm reiserfs squashfs xfs zfs zram zsh
 dev-libs/cyrus-sasl ldapdb
 sys-fs/cryptsetup -gcrypt
@@ -52,7 +52,7 @@ net-print/cups ppds
 media-libs/gegl raw
 media-sound/deadbeef alac midi
 media-sound/wildmidi -oss
-dev-libs/efl drm fribidi harfbuzz jp2k physics sound xim -wayland -egl -gles 
+dev-libs/efl drm fribidi harfbuzz jp2k physics sound xim -wayland -gles 
 x11-wm/enlightenment -wayland
 media-libs/elementary -wayland
 media-video/x264-encoder avs custom-cflags
@@ -207,6 +207,8 @@ dev-libs/libgpg-error abi_x86_32
 sys-libs/readline abi_x86_32
 dev-lang/lua abi_x86_32
 
+x11-libs/libxkbcommon abi_x86_32
+
 net-wireless/hostapd madwifi
 net-print/gutenprint foomaticdb gimp ppds
 >net-print/cnijfilter-3.90 backends -drivers gtk
@@ -242,3 +244,5 @@ dev-vcs/git subversion
 dev-vcs/subversion -dso
 x11-wm/icewm bidi
 media-libs/libcanberra -sound
+x11-libs/libfm -automount
+x11-misc/spacefm gtk3

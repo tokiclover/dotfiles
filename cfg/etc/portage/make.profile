@@ -1,0 +1,1 @@
+/var/portage/profiles/hardened/linux/amd64

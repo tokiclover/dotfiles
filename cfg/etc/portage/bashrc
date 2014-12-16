@@ -9,4 +9,10 @@ pre_pkg_setup() {
 		einfo "Using ld.gold linker"
 		LDFLAGS="${LDFLAGS} -Wl,-fuse-ld=gold"
 	fi
+
+	if grep -q "${CATEGORY}/${PN}" /etc/portage/package.bashism &&
+		[[ "${SHELL}" == "/bin/zsh" ]]; then
+		ln -f -s /bin/bash /bin/sh
+	fi
 }
+

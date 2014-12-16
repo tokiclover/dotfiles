@@ -1,7 +1,6 @@
 sys-fs/udev
 sys-apps/systemd
 lxde-base/lxpolkit
-#>app-cdr/brasero-3.0
 >gnome-extra/gnome-color-manager-3.0
 
 app-emulation/emul-linux-x86-*
@@ -12,5 +11,5 @@ sys-libs/db:6.0
 >=dev-libs/efl-1.11.0
 >=media-libs/elementary-1.11.0
 >=x11-terms/terminology-0.7.0
->x11-wm/enlightenment-0.19.0
+>x11-wm/enlightenment-0.19.0:0.17
 >=app-admin/elektra-0.8.0

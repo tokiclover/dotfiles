@@ -25,8 +25,8 @@ media-sound/ncmpc
 media-sound/ncmpcpp
 media-sound/oss
 media-sound/timidity++
-media-video/ffmpeg
+media-video/ffmpeg::bar
 media-video/mkvtoolnix
-media-video/mpv
+media-video/mpv::bar
 media-video/x264-encoder
 

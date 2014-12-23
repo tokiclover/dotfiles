@@ -1,14 +1,14 @@
 media-sound/ardour::bar
 media-sound/ecasound
 media-sound/fluidsynth::bar
-media-sound/hydrogen::bar
+#media-sound/hydrogen::bar
 media-sound/jack-audio-connection-kit::bar
 media-sound/jack_mixer::bar
-media-sound/jamin
+#media-sound/jamin
 media-sound/ladish::bar
 media-sound/laditools::bar
 media-sound/patchage::bar
-media-sound/rosegarden::bar
+#media-sound/rosegarden::bar
 media-sound/seq24::bar
 media-sound/yoshimi::bar
 media-sound/zita-ajbridge::bar

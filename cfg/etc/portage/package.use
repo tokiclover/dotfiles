@@ -10,7 +10,7 @@ media-libs/mesa gbm openmax xa
 dev-libs/DirectFB -egl -gles2
 dev-libs/apr-util ldap
 net-nds/openldap sasl
-sys-kernel/git-sources:3.17.2 -aufs -bfq -bfs -ck fbcondecor -gentoo hardened -optimization reiser4 -toi -uksm
+sys-kernel/git-sources:3.17.7 -aufs -bfq -bfs -ck fbcondecor -gentoo hardened -optimization reiser4 -toi -uksm
 sys-kernel/git-sources:3.16.2 aufs bfq bfs ck fbcondecor -gentoo -hardened -optimization reiser4 toi uksm
 sys-kernel/mkinitramfs-ll aufs bash btrfs dm-crypt dmraid jfs mdadm reiserfs squashfs xfs zfs zram zsh
 dev-libs/cyrus-sasl ldapdb
@@ -46,7 +46,7 @@ dev-java/icedtea -javascript
 app-office/libreoffice java jemalloc
 www-client/firefox custom-cflags custom-optimization jit system-cairo system-icu system-jpeg system-sqlite
 net-libs/neon gnutls libproxy pkcs11
-app-emulation/qemu sasl smartcard tls virtfs vhost-net
+app-emulation/qemu sasl smartcard tls vhost-net
 dev-db/sqlite secure-delete
 net-print/cups ppds
 media-libs/gegl raw

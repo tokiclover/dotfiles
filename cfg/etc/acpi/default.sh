@@ -3,7 +3,7 @@
 # $Header: /etc/acpi/default.sh                          Exp $
 # $Aythor: (c) 2012-2014 -tclover <tokiclover@gmail.com> Exp $
 # $License: MIT (or 2-clause/new/simplified BSD)         Exp $
-# $Version: 2014/09/09 21:09:26                          Exp $
+# $Version: 2014/12/24 21:09:26                          Exp $
 #
 
 log() {
@@ -21,8 +21,8 @@ device=$2
 id=$3
 value=$4
 
-[ -e /run/openrc/started/alsasound ] && alsa=true || alsa=false
-[ -e /run/openrc/started/oss ]       && oss=true  || oss=false
+[ -d /dev/snd ] && alsa=true || alsa=false
+[ -d /dev/oss ] && oss=true  || oss=false
 amixer="amixer -q set Master"
 ossmix="ossmix -- vmix0-outvol"
 

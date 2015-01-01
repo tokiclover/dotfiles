@@ -43,7 +43,7 @@ pcm.dlp {
 #-*- DEFAULT -*-
 #
 pcm.!default { type plug; slave.pcm dlp }
-ctl.!default { type hw  ; card Loopback }
+ctl.!default { type hw  ; card PCH }
 #
 #-*- BS2B -*-
 #

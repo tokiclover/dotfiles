@@ -1,0 +1,17 @@
+#!/bin/sh
+#
+# $Header:  magnet                                      Exp $
+# $License: MIT (or 2-clause/new/simplified BSD)        Exp $
+#
+
+HASH="${1#*xt=urn:btih:}"
+[ "${HASH}" = "${1}" ] && exit
+FILENAME="${HASH#*&dn=}"
+FILENAME="${FILENAME%%&tr=*}"
+HASH="${HASH%&dh=*}"
+
+echo "d10:magnet-uri${#1}:${1}e" > "${WATCH_DIR}${WATCH_DIR:+/}meta-${FILENAME:-$HASH}.torrent"
+
+#
+# vim:fenc=utf-8:ft=sh:ci:pi:sts=2:sw=2:ts=2:
+#

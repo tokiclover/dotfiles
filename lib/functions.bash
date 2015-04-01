@@ -1,10 +1,11 @@
 #
-# $Header: functions.bash, 2014/09/28 12:59:26 -tclover Exp $
+# $Header: ${HOME}/functions.bash                       Exp $
+# $Author: (c) 2011-015 -tclover <tokiclover@gmail.com> Exp $
 # $License: MIT (or 2-clause/new/simplified BSD)        Exp $
+# $Version: 2015/03/30 21:09:26                         Exp $
 #
 
-# @FUNCTION: error
-# @DESCRIPTION: hlper function, print error message to stdout
+# @FUNCTION: hlper function, print error message to stdout
 # @USAGE: <string>
 function error {
 	echo -e "\e[1;31m* \e[0m${0##*/}: $@" >&2
@@ -12,8 +13,7 @@ function error {
 	[[ "$LOGGER" ]] && [[ "$facility" ]] && logger -p $facility "${0##*/}: $@"
 }
 
-# @FUNCTION: die
-# @DESCRIPTION: hlper function, print message and exit
+# @FUNCTION: hlper function, print message and exit
 # @USAGE: <string>
 function die {
 	local ret=$?
@@ -21,8 +21,7 @@ function die {
 	return $ret
 }
 
-# @FUNCTION: into
-# @DESCRIPTION: hlper function, print info message to stdout
+# @FUNCTION: hlper function, print info message to stdout
 # @USAGE: <string>
 function info {
 	echo -e "\e[1;32m \e[0m${0##*/}: $@"
@@ -113,8 +112,6 @@ declare -a COLORS CHARS
 COLOR=(black red green yellow blue magenta cyan white)
 SGR07=(reset bold faint italic underline sblink rblink inverse)
 
-# @FUNCTION: bash_prompt
-# @DESCRIPTION: bash prompt function
 # @USAGE: bash_prompt [4-color]
 # if 256 colors is suported, color can be in [0-255] range check out
 # ref: http://www.calmar.ws/vim/256-xterm-24bit-rgb-color-chart.html
@@ -164,12 +161,10 @@ function bash_prompt {
 	;;
 	esac
 }
-# @ENV_VARIABLE: PROMPT_COMMAND
-# @DESCRIPTION: bash prompt command
+# @ENV_VARIABLE: bash prompt command
 PROMPT_COMMAND=bash_prompt
 
-# @FUNCTION: kmod-pa
-# @DESCRIPTION: little helpter to retrieve Kernel Module Parameters
+# @FUNCTION: little helpter to retrieve Kernel Module Parameters
 function kmod-pa {
 	local c d line m mc mod md de n=/dev/null o
 	c=$(tput op) o=$(echo -en "\n$(tput setaf 2)-*- $(tput op)")
@@ -200,9 +195,7 @@ function kmod-pa {
 	done
 }
 
-
-# @FUNCTION: kmod-pc
-# @DESCRIPTION: colorful helper to retrieve Kernel Module Parameters
+# @FUNCTION: colorful helper to retrieve Kernel Module Parameters
 function kmod-pc {
 	local green yellow cyan reset
 	if [[ "$(tput colors)" -ge 8 ]]
@@ -262,14 +255,12 @@ function kmod-pc {
 	done
 }
 
-# @FUNCTION: genpwd
-# @DESCRIPTION: generate a random password using openssl to stdout
+# @FUNCTION: generate a random password using openssl to stdout
 function genpwd {
 	openssl rand -base64 48
 }
 
-# @FUNCTION: xev-key-code
-# @DESCRIPTION: simple xev key code
+# @FUNCION: simple xev key code
 function xev-key-code {
 	xev | grep -A2 --line-buffered '^KeyRelease' | \
 	sed -nre '/keycode /s/^.*keycode ([0-9]*).* (.*, (.*)).*$/\1 \2/p'

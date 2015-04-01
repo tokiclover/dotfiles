@@ -1,5 +1,5 @@
 #
-# $Header: ~/.xinitrc, 2014/10/10 15:32:37 -tclover Exp $
+# $Header: ~/.xinitrc, 2015/03/30 15:32:37 -tclover Exp $
 #
 
 gcm-session &
@@ -24,13 +24,15 @@ xset fp+ /usr/share/fonts/terminus
 xset fp rehash
 
 [ -s ~/.Xresources ] && xrdb -load ~/.Xresources
-xbacklight -set 20
 #setxkbmap -model pc105 -layout fr -variant ,oss,latin9,oss_latin9 \
 #	-option grp:shift_caps_toggle,keypad:future,terminate:ctrl_alt_bksp
 #[ -s ~/.Xdefaults ] && xrdb -merge ~/.Xdefaults
 [ -s ~/.Xmodmap ] && xmodmap ~/.Xmodmap
 #[ -s ~/.color/x/sj-bright ] && xrdb -merge ~/.color/x/sj-bright
 #[ -s ~/.color/icc/sRGB_v4_ICC_preference_displayclass.icc ] &&
+
+#xautolock -time 30 -locker slock
+xbacklight -set 20
 #xcalib -gc 1.0 -b 0.0 -co 100.0 ~/.color/icc/sRGB_v4_ICC_preference_displayclass.icc
 
 unclutter -idle 8 -noevents &
@@ -43,7 +45,6 @@ case $(tty | cut -b9-) in
 	(2) exec icewm-session      ;;
 	(3) exec openbox-session    ;;
 esac
-unset launch
 
 #
 # vim:fenc=utf-8:ft=sh:ci:pi:sts=2:sw=2:ts=2:

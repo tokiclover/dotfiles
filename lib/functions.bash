@@ -23,88 +23,97 @@ function die {
 
 # @FUNCTION: hlper function, print info message to stdout
 # @USAGE: <string>
+# @VERSION: 0.6
 function info {
 	echo -e "\e[1;32m \e[0m${0##*/}: $@"
 
 	[[ "$LOGGER" ]] && [[ "$facility" ]] && logger -p $facility "${0##*/}: $@"
 }
 
-# @FUNCTION: mktmp
-# @DESCRIPTION: make tmp dir or file in ${TMPDIR:-/tmp}
-# @ARG: [-d|-f] [-m <mode>] [-o <owner[:group]>] [-g <group>] TEMPLATE
-function mktmp {
+# @FUNCTION: Simple & Cheap checkpath/mktemp script
+# @ARG: [-M] [-d|-f] [-m mode] [-o owner[:group]] TEMPLATE|DIR|FILE
+function checkpath {
 	function usage {
 	cat <<-EOH
-usage: mktmp [-d|-f] [-m <mode>] [-o <owner[:group]>] [-g <group>] TEMPLATE
-  -d, --dir           create a directory
-  -f, --file          create a file
-  -o, --owner <name>  owner naame
-  -g, --group <name>  group name
-  -m, --mode <1700>   octal mode
-  -h, --help          help/exit
+usage: checkpath [-M] [-d|-f] [-m mode] [-o owner[:group]] TEMPLATE|DIR|FILE
+  -d, --dir           (Create a) directory
+  -f, --file          (Create a) file
+  -p, --pipe          (Create a) pipe (FIFO)
+  -o, --owner <name>  Use owner name
+  -g, --group <name>  Use group name
+  -m, --mode <1700>   Use octal mode
+  -c, --checkpath     Enable check mode
+  -M, --mktemp        Enable mktmp mode
+  -q, --quiet         Enable quiet mode
+  -h, --help          Help/Exit
 EOH
 return
 }
-	
 	(( $# == 0 )) && usage
-	test $# -ge 1 -a -n "$1"
-	if (( $? )); then
-		die "invalid/null TEMPLATE"
-		return
-	fi
-	
-	local type mode owner group tmp tmpdir=${TMPDIR:-/tmp}
-	while [[ $# -gt 1 ]]; do
+	args="$(getopt \
+		-o Mcdfg:hm:o:pq \
+		-l checkpath,dir,file,group: \
+		-l help,mode:,owner:,pipe,quiet \
+		-s sh -n checkpath -- "$@")"
+	(( $? == 0 )) || usage
+	eval set -- $args
+
+	local temp=-XXXXXX type tmpdir=${TMPDIR:-/tmp}
+	local group mode owner task tmp quiet
+	while [[ $# -ge 1 ]]; do
 		case $1 in
-			(-d|--dir)
-				type=dir
-				shift;;
-			(-f|--file)
-				type=file
-				shift;;
-			(-h|--help)
-				usage;;
-			(-m|--mode)
-				mode=$2
-				shift 2;;
-			(-o|--owner)
-				owner="$2"
-				shift 2;;
-			(-g|-group)
-				group="$2"
-				shift 2;;
-		 	(*)
-		 		die
-		 		shift;;
+			(-c|--chec*) task=chk  ;;
+			(-m|--mkte*) task=tmp  ;;
+			(-d|--dir)   type=dir  ;;
+			(-f|--file)  type=file ;;
+			(-p|--pipe)  type=pipe ;;
+			(-h|--help)  usage     ;;
+			(-m|--mode)  mode="$2" ; shift;;
+			(-o|--owner) owner="$2"; shift;;
+			(-g|-group)  group="$2"; shift;;
+			(-q|--quiet) quiet=true;;
+			(*) break              ;;
 		esac
+		shift
 	done
 
-	local temp=-XXXXXX
-	test -n "$1" -a "${1%$temp}" != "$1"
-	if (( $? )); then
-		die "invalid/null TEMPLATE"
+	if ! [ $# -eq 1 -a -n "$1" ]; then
+		die "Invalid argument(s)/TEMPLATE"
 		return
 	fi
-	local cmd=$(type -p uuidgen)
-	[[ -n "$cmd" ]] && temp=$($cmd --random)
-	tmp=$tmpdir/${1%$temp}-$(echo "$temp" | cut -c-6)
-
-	if [[ "$type" == "dir" ]]; then
-		mkdir -p ${mode:+-m$mode} "$tmp"
-		if (( $? )); then
-			die "mktmp: failed to make $tmp"
-		fi
-	else
-		mkdir -p "${tmp%/*}" && touch "$tmp"
-		if (( $? )); then
-			die "mktmp: failed to make $tmp"
+	case "$task" in
+		(tmp)
+		if [[ "${1%$temp}" = "$1" ]]; then
+			die "Invalid TEMPLATE"
 			return
 		fi
-		[[ "$mode" ]] && chmod $mode "$tmp"
-	fi
+		local cmd=$(type -p uuidgen)
+		[[ -n "$cmd" ]] && temp=$($cmd --random)
+		tmp=$tmpdir/${1%$temp}-$(echo "$temp" | cut -c-6)
+		;;
+		(*)
+		tmp="$1"
+		;;
+	esac
+	case "$type" in
+		(dir)
+		[[ -d "$tmp" ]] || mkdir -p "$tmp"
+		;;
+		(*)
+		[[ -e "$tmp" ]] || mkdir -p "${tmp%/*}" && break
+		case "$type" in
+			(pipe) mkfifo $tmp;;
+			(file) touch  $tmp;;
+		esac
+		;;
+	esac
+
+	((  $? == 0 )) || { die "Failed to create ${tmp}"; return; }
+	[[ -h "$tmp" ]] && return
 	[[ "$owner" ]] && chown "$owner" "$tmp"
 	[[ "$group" ]] && chgrp "$group" "$tmp"
-	echo "$tmp"
+	[[ "$mode"  ]] && chmod "$mode"  "$tmp"
+	[[ "$quiet" ]] || echo "$tmp"
 }
 
 # ANSI color codes for bash_prompt function

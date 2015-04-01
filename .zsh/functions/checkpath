@@ -1,0 +1,103 @@
+#
+# $Header: $HOME/.zsh/functions/checkpath               Exp $
+# $Aythor: (c) 2011-015 -tclover <tokiclover@gmail.com> Exp $
+# $License: MIT (or 2-clause/new/simplified BSD)        Exp $
+# $Version: 0.6 2015/03/30 21:09:26                     Exp $
+#
+
+function die {
+	local ret=$?
+	print -P " %F{red}*%f ${(%):-%1x}: $argv" >&2
+	return $ret
+}
+
+function checkpath {
+	function usage {
+	cat <<-EOH
+usage: ${(%):-%1x} [-M] [-d|-f] [-m mode] [-o owner[:group]] TEMPLATE|DIR|FILE
+  -d, --dir           (Create a) directory
+  -f, --file          (Create a) file
+  -p, --pipe          (Create a) pipe (FIFO)
+  -o, --owner <name>  Use owner name
+  -g, --group <name>  Use group name
+  -m, --mode <1700>   Use octal mode
+  -c, --checkpath     Enable check mode
+  -M, --mktemp        Enable mktmp mode
+  -q, --quiet         Enable quiet mode
+  -h, --help          Help/Exit
+EOH
+return
+}
+	(( $# == 0 )) && usage
+	args="$(getopt \
+		-o Mcdfg:hm:o:pq \
+		-l checkpath,dir,file,group: \
+		-l help,mode:,owner:,pipe,quiet \
+		-s sh -n checkpath -- "$@")"
+	(( $? == 0 )) || usage
+	eval set -- $args
+
+	local temp=-XXXXXX type tmpdir=${TMPDIR:-/tmp}
+	local group mode owner task tmp quiet
+
+	for (( ; $# > 1; )) {
+		case $1 {
+			(-c|--chec*) task=chk  ;;
+			(-m|--mkte*) task=tmp  ;;
+			(-d|--dir)   type=dir  ;;
+			(-f|--file)  type=file ;;
+			(-p|--pipe)  type=pipe ;;
+			(-h|--help)  usage     ;;
+			(-m|--mode)  mode=$2   ; shift;;
+			(-o|--owner) owner=$2  ; shift;;
+			(-g|-group)  group=$2  ; shift;;
+			(-q|--quiet) quiet=true;;
+	 		(*) break              ;;
+		}
+		shift
+	}
+	if ! [ $# -eq 1 -a -n "$1" ]; then
+		die "Invalid argument(s)/TEMPLATE"
+		return
+	fi
+
+	case $task {
+		(tmp)
+		if [[ ${1%$temp} = $1 ]] {
+			die "Invalid TEMPLATE"
+			return
+		}
+		(( $+commands[uuidgen] )) && temp=$($commands[uuidgen] --random)
+		tmp=$tmpdir/${1%$temp}-$temp[1,6]
+		;;
+		(*)
+		tmp=$1
+	}
+	case $type {
+		(dir)
+		[[ -d $tmp ]] || mkdir -p $tmp
+		;;
+		(*)
+		[[ -e $tmp ]] || mkdir -p $tmp:h && break
+		case $type {
+			(pipe) mkfifo $tmp;;
+			(file) touch  $tmp;;
+		}
+		;;
+	}
+
+	(( $? == 0 )) || { die "Failed to create ${tmp}"; return; }
+	[[ -h $tmp ]] && return
+	(( $+owner )) && chown $owner $tmp
+	(( $+group )) && chgrp $group $tmp
+	(( $+mode  )) && chmod $mode  $tmp
+	(( $+quiet )) || print $tmp
+}
+
+if [[ ${(%):-%1x} == (checkpath|mktmp)(|.zsh) ]] {
+	checkpath "$@"
+}
+
+#
+# vim:fenc=utf-8:ft=zsh:ci:pi:sts=0:sw=2:ts=2:
+#

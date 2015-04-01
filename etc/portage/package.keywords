@@ -1,7 +1,7 @@
 dev-perl/perl-URxvt::bar **
 media-video/mplayer2 **
 =media-sound/jack-audio-connection-kit-2.9999 **
-=app-office/libreoffice-4.3.9999 **
+=app-office/libreoffice-4.4.9999 **
 =media-sound/ardour-3.9999 **
 media-sound/ladish::bar **
 media-sound/a2jmidid **
@@ -14,7 +14,7 @@ x11-plugins/entrance **
 x11-plugins/ekbd **
 media-gfx/ephoto **
 
-=media-video/ffmpeg-2.4.9999 **
-=media-libs/mesa-10.3.9999 **
+=media-video/ffmpeg-2.6.9999 **
+=media-libs/mesa-10.4.9999 **
 
 media-plugins/deadbeef-plugins-jack **

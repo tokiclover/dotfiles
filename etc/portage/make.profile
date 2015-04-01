@@ -1,1 +1,1 @@
-/var/portage/profiles/hardened/linux/amd64
+../../var/db/repos/gentoo/profiles/hardened/linux/amd64

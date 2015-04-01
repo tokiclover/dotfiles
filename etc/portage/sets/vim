@@ -14,4 +14,4 @@ app-vim/vim-spell-fr
 app-vim/xsl-syntax
 app-vim/youcompleteme
 app-vim/yankring
-app-vim/zencoding-vim
+app-vim/emmet

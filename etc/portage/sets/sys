@@ -39,3 +39,4 @@ net-wireless/wpa_supplicant
 
 net-dns/openresolv
 net-dns/dnsmasq
+sys-apps/sysvinit

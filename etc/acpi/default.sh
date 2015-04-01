@@ -1,17 +1,40 @@
 #!/bin/sh
 #
 # $Header: /etc/acpi/default.sh                          Exp $
-# $Aythor: (c) 2012-2014 -tclover <tokiclover@gmail.com> Exp $
+# $Author: (c) 2012-2015 -tclover <tokiclover@gmail.com> Exp $
 # $License: MIT (or 2-clause/new/simplified BSD)         Exp $
-# $Version: 2014/12/24 21:09:26                          Exp $
+# $Version: 2015/02/14 21:09:26                          Exp $
 #
 
 log() {
 	logger -p daemon.notice "acpi: $*"
 }
-
+#
+# Unhandled Events helper
+#
 uhd() {
 	log "event unhandled: $*"
+}
+#
+# (Intel GPU) Brightness helper
+#
+btn() {
+	local BTF=/sys/class/backlight/intel_backlight/brightness
+	[ -e $BTF ] || return
+	local BTM=$(cat /sys/class/backlight/intel_backlight/max_brightness)
+	local BTN=$(cat $BTF) NEW=0 STP=24
+
+	case "$1" in
+		up)   NEW=$(($BTN + $STP));;
+		down) NEW=$(($BTN - $STP));;
+		*)    return;;
+	esac
+	if [ $NEW -lt 0 ]; then
+		NEW=0
+	elif [ $NEW -gt $BTM ]; then
+		NEW=$BTM
+	fi
+	echo $NEW >$BTF
 }
 
 set $*
@@ -77,6 +100,7 @@ case $group in
 	video)
 		case $action in
 			displayoff) :;;
+			brightness*) btn ${action#brightness};;
 			*) uhd $*;;
 		esac
 		;;
@@ -85,4 +109,6 @@ esac
 
 unset alsa oss amixer ossmix group action device id
 
+#
 # vim:fenc=utf-8:ft=sh:ci:pi:sts=0:sw=4:ts=4:
+#

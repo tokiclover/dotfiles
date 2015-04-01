@@ -1,4 +1,0 @@
-#!/bin/sh
-echo "Stoping vga.${1} profile"
-rmmod fglrx || echo "failed to remove fglrx module"
-# vim:fenc=utf-8:ft=sh:ci:pi:sts=0:sw=4:ts=4:

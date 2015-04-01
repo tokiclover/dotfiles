@@ -1,3 +1,0 @@
-#!/bin/sh
-echo 0 >/sys/class/rfkill/rfkill1/state
-# vim:fenc=utf-8:ft=sh:ci:pi:sts=0:sw=4:ts=4:

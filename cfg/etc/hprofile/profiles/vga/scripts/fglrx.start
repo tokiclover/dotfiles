@@ -1,9 +1,0 @@
-#!/bin/sh
-echo "Starting vga.${1} profile"
-if ! modprobe fglrx; then
-	echo "failed to load fglrx module"
-	exit
-fi
-[ "$(eselect opengl show)" != "ati" ] && eselect opengl set ati
-[ "$(eselect xvmc show)" != "ati" ] && eselect xvmc set ati
-# vim:fenc=utf-8:ft=sh:ci:pi:sts=0:sw=4:ts=4:

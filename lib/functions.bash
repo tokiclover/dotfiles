@@ -2,7 +2,7 @@
 # $Header: ${HOME}/functions.bash                       Exp $
 # $Author: (c) 2011-015 -tclover <tokiclover@gmail.com> Exp $
 # $License: MIT (or 2-clause/new/simplified BSD)        Exp $
-# $Version: 2015/03/30 21:09:26                         Exp $
+# $Version: 2015/05/05 21:09:26                         Exp $
 #
 
 # @FUNCTION: hlper function, print error message to stdout
@@ -35,38 +35,39 @@ function info {
 function checkpath {
 	function usage {
 	cat <<-EOH
-usage: checkpath [-M] [-d|-f] [-m mode] [-o owner[:group]] TEMPLATE|DIR|FILE
+usage: checkpath [-p] [-d|-f] [-m mode] [-o owner[:group]] TEMPLATE|DIR|FILE
   -d, --dir           (Create a) directory
   -f, --file          (Create a) file
-  -p, --pipe          (Create a) pipe (FIFO)
+  -P, --pipe          (Create a) pipe (FIFO)
   -o, --owner <name>  Use owner name
   -g, --group <name>  Use group name
   -m, --mode <1700>   Use octal mode
   -c, --checkpath     Enable check mode
-  -M, --mktemp        Enable mktmp mode
+  -p, --tmpdir[=DIR]  Enable mktmp mode
   -q, --quiet         Enable quiet mode
   -h, --help          Help/Exit
 EOH
 return
 }
 	(( $# == 0 )) && usage
+	local args temp=-XXXXXX type
 	args="$(getopt \
-		-o Mcdfg:hm:o:pq \
-		-l checkpath,dir,file,group: \
-		-l help,mode:,owner:,pipe,quiet \
+		-o Pcdfg:hm:o:p::q \
+		-l checkpath,dir,file,group:,tmpdir:: \
+		-l help,mode:owner:,pipe,quiet \
 		-s sh -n checkpath -- "$@")"
 	(( $? == 0 )) || usage
 	eval set -- $args
+	args=
 
-	local temp=-XXXXXX type tmpdir=${TMPDIR:-/tmp}
 	local group mode owner task tmp quiet
-	while [[ $# -ge 1 ]]; do
+	for (( ; $# > 1; )); do
 		case $1 in
 			(-c|--chec*) task=chk  ;;
-			(-m|--mkte*) task=tmp  ;;
-			(-d|--dir)   type=dir  ;;
+			(-p|--tmpd*) task=tmp tmpdir="${2:-$TMPDIR}"; shift;;
+			(-d|--dir) args=-d type=dir;;
 			(-f|--file)  type=file ;;
-			(-p|--pipe)  type=pipe ;;
+			(-P|--pipe)  type=pipe ;;
 			(-h|--help)  usage     ;;
 			(-m|--mode)  mode="$2" ; shift;;
 			(-o|--owner) owner="$2"; shift;;
@@ -83,13 +84,17 @@ return
 	fi
 	case "$task" in
 		(tmp)
+		quiet= tmpdir="${tmpdir:-/tmp}"
 		if [[ "${1%$temp}" = "$1" ]]; then
 			die "Invalid TEMPLATE"
 			return
 		fi
-		local cmd=$(type -p uuidgen)
-		[[ -n "$cmd" ]] && temp=$($cmd --random)
-		tmp=$tmpdir/${1%$temp}-$(echo "$temp" | cut -c-6)
+		if type -p mktemp >/dev/null 2>&1; then
+			tmp=$(mktemp -p "$tmpdir" $args "$1")
+		else
+			type -p uuidgen >/dev/null 2>&1 && temp=$(uuidgen --random)
+			tmp=$tmpdir/${1%-*}-$(echo "$temp" | cut -c-6)
+		fi
 		;;
 		(*)
 		tmp="$1"

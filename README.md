@@ -24,7 +24,8 @@ FILES
 -----
 ### /bin
 
-* fhp: is a simple script which put firefox profile into tmpfs/zram backed FS;
+* fhp: is a simple script which put Firefox-Home-Profile and cache directory to
+       tmpfs (or zram backed FileSystem by specifying -t|--tmpdir [DIR]);
 * hdu: is a simple script which ease updating '$Header:...$' or '$Id:...$' update;
 * ips: is a script which can be used to retrieve IP block lists to be added to iptables rules;
 * ipr: is script to generate statefull ip[6]tables net rules;

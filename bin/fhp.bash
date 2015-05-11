@@ -1,134 +1,147 @@
 #!/bin/bash
 #
-# $Header: fhp.bash                                     Exp $
-# $Aythor: (c) 2011-014 -tclover <tokiclover@gmail.com> Exp $
+# $Header: $HOME/bin/fhp.bash                           Exp $
+# $Author: (c) 2012-014 -tclover <tokiclover@gmail.com> Exp $
 # $License: MIT (or 2-clause/new/simplified BSD)        Exp $
-# $Version: 2.2 2014/09/30                              Exp $
+# $Version: 2.4 2014/05/05                              Exp $
 #
-# @DESCRIPTION: set firefox profile dir to tmpfs or zram backed fs
+# @DESCRIPTION: Set up and maintain firefox home profile directory
+#   and cache directory in a tmpfs (or zram backed filesystem.)
 # @USAGE: [OPTIONS] [profile]
-# @OPTIONS: [-h|--help] [-c|--compression 'lzop -1']
-# @DESCRIPTION: set compressor, default to lz4
+# @OPTIONS: [-h|--help] [-c|--compressor 'lzop -1'] [-t|--tmpdir]
 #
-# And maybe something like: */30 * * * * $USER /path/to/fhp.zsh
+# And maybe something like: */30 * * * * $USER $HOME/bin/fhp.zsh
 # in cron job to keep track of changes is necessary.
 # lz4 compressor is required, or else, use -c|--compression 'lzop -1'
-
-# @ENV_VARIABLE: ZRAMDIR
-# @DESCRIPTION: Zram block device backed FS to use for firefox profile
-
-# @ENV_VARIABLE: TMPDIR:-/tmp/.private/$USER
-# @DESCRIPTION: tmpfs directory to use instead of zram fs backed fs
-# you should have this one already, just put it to tmpfs with something like:
-# /etc/fstab: tmp /tmp tmpfs mode=1777,size=256M,noatime 0 0
+#
+# @ENVIRONMENT: TMPDIR:-/tmp/.private/$USER
+# @DESCRIPTION: tmpfs directory to use instead of zram backed filesystem
+#   WARN: Use something like the following in fstab(5) to set up a tmpfs
+#   /tmp: tmp /tmp tmpfs nodev,exec,mode=1777,size=256M 0 0
 #
 
 shopt -qs extglob
 shopt -qs nullglob
 
-# Define a little helper to handle errors
-function die {
-	local ret=$?
+function error {
 	echo -e "\e[1;31m* \e[0m${0##*/}: $@\n" >&2
-	exit $ret
 }
 
 function fhp-help {
 	cat <<-EOH
-usage: fhp [options] [firefox-profile]
-  -c, --compressor 'lzop -1'  set lzop compressor instead of lz4
-  -z, --zsh-exit-hook         add fhp function to zshexit hook
-  -h, --help                  print this help message and exit
+usage: fhp [OPTIONS] [Uirefox-Home-Profile]
+  -c, --compressor 'lzop -1'  Use lzop compressor, default to lz4
+  -t, --tmpdir [DIR]          Set up a particular TMPDIR
+  -h, --help                  Print help message and exit
 EOH
 }
 
+NULL=/dev/null
 typeset -A fhpinfo
-
+#
+# Use a private initializer function
+#
 function fhp-init {
-	while (( $# > 0 )); do
+	local DIR  dir char ext tmpdir
+	for (( ; $# > 0; )); do
 		case $1 in
 			(-h|--help)
-				usage
-				exit;;
+				fhp-help
+				return 128;;
 			(-c|--compressor)
 				fhpinfo[compressor]="$2"
 				shift 2;;
+		(-t|--tmpdir)
+			tmpdir=$2
+			shift 2;;
 			(*)
-				fhpinfo[fhp]="$1"
+				fhpinfo[profile]="$1"
 				break;;
 		esac
 	done
 
-	[[ "$fhpinfo[fhp]}" ]] && [[ -d "$HOME/.mozzila/firefox/${fhpinfo[fhp]}" ]] ||
-		fhpinfo[fhp]=
-	[[ "$fhpinfo[fhp]}" ]] ||	fhpinfo[fhp]="${1:-$FHP}"
-	if [[ -z "${fhpinfo[fhp]}" ]]; then
-		FHPDIR=$(ls -d $HOME/.mozilla/firefox/*.default 2>/dev/null)
-		fhpinfo[fhp]="${FHPDIR##*/}"
-	fi
-	[[ "${fhpinfo[fhp]}" ]] || die "no firefox profile dir found"
-	[[ ${fhpinfo[fhp]%.default} == ${fhpinfo[fhp]} ]] && fhpinfo[fhp]+=.default
-
+	[[ "${fhpinfo[profile]}" ]] && [[ -d "$HOME/.mozzila/firefox/${fhpinfo[profile]}" ]] ||
+		fhpinfo[profile]=
+	[[ "${fhpinfo[profile]}" ]] ||
+	fhpinfo[profile]="${1:-$(ls -d $HOME/.mozilla/firefox/*.default 2>$NULL)}"
+	fhpinfo[profile]="${fhpinfo[profile]##*/}"
+	[[ "${fhpinfo[profile]}" ]] || { error "No firefox profile dir found"; return 1; }
+	case "${fhpinfo[profile]}" in
+		(*.default) ;;
+		(*) fhpinfo[profile]+=.default;;
+	esac
 	[[ "${fhpinfo[compressor]}" ]] || fhpinfo[compressor]="lz4 -1 -"
-	local ext=.tar.${fhpinfo[compressor]%% *}
+:	${ext=.tar.${fhpinfo[compressor]%% *}}
+:	${tmpdir:=${TMPDIR:-/tmp/"$USER"}}
 
-:	${FHPDIR:=$HOME/.mozilla/firefox/${fhpinfo[fhp]}}
-:	${TMPDIR:=/tmp/.private/"$USER"}
+	[[ -d "$TMPDIR" ]] || mkdir -p -m1700 "$TMPDIR" ||
+		{ error "No suitable directory found"; return 2; }
 
-	[[ "$ZRAMDIR" ]] || [[ -d "$TMPDIR" ]] || mkdir -p -m1700 "$TMPDIR" || die
+	for dir in "$HOME"/.{,cache/}mozilla/firefox/${fhpinfo[profile]}; do
+		grep -q "$dir" /proc/mounts && continue
+		pushd "${dir%/*}" >$NULL 2>&1 || continue
+		if [[ ! -f "${fhpinfo[profile]}$ext" ]] ||
+			[[ ! -f "${fhpinfo[profile]}.old$ext" ]]; then
+			tar -Ocp ${fhpinfo[profile]} | ${fhpinfo[compressor]} ${fhpinfo[profile]}$ext ||
+			{ error "Failed to pack a new tarball"; continue; }
+		fi
+		popd >$NULL 2>&1
 
-	mount | grep -q "$FHPDIR" && return
-	
-	local mntdir
-	if [[ ! -f "$FHPDIR$ext" ]] || [[ ! -f "$FHPDIR.old$ext" ]]; then
-		pushd "${FHPDIR%/*}" >/dev/null 2>&1 || die
-		tar -Ocp ${fhpinfo[fhp]} | ${fhpinfo[compressor]} ${fhpinfo[fhp]}$ext ||
-			die "failed to pack a new tarball"
-		popd >/dev/null 2>&1
-	fi
-
-	[[ -n "$ZRAMDIR" ]] && mnt="$(mktemp -d "$ZRAMDIR/$USER"/fhp-XXXXXX)" ||
-		mntdir="$(mktemp -d $TMPDIR/fhp-XXXXXX)"
-
-	sudo mount --bind "$mntdir" "$FHPDIR" || die "failed to mount $mntdir"
+		case "$dir" in
+			(*.cache/*) char=c;;
+			(*) char=p;;
+		esac
+		if type -p mktemp >$NULL 2>&1; then
+			mktmp=mktemp
+		elif command -v checkpath >$NULL 2>&1; then
+			mktmp=checkpath
+		else
+			DIR="$tmpdir/fh${char}-XXXXXX"
+			mkdir -p -m 1700 "$DIR"
+		fi
+		[[ "$mktmp" ]] && DIR="$($mktmp -p "$tmpdir" -d fh${char}-XXXXXX)"
+		sudo mount --bind "$DIR" "$dir" 2>$NULL ||
+			{ error "Failed to mount $DIR"; continue; }
+	done
 }
 fhp-init "$@"
-
+FHP_RET="$?"
 
 function fhp {
 	local ext=.tar.${fhpinfo[compressor]%% *}
 
-	pushd "$HOME/.mozilla/firefox" >/dev/null 2>&1 || die
-	if [[ -f ${fhpinfo[fhp]}/.unpacked ]]; then
-		if [[ -f ${fhpinfo[fhp]}$ext ]]; then
-			mv -f ${fhpinfo[fhp]}{,.old}$ext ||
-			die "failed to override the old tarball"
-		fi
-
-		tar -X ${fhpinfo[fhp]}/.unpacked -Ocp ${fhpinfo[fhp]} | \
-			${fhpinfo[compressor]} ${fhpinfo[fhp]}$ext ||
-			die "failed to repack a new tarball"
-	else
-		local decompress="${fhpinfo[compressor]%% *}"
-
-		if [[ -f ${fhpinfo[fhp]}$ext ]]; then
-			local tarball=${fhpinfo[fhp]}$ext
-		elif [[ -f ${fhpinfo[fhp]}.old$ext ]]; then
-			local tarball=${fhpinfo[fhp]}.old$ext 
+	for dir in "$HOME"/.{,cache/}mozilla/firefox/${fhpinfo[profile]}; do
+		pushd "${dir%/*}" >$NULL 2>&1 || continue
+		if [[ -f ${fhpinfo[profile]}/.unpacked ]]; then
+			if [[ -f ${fhpinfo[profile]}$ext ]]; then
+				mv -f ${fhpinfo[profile]}{,.old}$ext ||
+					{ error "Failed to override the old tarball"; continue; }
+			fi
+			tar -X ${fhpinfo[profile]}/.unpacked -Ocp ${fhpinfo[profile]} | \
+				${fhpinfo[compressor]} ${fhpinfo[profile]}$ext ||
+				{ error "Failed to repack a new tarball"; continue; }
 		else
-			die "no tarball found"
-		fi
+			local decompress="${fhpinfo[compressor]%% *}"
 
-		$decompress -cd $tarball | tar -xp &&
-			touch ${fhpinfo[fhp]}/.unpacked ||
-			die "failed to unpack the profile"
-	fi
-	popd >/dev/null 2>&1
+			if [[ -f ${fhpinfo[profile]}$ext ]]; then
+				local tarball=${fhpinfo[profile]}$ext
+			elif [[ -f ${fhpinfo[profile]}.old$ext ]]; then
+				local tarball=${fhpinfo[profile]}.old$ext 
+			else
+				error "no tarball found"
+			fi
+
+			$decompress -cd $tarball | tar -xp &&
+				touch ${fhpinfo[profile]}/.unpacked ||
+				{ error "failed to unpack the profile"; continue; }
+		fi
+		popd >$NULL 2>&1
+	done
 }
 
 if [[ "${0##*/}" == fhp*(.bash) ]]; then
-	fhp
-	unset fhpinfo
+	(( $FHP_RET == 0 )) && fhp
+	unset FHP_RET fhpinfo
 fi
 
 #

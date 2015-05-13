@@ -133,9 +133,8 @@ function fhp {
 	}
 }
 
-if [[ ${(%):-%1x} == fhp(|.zsh) ]] {
-	(( $FHP_RET == 0)) && fhp
-	unset FHP_RET fhpinfo
+case ${(%):-%1x} {
+	(fhp*) (( $FHP_RET == 0)) && fhp;;
 }
 
 #

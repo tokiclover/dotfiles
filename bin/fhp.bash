@@ -139,10 +139,9 @@ function fhp {
 	done
 }
 
-if [[ "${0##*/}" == fhp*(.bash) ]]; then
-	(( $FHP_RET == 0 )) && fhp
-	unset FHP_RET fhpinfo
-fi
+case "${0##*/}"in
+	(fhp*) (( $FHP_RET == 0 )) && fhp;;
+esac
 
 #
 # vim:fenc=utf-8:ft=sh:ci:pi:sts=2:sw=2:ts=2:

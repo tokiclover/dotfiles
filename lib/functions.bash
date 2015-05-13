@@ -73,7 +73,7 @@ return
 			(-o|--owner) owner="$2"; shift;;
 			(-g|-group)  group="$2"; shift;;
 			(-q|--quiet) quiet=true;;
-			(*) break              ;;
+			(*) shift; break       ;;
 		esac
 		shift
 	done
@@ -84,16 +84,16 @@ return
 	fi
 	case "$task" in
 		(tmp)
-		quiet= tmpdir="${tmpdir:-/tmp}"
-		if [[ "${1%$temp}" = "$1" ]]; then
-			die "Invalid TEMPLATE"
-			return
-		fi
+		quiet= tmpdir="${tmpdir:-${TEMPLATE:-/tmp}}"
+		case "$1" in
+			(*$temp) ;;
+			(*) die "Invalid TEMPLATE"; return;;
+		esac
 		if type -p mktemp >/dev/null 2>&1; then
-			tmp=$(mktemp -p "$tmpdir" $args "$1")
+			tmp="$(mktemp -p "$tmpdir" $args "$1")"
 		else
 			type -p uuidgen >/dev/null 2>&1 && temp=$(uuidgen --random)
-			tmp=$tmpdir/${1%-*}-$(echo "$temp" | cut -c-6)
+			tmp="$tmpdir/${1%-*}-$(echo "$temp" | cut -c-6)"
 		fi
 		;;
 		(*)

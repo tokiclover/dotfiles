@@ -50,6 +50,7 @@ EOH
 return
 }
 	(( $# == 0 )) && usage
+
 	local args temp=-XXXXXX type
 	args="$(getopt \
 		-o Pcdfg:hm:o:p::q \
@@ -61,10 +62,10 @@ return
 	args=
 
 	local group mode owner task tmp quiet
-	for (( ; $# > 1; )); do
+	while true; do
 		case $1 in
 			(-c|--chec*) task=chk  ;;
-			(-p|--tmpd*) task=tmp tmpdir="${2:-$TMPDIR}"; shift;;
+			(-p|--tmpd*) task=tmp tmpdir="${2:-${TMPDIR:-/tmp}}"; shift;;
 			(-d|--dir) args=-d type=dir;;
 			(-f|--file)  type=file ;;
 			(-P|--pipe)  type=pipe ;;
@@ -78,22 +79,22 @@ return
 		shift
 	done
 
-	if ! [ $# -eq 1 -a -n "$1" ]; then
-		die "Invalid argument(s)/TEMPLATE"
+	if ! ([[ $# == 1 ]] && [[ -n "$1" ]]); then
+		error "Invalid argument(s)/TEMPLATE"
 		return
 	fi
 	case "$task" in
 		(tmp)
-		quiet= tmpdir="${tmpdir:-${TEMPLATE:-/tmp}}"
+		quiet=
 		case "$1" in
 			(*$temp) ;;
-			(*) die "Invalid TEMPLATE"; return;;
+			(*) error "Invalid TEMPLATE"; return;;
 		esac
 		if type -p mktemp >/dev/null 2>&1; then
-			tmp="$(mktemp -p "$tmpdir" $args "$1")"
+			tmp="$(mktemp ${tmpdir:+-p} "$tmpdir" $args "$1")"
 		else
 			type -p uuidgen >/dev/null 2>&1 && temp=$(uuidgen --random)
-			tmp="$tmpdir/${1%-*}-$(echo "$temp" | cut -c-6)"
+			tmp="$tmpdir/${1%-*}-${temp:0:5}"
 		fi
 		;;
 		(*)
@@ -105,15 +106,17 @@ return
 		[[ -d "$tmp" ]] || mkdir -p "$tmp"
 		;;
 		(*)
-		[[ -e "$tmp" ]] || mkdir -p "${tmp%/*}" && break
-		case "$type" in
-			(pipe) mkfifo $tmp;;
-			(file) touch  $tmp;;
-		esac
+		if [[ ! -e "$tmp" ]]; then
+			mkdir -p "${tmp%/*}" && break
+			case "$type" in
+				(pipe) mkfifo $tmp;;
+				(file) touch  $tmp;;
+			esac
+		fi
 		;;
 	esac
 
-	((  $? == 0 )) || { die "Failed to create ${tmp}"; return; }
+	((  $? == 0 )) || { error "Failed to create ${tmp}"; return; }
 	[[ -h "$tmp" ]] && return
 	[[ "$owner" ]] && chown "$owner" "$tmp"
 	[[ "$group" ]] && chgrp "$group" "$tmp"

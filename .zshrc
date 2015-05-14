@@ -28,7 +28,8 @@ if [[ -f ~/.zprezto/init.zsh ]] {
 	autoload -Uz precompile && precompile
 }
 
-for file (~/.zsh/**/{key-bindings.zsh,prompt_clover_setup}(.N)) source $file
+for file (~/.zsh/**/{{functions,key-bindings}.zsh,prompt_clover_setup}(.N))
+	source $file
 
 if [[ -f ~/lib/aliasrc ]] { source ~/lib/aliasrc }
 

@@ -2,13 +2,11 @@
 # $Header: $HOME/.zsh/functions/checkpath               Exp $
 # $Aythor: (c) 2012-015 -tclover <tokiclover@gmail.com> Exp $
 # $License: MIT (or 2-clause/new/simplified BSD)        Exp $
-# $Version: 0.7 2015/05/05 21:09:26                     Exp $
+# $Version: 0.7 2015/05/14 21:09:26                     Exp $
 #
 
-function die {
-	local ret=$?
+function error {
 	print -P " %F{red}*%f ${(%):-%1x}: $argv" >&2
-	return $ret
 }
 
 function checkpath {
@@ -29,6 +27,7 @@ EOH
 return
 }
 	(( $# == 0 )) && usage
+
 	local args temp=-XXXXXX type
 	args="$(getopt \
 		-o Pcdfg:hm:o:p::q \
@@ -40,10 +39,10 @@ return
 	args=
 
 	local group mode owner task tmp quiet
-	for (( ; $# > 1; )) {
+	while true; do
 		case $1 {
 			(-c|--chec*) task=chk  ;;
-			(-p|--tmpd*) task=tmp tmpdir=${2:-$TMPDIR}; shift;;
+			(-p|--tmpd*) task=tmp tmpdir=${2:-${TMPDIR:-/tmp}}; shift;;
 			(-d|--dir) args=-d type=dir;;
 			(-f|--file)  type=file ;;
 			(-P|--pipe)  type=pipe ;;
@@ -55,21 +54,22 @@ return
 			(*) shift; break       ;;
 		}
 		shift
-	}
-	if ! [ $# -eq 1 -a -n "$1" ]; then
-		die "Invalid argument(s)/TEMPLATE"
+	done
+
+	if ! ([[ $# == 1 ]] && [[ -n $1 ]]); then
+		error "Invalid argument(s)/TEMPLATE"
 		return
 	fi
 
 	case $task {
 		(tmp)
-		quiet= tmpdir=${tmpdir:-/tmp}
-		if [[ ${1%$temp} = $1 ]] {
-			die "Invalid TEMPLATE"
-			return
+		quiet=
+		case $1 {
+			(*$temp) ;;
+			(*) error "Invalid TEMPLATE"; return;;
 		}
 		if (( $+commands[mktemp] )) {
-			tmp=$($commands[mktemp] -p $tmpdir $args $1)
+			tmp=$($commands[mktemp] ${tmpdir:+-p} $tmpdir $args $1)
 		} else {
 			(( $+commands[uuidgen] )) && temp=$($commands[uuidgen] --random)
 			tmp=$tmpdir/${1%-*}-$temp[1,6]
@@ -83,15 +83,17 @@ return
 		[[ -d $tmp ]] || mkdir -p $tmp
 		;;
 		(*)
-		[[ -e $tmp ]] || mkdir -p $tmp:h && break
-		case $type {
+		if [[ ! -e $tmp ]] {
+			mkdir -p $tmp:h
+			case $type {
 			(pipe) mkfifo $tmp;;
 			(file) touch  $tmp;;
+			}
 		}
 		;;
 	}
+	(( $? == 0 )) || { error "Failed to create ${tmp}"; return; }
 
-	(( $? == 0 )) || { die "Failed to create ${tmp}"; return; }
 	[[ -h $tmp ]] && return
 	[[ -n $owner ]] && chown $owner $tmp
 	[[ -n $group ]] && chgrp $group $tmp
@@ -99,8 +101,8 @@ return
 	[[ -n $quiet ]] || print $tmp
 }
 
-if [[ ${(%):-%1x} == (checkpath|mktmp)(|.zsh) ]] {
-	checkpath "$@"
+case ${(%):-%1x} {
+	(checkpath*|mktmp*) checkpath "$@";;
 }
 
 #

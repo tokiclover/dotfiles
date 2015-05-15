@@ -2,7 +2,7 @@
 # $Header: browser-home-profile/functions/mktmp         Exp $
 # $Aythor: (c) 2012-015 -tclover <tokiclover@gmail.com> Exp $
 # $License: MIT (or 2-clause/new/simplified BSD)        Exp $
-# $Version: 0.7 2015/05/14 21:09:26                     Exp $
+# $Version: 0.7 2015/05/15 21:09:26                     Exp $
 #
 
 function mktmp {
@@ -14,7 +14,7 @@ function mktmp {
   -o, --owner <name>  Use owner name
   -g, --group <name>  Use group name
   -m, --mode   1700   Use octal mode
-  -p, --tmpdir[=DIR]  Enable mktmp mode
+  -p, --tmpdir[=DIR]  Use temp-dir
   -h, --help          Help/Exit
 	EOH
 	}
@@ -49,12 +49,12 @@ function mktmp {
 	done
 
 	if ! ([[ ${#} == 1 ]] && [[ -n ${1} ]]); then
-		pr_error "Invalid argument(s)"
+		pr-error "Invalid argument(s)"
 		return 3
 	fi
 	case ${1} {
 		(*${temp}) ;;
-		(*) pr_error "Invalid TEMPLATE"; return 4;;
+		(*) pr-error "Invalid TEMPLATE"; return 4;;
 	}
 
 	if (( ${+commands[mktemp]} )); then
@@ -68,7 +68,7 @@ function mktmp {
 		(*)   [[ -e ${tmp} ]] || { mkdir -p ${tmp:h}; touch  ${tmp}; };;
 	}
 	if (( ${?} != 0 )) {
-		pr_error "Failed to create ${tmp}"
+		pr-error "Failed to create ${tmp}"
 		return 5
 	}
 	[[ -h ${tmp} ]] && return

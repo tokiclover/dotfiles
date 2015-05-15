@@ -24,7 +24,7 @@ FILES
 -----
 ### /bin
 
-* fhp: is a simple script which put Firefox-Home-Profile and cache directory to
+* bhp: is a simple script amintianing Browser-Home-Profile and cache directory to
        tmpfs (or zram backed FileSystem by specifying -t|--tmpdir [DIR]);
 * hdu: is a simple script which ease updating '$Header:...$' or '$Id:...$' update;
 * ips: is a script which can be used to retrieve IP block lists to be added to iptables rules;
@@ -42,9 +42,7 @@ FILES
 
 ### /lib
 
-* functions.bash: a very few helpers not fully tested..;
-* .zsh/functions: a more usable variant of the previous;
-	% autoload -Uz $helpers #when need be
+* functions.{ba,z}sh: a very few common helpers used in other scripts;
 
 [1]: https://github.com/tokiclover/prezto
 [2]: https://github.com/sorin-ionescu/prezto

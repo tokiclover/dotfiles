@@ -50,6 +50,7 @@ usage: ${bhp[zero]} [OPTIONS] [BROWSER]
   -c, --compressor='lzop -1'  Use lzop compressor, default to lz4
   -t, --tmpdir=DIR            Set up a particular TMPDIR
   -p, --profile=PROFILE       Select a particular profile
+  -z, --zsh-exit-hook         Add an exit hook to Z Shell
   -h, --help                  Print help message and exit
 EOH
 }
@@ -59,8 +60,9 @@ EOH
 #
 function {
 	local ARGS DIR PROFILE browser char dir ext name=${bhp[zero]} profile tmpdir
+
 	ARGS=($(getopt \
-		-o b:c:hp:t: -l browser:,compressor:,help,profile:,tmpdir: \
+		-o b:c:hp:t:z -l browser:,compressor:,help,profile:,tmpdir:,zsh-exit-hook \
 		-n ${bhp[zero]} -s sh -- "${@}"))
 	if (( ${?} != 0 )) {
 		return 111
@@ -77,7 +79,7 @@ function {
 			(-z|--zsh-exit-hook)
 				autoload -Uz add-zsh-hook
 				add-zsh-hook zshexit bhp;;
-			(*) shift; bhp[profile]=${1}; break;;
+			(*) shift; break;;
 		}
 	done
 	setopt LOCAL_OPTIONS EXTENDED_GLOB
@@ -107,7 +109,7 @@ function {
 					}
 			}
 		return 111
-	} ${browser:-$BROWSER}
+	} ${browser:-${BROWSER:-$1}}
 
 	if (( ${?} != 0 )) {
 		pr-error "No web-browser found."
@@ -173,7 +175,7 @@ BHP_RET=${?}
 function bhp {
 	local ext=.tar.${bhp[compressor][(w)1]} name=bhp tarball
 
-	for dir (${HOME}/.{,cache/}mozilla/firefox/${bhp[profile]}) {
+	for dir (${HOME}/.{${bhp[PROFILE]},cache/${bhp[PROFILE]#config/}}) {
 		pushd -q ${dir:h} || continue
 		pr-begin "Setting up tarball..."
 		if [[ -f ${bhp[profile]}/.unpacked ]] {

@@ -25,7 +25,7 @@ zstyle ':prezto:*:*' color 'yes'
 # The order matters.
 zpmodules=(environment editor prompt helper precompile)
 if [[ ${TTY/tty} == $TTY ]] && [[ $EUID != 0 ]] {
-  zpmodules=($zpmodules firefox-home-profile)
+  zpmodules=($zpmodules browser-home-profile)
 }
 zstyle ':prezto:load' pmodule $zpmodules
 unset zpmodules

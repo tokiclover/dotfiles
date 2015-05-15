@@ -1,0 +1,56 @@
+#
+# $Header: $HOME/.zsh/functions/kmp-pc                  Exp $
+#
+
+function kmod-pc {
+	(( $+functions[colors] ))   || autoload -Uz colors 
+	(( $+functions[terminfo] )) || autoload -Uz zsh/terminfo
+	if [[ $terminfo[colors] -ge 8 ]] { colors }
+
+	local line conf dir mod{,s} null=/dev/null newline='
+'
+	if (( $# > 0 )) {
+		mods=($*)
+	} else {
+		while read line; do
+			mods+=($line[(w)1])
+		done </proc/modules
+	}
+
+	for mod (${mods[@]}) {
+		dir=/sys/module/$mod/parameters
+		if [[ ! -d $dir ]] { continue }
+		print -P "$fg[green]'-*- '$mod$color[none]: ${$(modinfo -d $mod 2>$null)//\\n/\\t}"
+
+		declare -a names descs vals
+		local add_desc=false desc name val IFS="$newline"
+	
+		while read line; do
+			if [[ $line =~ ^[[:space:]] ]] {
+				desc+="$newline	$line"
+			} else {
+				$add_desc && descs+=($desc)
+				name=${line%%:*}
+				names+=($name)
+				desc=(${line#*:})
+				val="$(< $dir/$name 2>$null | sed -e 's/(null),//g' -e 's/-1,//g' \
+					-e 's/Y,//g' -e 's/0,//g')"
+				vals+=($val)
+			}
+			add_desc=true
+		done < <(modinfo -p $mod 2>$null)
+
+		$add_desc && descs+=($desc)
+		for ((i=1; i<${#names[@]}; i++)) {
+			print -P "\t$fg[cyan]${names[i]}$color[none] = $fg[yellow]${vals[i]}$color[none] - ${descs[i]}"
+		}
+	}
+}
+
+if [[ ${(%):-%1x} == kmod-pc(.zsh) ]] {
+	kmod-pc "$@"
+}
+
+#
+# vim:fenc=utf-8:ft=zsh:ci:pi:sts=0:sw=2:ts=2:
+#

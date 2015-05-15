@@ -44,6 +44,7 @@ FILES
 ### /lib
 
 * functions.{ba,z}sh: a very few common helpers used in other scripts;
+* helpers.bash for extra bash helpers (zsh equivalent are `.zsh/functions`);
 
 [1]: https://github.com/tokiclover/prezto
 [2]: https://github.com/sorin-ionescu/prezto

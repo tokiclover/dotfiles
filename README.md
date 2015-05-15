@@ -32,6 +32,7 @@ FILES
 * kvm: is a script to ease kvm loadind with a few default option;
 * lbd: is a script to add/remove loop back devices;
 * a2jloop: a script to map loopback device to jack client (support zita/alsa);
+* mktmp: a simple and cheap mktemp variant to set up tmp-{dir,file}s; 
 * magnet: a little script to transliterate magnet uri to torrent (file);
 * mkstage4: a stage4 maker scripts with squashed (system/local) directories support;
 * soundon.user: an oss4 user soundon script;

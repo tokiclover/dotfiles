@@ -1,5 +1,6 @@
 #
-# $Heder: ~/.zprofile, 2014/11/18 08:04:40 -tclover Exp $
+# $Header: ${HOME}/.zprofile                            Exp $
+# $Version: 2015/05/15                                  Exp $
 #
 
 export EDITOR=${EDITOR:-/bin/nano}

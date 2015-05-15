@@ -1,5 +1,6 @@
 #
-# $Header: ~/.zshrc, 2014/10/01 22:01:25 -tclover Exp $
+# $Header: ${HOME}/.zshrc                               Exp $
+# $Version: 2015/05/15                                  Exp $
 #
 
 setopt extended_glob

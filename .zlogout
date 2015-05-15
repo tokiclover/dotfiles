@@ -1,5 +1,6 @@
 #
-# $Header: ~/.zlogout, 2014/09/28 08:40:33 -tclover Exp $
+# $Header: ${HOME}/.zlogout                             Exp $
+# $Version: 2015/05/15                                  Exp $
 #
 
 #(( $+DISPLAY )) && [[ $EUID != 0 ]] && fhp >/dev/null 2>&1

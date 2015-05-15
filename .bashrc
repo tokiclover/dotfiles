@@ -1,5 +1,6 @@
 #
-# $Header: ~/.bashrc, 2014/09/28 22:52:41 -tclover Exp $
+# $Header: ${HOME}/.bashrc                              Exp $
+# $Version: 2015/05/15                                  Exp $
 #
 
 shopt -qs extglob
@@ -12,17 +13,18 @@ if [[ -f /etc/bash_completion ]] && ! shopt -oq posix; then
 	source /etc/bash_completion
 fi
 
-if [[ -f ~/lib/functions.bash ]]; then
-	source ~/lib/functions.bash
-fi
-
-for script in ~/bin/*.bash; do
-	if [[ -x "$script" ]]; then
-		alias $(basename ${script%.bash})='~/bin/'${script##*/}
-	fi
+pushd "${HOME}"/lib >/dev/null 2>&1
+for file in *.bash; do
+	source ${file}
 done
+popd >/dev/null 2>&1
+pushd "${HOME}"/bin >/dev/null 2>&1
+for file in *.bash; do
+	alias ${file%.bash}='~/bin/'${file}
+done
+popd >/dev/null 2>&1
 
-[[ "$PROMPT_COMMAND" ]] && $PROMPT_COMMAND
+[[ "${PROMPT_COMMAND}" ]] && ${PROMPT_COMMAND}
 
 #
 # vim:fenc=utf-8:ft=sh:ci:pi:sts=2:sw=2:ts=2:

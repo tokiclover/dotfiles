@@ -104,7 +104,7 @@ eval_colors()
 	done
 	for c in 0:none 1:bold 2:faint 3:italic 4:underline 5:blink \
 		6:rapid-blink 7:inverse 8:conceal 23:no-italic 24:no-underline \
-		25:no-blink 28:reveal 39:default; do
+		25:no-blink 28:reveal 39;49:default; do
 		color[${c#*:}]="${E}${c%:*}m"
 	done
 }

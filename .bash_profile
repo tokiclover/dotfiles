@@ -1,5 +1,6 @@
 #
-# $Header: ~/.bash_profile, 2014/11/18 08:03:53 -tclover Exp $
+# $Header: ${HOME}/.bash_profile                        Exp $
+# $Version: 2015/05/15                                  Exp $
 #
 
 shopt -s cdspell

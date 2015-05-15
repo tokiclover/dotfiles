@@ -1,5 +1,6 @@
 #
-# $Header: ~/.bash_login, 2014/10/10 10:15:47 -tclover Exp $
+# $Header: ${HOME}/.bash_login                          Exp $
+# $Version: 2015/05/15                                  Exp $
 #
 
 # auto startx depending on the tty

@@ -1,2 +1,10 @@
+#
+# $Header: ${HOME}/.inputrc                             Exp $
+#
+
 set editing-mode vi
-set keymap vi 
+set keymap vi
+
+#
+# vim:fenc=utf-8:tw=80:sw=2:sts=2:ts=2:
+#

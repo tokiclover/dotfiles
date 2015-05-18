@@ -1,7 +1,7 @@
 #
-# $Header: ${HOME}/promp-clover-setup.bash              Exp $
+# $Header: ${HOME}/lib/promp-clover-setup.bash          Exp $
 # $Author: (c) 2012-15 -tclover <tokiclover@gmail.com>  Exp $
-# $License: MIT (or 2-clause/new/simplified BSD)        Exp $
+# $License: 2-clause/new/simplified BSD                 Exp $
 # $Version: 1.0 2015/05/05 21:09:26                     Exp $
 #
 

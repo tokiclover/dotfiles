@@ -99,9 +99,9 @@ done
 unset key
 
 if [[ "${EDITOR}" =~ vi ]]; then
-	set -o emacs
-else
 	set -o vi
+else
+	set -o emacs
 fi
 
 #

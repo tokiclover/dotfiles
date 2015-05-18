@@ -12,7 +12,6 @@
 #
 # Set up a few options
 #
-set colored-stats On
 set enable-keypad On
 set enable-meta-key On
 set mark-modified-lines On
@@ -24,21 +23,22 @@ set mark-directories On
 set page-completions On
 set menu-complete-display-prefix On
 
+function tput-to-str {
+	strace -s 64 -e trace=write tput ${@} 2>&1 | sed -nre 's/.*"([^"].*33)(.*)".*/\\e\2/p'
+}
+
 #
 # Set up keyinfo associative array
 #
 typeset -A keyinfo
-for key in 'Control:\C-' 'Escape:\e' 'Meta:\M-' \
-	'Backspace:^?' 'Delete:\e[3~'; do
+for key in 'Control:\C-' 'Escape:\e' 'Meta:\M-' 'Backspace:^?' 'Delete:\e[3~' \
+	'Up:\e[A' 'Left:\e[D' 'Down:\e[B' 'Right:\e[C'; do
 	keyinfo[${key%:*}]="${key#*:}"
 done
-for key in '1:11' '2:12' '3:13' '4:14' '5:15' '6:17' \
-	'7:18' '8:19' '9:20' '10:21' '11:23' '12:24'; do
-	keyinfo[F${key%:*}]="\e[${key#*:}~"
-done
-for key in 'Insert:2' 'Home:7' 'PageUp:5' 'End:8' 'PageDown:6' \
-  'Up:A' 'Left:D' 'Down:B' 'Right:C' 'BackTab:Z'; do
-	keyinfo[${key%:*}]="\e[${key#*:}"
+for key in 'F1:kf1' 'F2:kf2' 'F3:kf3' 'F4:kf4' 'F5:kf5' 'F6:kf7' \
+	'F7:kf7' 'F8:kf8' 'F9:kf9' 'F10:kf10' 'F11:kf11' 'F12:kf12' 'Insert:kich1' \
+	'Home:khome' 'PageUp:kpp' 'End:kend' 'PageDown:knp' 'BackTab:kcbt'; do
+	keyinfo[${key%:*}]="$(tput-to-str ${key#*:})"
 done
 
 bind "\"${keyinfo[Backspace]}\"":backward-delete-char

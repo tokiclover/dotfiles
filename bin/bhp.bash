@@ -46,9 +46,11 @@ fi
 
 function fhp-help {
 	cat <<-EOH
-usage: fhp [OPTIONS] [Uirefox-Home-Profile]
-  -c, --compressor 'lzop -1'  Use lzop compressor, default to lz4
-  -t, --tmpdir [DIR]          Set up a particular TMPDIR
+usage: fhp [OPTIONS] [Browser-Home-Profile]
+  -b, --browser=Web-Browser   Select a browser to set up
+  -c, --compressor='lzop -1'  Use lzop compressor, default to lz4
+  -t, --tmpdir=DIR            Set up a particular TMPDIR
+  -p, --profile=PROFILE       Select a particular profile
   -h, --help                  Print help message and exit
 EOH
 }

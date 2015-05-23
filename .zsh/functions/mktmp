@@ -26,8 +26,8 @@ function mktmp {
 
 	local ARGS name=mktmp
 	ARGS="$(getopt \
-		-o dfg:hm:o:p:: \
-		-l dir,file,group:,tmpdir::	-l help,mode:owner: \
+		-o dfg:hm:o:p: \
+		-l dir,file,group:,tmpdir:,help,mode:owner: \
 		-s sh -n mktmp -- "${@}")"
 	if (( ${?} != 0 )) { mktmp-help; return 2; }
 	eval set -- ${ARGS}
@@ -75,6 +75,7 @@ function mktmp {
 	(( -n ${owner} )) && chown ${owner} ${tmp}
 	(( -n ${group} )) && chgrp ${group} ${tmp}
 	(( -n ${mode}  )) && chmod ${mode}  ${tmp}
+	print ${tmp}
 }
 
 case ${(%):-%1x} {

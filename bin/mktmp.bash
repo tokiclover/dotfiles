@@ -31,8 +31,8 @@ return
 
 	local args group mode owner temp=-XXXXXX tmp type
 	args=($(getopt \
-		-o cdfg:hm:o:p:: \
-		-l dir,file,group:,tmpdir::,help,mode:owner: \
+		-o cdfg:hm:o:p: \
+		-l dir,file,group:,tmpdir:,help,mode:owner: \
 		-s sh -n mktmp -- "${@}"))
 	(( ${?} == 0 )) || { usage; return 2; }
 	eval set -- "${args[@]}"
@@ -83,6 +83,7 @@ return
 	[[ "${owner}" ]] && chown "${owner}" "${tmp}"
 	[[ "${group}" ]] && chgrp "${group}" "${tmp}"
 	[[ "${mode}"  ]] && chmod "${mode}"  "${tmp}"
+	echo "${tmp}"
 }
 
 case "${0##*/}" in

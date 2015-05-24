@@ -13,6 +13,7 @@ media-video/libav
 >=app-text/evince-3.14.0
 >=x11-libs/gtk+-3.14.0
 >=x11-libs/libwnck-3.14.0
+x11-themes/adwaita-icon-theme
 >=x11-themes/gnome-themes-standard-3.14.0
 >=x11-libs/gtksourceview-3.14.0
 
@@ -21,3 +22,7 @@ media-video/libav
 >=media-libs/elementary-1.11.0
 >=x11-terms/terminology-0.7.0
 >x11-wm/enlightenment-0.19.0:0.17
+dev-java/oracle-jdk-bin
+dev-java/oracle-jre-bin
+=virtual/jdk-1.8.0
+=virtual/jre-1.8.0

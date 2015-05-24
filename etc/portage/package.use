@@ -10,8 +10,8 @@ media-libs/mesa gbm openmax xa
 dev-libs/DirectFB -egl -gles2
 dev-libs/apr-util ldap
 net-nds/openldap sasl
-sys-kernel/git-sources:3.18.9 -aufs -bfq -bfs -ck fbcondecor -gentoo hardened -optimization reiser4 -toi -uksm
-sys-kernel/git-sources:3.17.7 -aufs -bfq -bfs -ck fbcondecor -gentoo hardened -optimization reiser4 -toi -uksm
+sys-kernel/git-sources:3.18.9 aufs -bfq bfs ck fbcondecor -gentoo -hardened -optimization reiser4 -toi uksm
+sys-kernel/git-sources:3.16.7 aufs bfq bfs ck fbcondecor -gentoo -hardened optimization reiser4 toi uksm
 sys-kernel/mkinitramfs-ll aufs bash btrfs dm-crypt dmraid jfs mdadm reiserfs squashfs xfs zfs zram zsh
 dev-libs/cyrus-sasl ldapdb
 sys-fs/cryptsetup -gcrypt
@@ -212,6 +212,8 @@ x11-libs/libxkbcommon abi_x86_32
 x11-libs/libva abi_x86_32
 x11-libs/libva-vdpau-driver abi_x86_32
 x11-libs/libva-intel-driver abi_x86_32
+gnome-base/librsvg abi_x86_32
+dev-libs/libcroco abi_x86_32
 
 net-wireless/hostapd madwifi
 net-print/gutenprint foomaticdb gimp ppds

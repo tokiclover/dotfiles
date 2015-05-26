@@ -2,11 +2,11 @@
 # $Header: $HOME/bin/mktmp.bash                         Exp $
 # $Aythor: (c) 2012-015 -tclover <tokiclover@gmail.com> Exp $
 # $License: MIT (or 2-clause/new/simplified BSD)        Exp $
-# $Version: 0.7 2015/05/15 21:09:26                     Exp $
+# $Version: 0.8 2015/05/26 21:09:26                     Exp $
 #
 
 if [[ -f "${0%bin/*}"lib/functions.bash ]]; then
-	source "${0%bin/*}"lib/functions.zsh
+	source "${0%bin/*}"lib/functions.bash
 else
 	function pr-error {
 		echo -e " \e[1;31m* \e[0m${0##*/}: $@" >&2
@@ -61,9 +61,16 @@ return
 		(*) pr-error "Invalid TEMPLATE"; return 4;;
 	esac
 
+	local mktmp
 	if type -p mktemp >/dev/null 2>&1; then
-		tmp="$(mktemp ${tmpdir:+-p} "${tmpdir}" ${args} "${1}")"
-	else
+		mktmp=mktemp
+	elif type -p busybox >/dev/null 2>&1; then
+		mktmp='busybox mktemp'
+	fi
+	if [ -n "${mktmp}" ]; then
+		tmp="$(${mktmp} ${tmpdir:+-p} "${tmpdir}" ${args} "${1}")"
+	fi
+	if [ ! -e "${tmp}" ]; then
 		type -p uuidgen >/dev/null 2>&1 && temp=$(uuidgen --random)
 		tmp="${tmpdir}/${1%-*}-${temp:0:5}"
 	fi
@@ -74,7 +81,6 @@ return
 		;;
 		(*)
 		[[ -e "${tmp}" ]] || { mkdir -p "${tmp%/*}"; touch  "${tmp}"; }
-		fi
 		;;
 	esac
 	((  $? == 0 )) || { pr-error "Failed to create ${tmp}"; return 5; }

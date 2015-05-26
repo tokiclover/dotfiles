@@ -56,13 +56,19 @@ function mktmp {
 		(*${temp}) ;;
 		(*) pr-error "Invalid TEMPLATE"; return 4;;
 	}
-
-	if (( ${+commands[mktemp]} )); then
-		tmp="$(mktemp ${tmpdir:+-p} ${tmpdir} ${ARGS} ${1})"
-	else
+	local mktmp
+	if (( ${+commands[mktemp]} )) {
+		mktmp=mktemp
+	} elif (( ${+commands[busybox]} )) {
+		mktmp='busybox mktemp'
+	}
+	if (( ${+mktmp} )) {
+		tmp=$(${mktmp} ${tmpdir:+-p} ${tmpdir} ${ARGS} ${1})
+	}
+	if [[ ! -e ${tmp} ]] {
 		(( ${+commands[uuidgen]} )) && temp=$(uuidgen --random)
 		tmp="${tmpdir}/${1%-*}-${temp:1:6}"
-	fi
+	}
 	case ${type} {
 		(dir) [[ -d ${tmp} ]] || mkdir -p ${tmp};;
 		(*)   [[ -e ${tmp} ]] || { mkdir -p ${tmp:h}; touch  ${tmp}; };;

@@ -53,7 +53,7 @@ net-print/cups ppds
 media-libs/gegl raw
 media-sound/deadbeef alac midi
 media-sound/wildmidi -oss
-dev-libs/efl drm fribidi harfbuzz jp2k physics sound xim -wayland -gles 
+dev-libs/efl -drm fribidi harfbuzz jp2k physics sound xim -wayland -gles
 x11-wm/enlightenment -wayland
 media-libs/elementary -wayland
 media-video/x264-encoder avs custom-cflags

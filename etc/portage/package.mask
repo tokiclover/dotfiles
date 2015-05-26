@@ -12,17 +12,15 @@ media-video/libav
 >gnome-extra/gnome-color-manager-3.0
 >=app-text/evince-3.14.0
 >=x11-libs/gtk+-3.14.0
+>=dev-cpp/gtkmm-3.14.0
 >=x11-libs/libwnck-3.14.0
 x11-themes/adwaita-icon-theme
 >=x11-themes/gnome-themes-standard-3.14.0
 >=x11-libs/gtksourceview-3.14.0
 
 >www-client/firefox-32.0
->=dev-libs/efl-1.11.0
->=media-libs/elementary-1.11.0
->=x11-terms/terminology-0.7.0
->x11-wm/enlightenment-0.19.0:0.17
 dev-java/oracle-jdk-bin
 dev-java/oracle-jre-bin
 =virtual/jdk-1.8.0
 =virtual/jre-1.8.0
+>app-shells/zsh-5.0.5

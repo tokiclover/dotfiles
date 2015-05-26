@@ -1,3 +1,4 @@
+#!/bin/bash
 #
 # $Header: $HOME/bin/mktmp.bash                         Exp $
 # $Aythor: (c) 2012-015 -tclover <tokiclover@gmail.com> Exp $
@@ -5,8 +6,8 @@
 # $Version: 0.8 2015/05/26 21:09:26                     Exp $
 #
 
-if [[ -f "${0%bin/*}"lib/functions.bash ]]; then
-	source "${0%bin/*}"lib/functions.bash
+if [[ -f "${HOME}"/lib/functions.bash ]]; then
+	source "${HOME}"/lib/functions.bash
 else
 	function pr-error {
 		echo -e " \e[1;31m* \e[0m${0##*/}: $@" >&2

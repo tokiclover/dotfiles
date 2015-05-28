@@ -3,7 +3,7 @@
 # $Header: browser-home-profile/functions/mktmp         Exp $
 # $Aythor: (c) 2012-015 -tclover <tokiclover@gmail.com> Exp $
 # $License: MIT (or 2-clause/new/simplified BSD)        Exp $
-# $Version: 0.7 2015/05/15 21:09:26                     Exp $
+# $Version: 0.8 2015/05/24 21:09:26                     Exp $
 #
 
 function mktmp {
@@ -15,7 +15,7 @@ function mktmp {
   -o, --owner <name>  Use owner name
   -g, --group <name>  Use group name
   -m, --mode   1700   Use octal mode
-  -p, --tmpdir[=DIR]  Use temp-dir
+  -p, --tmpdir=DIR    Use temp-dir
   -h, --help          Help/Exit
 	EOH
 	}
@@ -79,9 +79,9 @@ function mktmp {
 		return 5
 	}
 	[[ -h ${tmp} ]] && return
-	(( -n ${owner} )) && chown ${owner} ${tmp}
-	(( -n ${group} )) && chgrp ${group} ${tmp}
-	(( -n ${mode}  )) && chmod ${mode}  ${tmp}
+	[[ -n ${owner} ]] && chown ${owner} ${tmp}
+	[[ -n ${group} ]] && chgrp ${group} ${tmp}
+	[[ -n ${mode}  ]] && chmod ${mode}  ${tmp}
 	print ${tmp}
 }
 

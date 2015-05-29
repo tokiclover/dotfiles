@@ -140,9 +140,9 @@ function bhp-init {
 
 :	${compressor:=lz4 -1 -}
 :	${profile:=${PROFILE##*/}}
-	[[ "${bhp[compressor]}" ]] || bhp[compressor]="${compressor}"
-	[[ "${bhp[profile]}" ]] || bhp[profile]="${profile}"
-	[[ "${bhp[PROFILE]}" ]] || bhp[PROFILE]="${PROFILE}"
+:	${bhp[compressor]:=${compressor}}
+:	${bhp[profile]:=${profile}}
+:	${bhp[PROFILE]:=${PROFILE}}
 :	${tmpdir:=${TMPDIR:-/tmp/$USER}}
 :	${ext=.tar.${compressor%% *}}
 

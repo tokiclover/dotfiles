@@ -44,9 +44,9 @@ else
 	}
 fi
 
-function fhp-help {
+function bhp-help {
 	cat <<-EOH
-usage: fhp [OPTIONS] [Browser-Home-Profile]
+usage: bhp [OPTIONS] [Browser-Home-Profile]
   -b, --browser=Web-Browser   Select a browser to set up
   -c, --compressor='lzop -1'  Use lzop compressor, default to lz4
   -t, --tmpdir=DIR            Set up a particular TMPDIR

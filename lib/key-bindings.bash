@@ -84,12 +84,11 @@ for key in emacs-standard vi-insert; do
 	bind -m "${key}" '"\eOd":backward-word'
 done
 	;;
+	(*)
 	(xterm*)
 for key in emacs-standard vi-insert; do
 	bind -m "${key}" '"\E[H":beginning-of-line'
 	bind -m "${key}" '"\E[F":end-of-line'
-	bind -m "${key}" '"\E[5~":up-line-or-history'
-	bind -m "${key}" '"\E[6~":down-line-or-history'
 done
 	;;
 esac

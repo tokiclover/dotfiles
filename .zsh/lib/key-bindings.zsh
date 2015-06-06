@@ -53,8 +53,6 @@ done
 for key in emacs viins; do
 	bindkey -M ${key} "\E[H"  beginning-of-line
 	bindkey -M ${key} "\E[F"  end-of-line
-	bindkey -M ${key} "\E[5~" up-line-or-history
-	bindkey -M ${key} "\E[6~" down-line-or-history
 done
 	;;
 esac

@@ -60,6 +60,8 @@ else
 	function run-term { screen; }
 fi
 
+case "${TERM}" in
+	(rxvt*)
 for key in emacs-standard vi-insert; do
 	bind -m "${key}" '"\eOw":beginning-of-line'
 	bind -m "${key}" '"\eOq":end-of-line'
@@ -76,17 +78,30 @@ for key in emacs-standard vi-insert; do
 	bind -m "${key}" '"\eOu":delete-char'
 	bind -m "${key}" '"\eOM":accept-line'
 
-	bind -m "${key}" '"\e[a":copy-earlier-word'
-	bind -m "${key}" '"\e[b":backward-kill-line'
-	bind -m "${key}" '"\e[c":backward-kill-word'
-	bind -m "${key}" '"\e[d":kill-word'
 	bind -m "${key}" '"\eOa":undo'
 	bind -m "${key}" '"\eOb":redo'
 	bind -m "${key}" '"\eOc":forward-word'
 	bind -m "${key}" '"\eOd":backward-word'
-	#
-	# Set the same bindings with standard keys
-	#
+done
+	;;
+	(*)
+for key in emacs-standard vi-insert; do
+	bind -m "${key}" '"\E[H":beginning-of-line'
+	bind -m "${key}" '"\E[F":end-of-line'
+	bind -m "${key}" '"\E[5~":up-line-or-history'
+	bind -m "${key}" '"\E[6~":down-line-or-history'
+done
+	;;
+esac
+#
+# Set the same bindings with standard keys
+#
+for key in emacs-standard vi-insert; do
+	bind -m "${key}" '"\e[a":copy-earlier-word'
+	bind -m "${key}" '"\e[b":backward-kill-line'
+	bind -m "${key}" '"\e[c":backward-kill-word'
+	bind -m "${key}" '"\e[d":kill-word'
+
 	bind -m "${key}" '"\C-[A":undo'
 	bind -m "${key}" '"\C-[B":redo'
 	bind -m "${key}" '"\C-[C":forward-word'

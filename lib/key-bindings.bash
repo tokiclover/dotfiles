@@ -84,7 +84,7 @@ for key in emacs-standard vi-insert; do
 	bind -m "${key}" '"\eOd":backward-word'
 done
 	;;
-	(*)
+	(xterm*)
 for key in emacs-standard vi-insert; do
 	bind -m "${key}" '"\E[H":beginning-of-line'
 	bind -m "${key}" '"\E[F":end-of-line'

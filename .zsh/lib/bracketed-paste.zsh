@@ -36,42 +36,41 @@ zle -N paste-insert
 
 # Switch the active keymap to paste mode
 function start-paste {
+  _paste=1
   bindkey -A paste main
 }
 
 # Restore keymap, and insert all the pasted text in the command line which
 # has the effect of making the whole paste be single undo/redo event.
 function end-paste {
-  case $_keymap {
-    (viins) bindkey -v;;
-    (vicmd) bindkey -a;;
-    (emacs) bindkey -e;;
-  }
+  bindkey -e
   LBUFFER+=$_paste_content
-  unset _keymap _paste_content
+  unset _paste_content
 }
 
 function paste-insert {
   _paste_content+=$KEYS
 }
 
-function zle-keymap-select {
-  # Save the old keymap
-  _keymap=$1
-}
-
 function zle-line-init {
   # Send escape codes around pastes
-  case $TERM {
-	  (rxvt*|xterm*|screen*) printf '\e[?2004h';;
+  case $_paste {
+    (1)
+    case $TERM {
+	    (rxvt*|xterm*|screen*) printf '\e[?2004h';;
+    };;
   }
 }
 
 function zle-line-finish {
   # Stop send escape codes around pastes
-  case $TERM {
-	  (rxvt*|xterm*|screen*) printf '\e[?2004l';;
-	}
+  case $_paste {
+    (1)
+    case $TERM {
+	    (rxvt*|xterm*|screen*) printf '\e[?2004l';;
+	  }
+    unset _paste;;
+  }
 }
 
 #

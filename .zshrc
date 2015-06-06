@@ -29,10 +29,9 @@ if [[ -f ~/.zprezto/init.zsh ]] {
 	autoload -Uz precompile && precompile
 }
 
-for file (~/.zsh/lib/^(editor.zsh)*(.N))
+for file (~/.zsh/lib/^(editor.zsh)*(.N)
+	.zsh/functions/prompt_clover_setup lib/{aliasrc,helpers})
 	source $file
-for file (.zsh/functions/prompt_clover_setup lib/{aliasrc,helpers})
-	source ~/$file
 
 #
 # vim:fenc=utf-8:ft=zsh:ci:pi:sts=0:sw=2:ts=2:

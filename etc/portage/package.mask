@@ -9,7 +9,6 @@ media-video/libav
 >=lxde-base/menu-cache-1.0.0-r1
 
 >=media-sound/patchage-1.0
->gnome-extra/gnome-color-manager-3.0
 >=app-text/evince-3.14.0
 >=x11-libs/gtk+-3.14.0
 >=dev-cpp/gtkmm-3.14.0

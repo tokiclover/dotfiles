@@ -1,21 +1,19 @@
 #
-# $Header: ~/.xinitrc, 2015/03/30 15:32:37 -tclover Exp $
+# $Header: ${HOME}/.xinitrc, 2015/06/06 15:32:37            Exp $
 #
 
-gcm-session &
-
-if [ -r $TMPDIR/env ]; then
+if [ -r "${TMPDIR}"/env ]; then
 	while read line; do
-		export $line
-	done <$TMPDIR/env
+		export "${line}"
+	done < "${TMPDIR}"/env
 else
 	eval export $(gpg-agent --daemon --sh)
 	eval export $(ssh-agent -s)
 	{
-		echo GPG_AGENT_INFO=$GPG_AGENT_INFO
-		echo SSH_AUTH_SOCK=$SSH_AUTH_SOCK
-		echo SSH_AGENT_PID=$SSH_AGENT_PID
-	} >$TMPDIR/env
+		echo GPG_AGENT_INFO="${GPG_AGENT_INFO}"
+		echo SSH_AUTH_SOCK="${SSH_AUTH_SOCK}"
+		echo SSH_AGENT_PID="${SSH_AGENT_PID}"
+	} > "${TMPDIR}"/env
 fi
 
 xset s off
@@ -29,18 +27,20 @@ xset fp rehash
 #[ -s ~/.Xdefaults ] && xrdb -merge ~/.Xdefaults
 [ -s ~/.Xmodmap ] && xmodmap ~/.Xmodmap
 #[ -s ~/.color/x/sj-bright ] && xrdb -merge ~/.color/x/sj-bright
-#[ -s ~/.color/icc/sRGB_v4_ICC_preference_displayclass.icc ] &&
 
 #xautolock -time 30 -locker slock
-xbacklight -set 20
-#xcalib -gc 1.0 -b 0.0 -co 100.0 ~/.color/icc/sRGB_v4_ICC_preference_displayclass.icc
+xbacklight -set 15
+if [ -f "${HOME}"/.color/icc/default.ic* ]; then
+	oyranos-monitor "${HOME}"/.color/icc/default.ic*
+	oyranos-monitor-daemon &
+fi
 
 unclutter -idle 8 -noevents &
 dhcpcd-gtk >/dev/null 2>&1 &
 ladi-system-tray > ~/.log/ladi/ladi.log 2>&1 &
 urxvtd -q -o -f &
 
-case $(tty | cut -b9-) in
+case "$(tty | cut -b9-)" in
 	(1) exec enlightenment_start;;
 	(2) exec icewm-session      ;;
 	(3) exec openbox-session    ;;

@@ -13,6 +13,7 @@ image/x-portable-bitmap=gpicview.desktop
 image/x-targa=gpicview.desktop
 image/x-portable-greymap=gpicview.desktop
 application/pcx=gpicview.desktop
+application/pdf=mupdf.desktop
 image/svg+xml=gpicview.desktop
 image/svg-xml=gpicview.desktop
 application/octet-stream=xarchiver.desktop

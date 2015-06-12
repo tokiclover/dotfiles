@@ -1,11 +1,25 @@
-# $Id: ~/.Xprofile, 2014/07/31 09:52:36 -tclover Exp $
+#
+# $Header: ${HOME}/.Xprofile                            Exp $
+# $Version: 2015/05/15                                  Exp $
+#
+
+if ! [ -n "${TMPDIR}" -a -d "${TMPDIR}" ]; then
+	mkdir -p -m 1700 "/tmp/${USER}"
+	export TMPDIR="/tmp/${USER}"
+fi
+
+export EDITOR=${EDITOR:-/bin/nano}
+export PAGER=${PAGER:-/usr/bin/less}
+export PATH="${PATH}:${HOME}/bin"
 
 export ECORE_IMF_MODULE=xim
 export GTK_IM_MODULE=xim
-export GTK2_RC_FILES=$HOME/.gtkrc-2.0
-export XDG_CONFIG_HOME=$HOME/.config
-export XDG_RUNTIME_DIR="/tmp/.private/$USER"
+export GTK2_RC_FILES="${HOME}/.gtkrc-2.0"
+export XDG_CONFIG_HOME="${HOME}/.config"
+export XDG_RUNTIME_DIR="${TMPDIR}"
 export XMODIFIERS="@im=none"
 export G_SLICE=always-malloc
 
-# vim:fenc=utf-8:ci:pi:sts=0:sw=2:ts=2:
+#
+# vim:fenc=utf-8:ft=sh:ci:pi:sts=0:sw=2:ts=2:
+#

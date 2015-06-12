@@ -8,9 +8,6 @@ shopt -s extglob
 shopt -s cdable_vars
 set -o vi
 
-# Append path
-export PATH="$PATH:$HOME/bin"
-
 [[ -f ~/.Xprofile ]] && source ~/.Xprofile
 
 #

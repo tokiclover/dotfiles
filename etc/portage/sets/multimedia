@@ -7,8 +7,6 @@ media-gfx/sane-backends
 media-libs/alsa-oss
 media-libs/x265
 media-plugins/alsa-plugins
-media-plugins/deadbeef-plugins-infobar
-media-plugins/deadbeef-plugins-mpris
 media-plugins/gmpc-albumview
 media-plugins/gmpc-discogs
 media-plugins/gmpc-extraplaylist
@@ -17,8 +15,8 @@ media-plugins/gmpc-tagedit
 media-plugins/ladspa-bs2b
 media-sound/alsa-utils
 media-sound/ecasound
-media-sound/deadbeef
 media-sound/gmpc
+media-sound/id3tool
 media-sound/mpd
 media-sound/ncmpc
 media-sound/ncmpcpp

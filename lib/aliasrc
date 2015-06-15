@@ -35,8 +35,6 @@ alias hl='history | less'
 alias ct='tar -cvpf'
 alias xt='tar -xvpf'
 
-alias esync='layman -s ALL && eix-sync'
-
 alias eqf='equery f'
 alias equ='equery u'
 alias eqh='equery h'

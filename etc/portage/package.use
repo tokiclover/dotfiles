@@ -1,8 +1,7 @@
 app-doc/doxygen dot
 app-emulation/qemu sasl smartcard tls vhost-net
 app-office/libreoffice java jemalloc
-app-portage/layman -python_targets_python2_7
-app-portage/layman subversion
+app-portage/layman -python_targets_python2_7 subversion
 app-shell/zsh doc
 app-text/docbook-sgml-utils jadetex
 app-text/evince xps
@@ -23,8 +22,6 @@ dev-util/lv2-c++-tools doc
 dev-vcs/git subversion
 dev-vcs/git subvervion
 dev-vcs/subversion -dso
-gnome-base/gvfs archive bluray mtp
-gnome-extra/nm-applet bluetooth
 mail-client/mutt gpg imap pop nntp sasl sidebar smime smtp
 media-fonts/unifont utils
 media-gfx/imagemagick corefonts hdri
@@ -39,7 +36,6 @@ media-libs/mesa gbm openmax xa
 media-plugins/calf lv2
 media-plugins/tap-plugins doc
 media-sound/ardour lv2
-media-sound/deadbeef alac midi
 media-sound/mpd faad wildmidi
 media-sound/ncmpcpp taglib visualizer
 media-sound/oss -pax_kernel
@@ -52,13 +48,12 @@ net-dialup/ppp eap-tls
 net-dns/dnsmasq uth-dns dhcp-tools dnssec script
 net-firewall/ipset -modules
 net-libs/gnutls pkcs11
-net-libs/loudmouth debug
 net-libs/neon gnutls libproxy pkcs11
 net-misc/connman bluetooth tools
 net-misc/tor nat-pmp tor-hardening transparent-proxy
 net-nds/openldap sasl
 net-p2p/rtorrent daemon
-net-print/cnijfilter-3.90 backends -drivers gtk
+net-print/cnijfilter backends -drivers gtk
 net-print/cups ppds
 net-print/gutenprint foomaticdb gimp ppds
 net-wireless/hostapd madwifi
@@ -79,8 +74,6 @@ sys-kernel/mkinitramfs-ll aufs bash btrfs dm-crypt dmraid jfs mdadm reiserfs squ
 virtual/linux-sources firmware
 virtual/udev gudev
 www-client/firefox custom-cflags custom-optimization jit system-cairo system-icu system-jpeg system-sqlite
-x11-apps/intel-gpu-tools -python
-x11-drivers/nvidia-drivers uvm
 x11-libs/libdrm libkms
 x11-libs/libfm -automount
 x11-libs/libxcb xkb
@@ -124,11 +117,8 @@ dev-libs/openssl abi_x86_32
 dev-libs/popt abi_x86_32
 dev-libs/wayland abi_x86_32
 dev-util/pkgconfig abi_x86_32
-gnome-base/gconf abi_x86_32
-gnome-base/gnome-vfs abi_x86_32
 gnome-base/libglade abi_x86_32
 gnome-base/librsvg abi_x86_32
-gnome-base/orbit abi_x86_32
 media-gfx/graphite2 abi_x86_32
 media-libs/fontconfig abi_x86_32
 media-libs/freeglut abi_x86_32
@@ -234,5 +224,3 @@ x11-proto/xf86vidmodeproto abi_x86_32
 x11-proto/xineramaproto abi_x86_32
 x11-proto/xproto abi_x86_32
 x11-themes/gtk-engines abi_x86_32
-x11-themes/gtk-engines-murrine abi_x86_32
-x11-themes/gtk-engines-xfce abi_x86_32

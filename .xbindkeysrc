@@ -36,49 +36,39 @@
 #keystate_scrolllock= enable
 
 "/etc/acpi/default.sh button/mute"
-  m:0x4 + c:76
+  m:0x5 + c:76
   XF86AudioMute
-  #Control + F10
+  #Control+Shift + F10
 "/etc/acpi/default.sh button/volumedown"
-  m:0x1 + c:95
+  m:0x5 + c:95
   XF86AudioLowerVolume
-  #Shift + F11
+  #Control+Shift + F11
 "/etc/acpi/default.sh button/volumeup"
-  m:0x1 + c:96
+  m:0x5 + c:96
   XF86AudioRaiseVolume
-  #Shift + F12
+  #Control+Shift + F12
 
 "/etc/acpi/default.sh video/brightnessup"
-  m:0x1 + c:72
+  m:0x5 + c:72
   XF86MonBrightnessUp
-  #Shift + F6
+  #Control+Shift + F6
 "/etc/acpi/default.sh video/brightnessdown"
-  m:0x1 + c:71
+  m:0x5 + c:71
   XF86MonBrightnessDown
-  #Shift + F5
+  #Control+Shift + F5
 "/etc/acpi/default.sh keyboard/brightnessup"
-  m:0x1 + c:70
+  m:0x5 + c:70
   XF86KbdBrightnessUp
-  #Shift + F4
+  #Control+Shift + F4
 "/etc/acpi/default.sh keyboard/brightnessdown"
-  m:0x1 + c:69
+  m:0x5 + c:69
   XF86KbdBrightnessDown
-  #Shift + F3
+  #Control+Shift + F3
 
 "/etc/acpi/default.sh button/sleep"
-  m:0x1 + c:67
+  m:0x5 + c:67
   XF86Sleep
-  #Shift + F1
-
-"import -window root ${HOME}/shot-$(date '+%Y-%m-%d-%H-%M-%S').png"
-  m:0x4 + c:95
-  Control + F11
-"urxvtc"
-  m:0x4 + c:96
-  Control + F12
-"xterm"
-  m:0x5 + c:96
-  Control+Shift + F12
+  #Cnntrol+Shift + F1
 
 # Examples of commands:
 

@@ -1,5 +1,5 @@
 #
-# $Header: ${HOME}/.xinitrc, 2015/06/06 15:32:37            Exp $
+# $Header: ${HOME}/.xinitrc, 2015/06/20 15:32:37            Exp $
 #
 
 if [ -r "${TMPDIR}"/env ]; then
@@ -27,11 +27,12 @@ xset fp rehash
 #[ -s ~/.Xdefaults ] && xrdb -merge ~/.Xdefaults
 [ -s ~/.Xmodmap ] && xmodmap ~/.Xmodmap
 #[ -s ~/.color/x/sj-bright ] && xrdb -merge ~/.color/x/sj-bright
+[ -s ~/.xbindkeysrc ] && xbindkeys -f ~/.xbindkeysrc
 
 #xautolock -time 30 -locker slock
 xbacklight -set 15
-if [ -f "${HOME}"/.color/icc/default.ic* ]; then
-	oyranos-monitor "${HOME}"/.color/icc/default.ic*
+if [ -f ~/.color/icc/default.ic* ]; then
+	oyranos-monitor ~/.color/icc/default.ic*
 	oyranos-monitor-daemon &
 fi
 

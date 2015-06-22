@@ -1,0 +1,21 @@
+#
+# $Header: ~/.mutt/mail_allias Exp $
+#
+
+lists ^mutt-users@mutt\\.org$ ^zsh-users@zsh\\.org$ ^^dm-crypt@saout\\.de$ \
+  ^dhcpcd-discuss@marples\\.name$ ^aufs-users@lists\\.sourceforge\\.net$ \
+  ^enlightenment-users@lists\\.sourceforge\\.net$
+
+alias mutt-users Mutt User List <mutt-users@mutt.org>
+alias e-users Enlightenment-Users Mailing List <enlightenment-users@lists.sourceforge.net>
+alias dm-crypt Cryptsetup (DM-Crypt) Mailing List <dm-crypt@saout.de>
+alias dhcpcd DHCP Client Daemon Mailing List <dhcpcd-discuss@marples.name>
+alias aufs Another Unions FileSystem Mailing List <aufs-users@lists.sourceforge.net>
+alias zsh-users Z Shell Users Mailing List <zsh-users@zsh.org>
+
+mailboxes ! +mutt-users +open-pgp +vim \
+  +e-users +aufs zsh-user +dm-crypt +dhcpcd
+
+#
+# vim:fenc=utf-8:ft=muttrc:ts=2:sts=2:sw=2:expandtab
+#

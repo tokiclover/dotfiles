@@ -6,7 +6,7 @@
 #
 # $Author: (c) 2012-15 -tclover <tokiclover@gmail.com>  Exp $
 # $License: MIT (or 2-clause/new/simplified BSD)        Exp $
-# $Version: 2015/05/15 21:09:26                         Exp $
+# $Version: 2015/06/20 21:09:26                         Exp $
 #
 
 if (( ${+DISPLAY} )); then
@@ -20,6 +20,21 @@ else
 	}
 	function run-term { screen }
 fi
+
+#
+# Define a few functions equivalent to ACPI key events
+#
+function acpi-default { /etc/acpi/default.sh "${@}" }
+for cmd (volume{down,mute,up}) {
+	eval function acpi-${cmd} \{ acpi-default button/${cmd} \}
+	zle -N acpi-${cmd}
+}
+for key (keyboard video)
+	for cmd (brightness{down,up}) {
+		eval function acpi-${key}-${cmd} \{ acpi-default ${key}/${cmd} \}
+		zle -N acpi-${key}-${cmd}
+	}
+
 zle -N run-term
 zle -N print-screen
 autoload -Uz copy-earlier-word
@@ -47,12 +62,30 @@ for key in emacs viins; do
 	bindkey -M ${key} "\EOp" vi-cmd-mode
 	bindkey -M ${key} "\EOu" delete-char
 	bindkey -M ${key} "\EOM" accept-line
+
+	bindkey -M ${key} "${terminfo[kf10]}^" acpi-volumemute
+	bindkey -M ${key} "${terminfo[kf11]}^" acpi-volumedown
+	bindkey -M ${key} "${terminfo[kf12]}^" acpi-volumeup
+
+	bindkey -M ${key} "${terminfo[kf3]}^" acpi-keyboard-brightnessdown
+	bindkey -M ${key} "${terminfo[kf4]}^" acpi-keyboard-brightnessup
+	bindkey -M ${key} "${terminfo[kf5]}^" acpi-video-brightnessdown
+	bindkey -M ${key} "${terminfo[kf6]}^" acpi-video-brightnessup
 done
 	;;
 	(xterm*)
 for key in emacs viins; do
 	bindkey -M ${key} "\E[H"  beginning-of-line
 	bindkey -M ${key} "\E[F"  end-of-line
+
+	bindkey -M ${key} "${terminfo[kf10]/\~/;5\~}" acpi-volumemute
+	bindkey -M ${key} "${terminfo[kf11]/\~/;5\~}" acpi-volumedown
+	bindkey -M ${key} "${terminfo[kf12]/\~/;5\~}" acpi-volumeup
+
+	bindkey -M ${key} "${terminfo[kf3]/\~/;5\~}" acpi-keyboard-brightnessdown
+	bindkey -M ${key} "${terminfo[kf4]/\~/;5\~}" acpi-keyboard-brightnessup
+	bindkey -M ${key} "${terminfo[kf5]/\~/;5\~}" acpi-video-brightnessdown
+	bindkey -M ${key} "${terminfo[kf6]/\~/;5\~}" acpi-video-brightnessup
 done
 	;;
 esac
@@ -74,10 +107,11 @@ for key in emacs viins; do
 	bindkey -M ${key} "\C-[B" redo
 	bindkey -M ${key} "\C-[C" forward-word
 	bindkey -M ${key} "\C-[D" backward-word
+
 	bindkey -M ${key} "${terminfo[kf12]}" run-term
 	bindkey -M ${key} "${terminfo[kf11]}" print-screen
 done
-unset key
+unset cmd key
 
 #
 # vim:fenc=utf-8:tw=80:sw=2:sts=2:ts=2:

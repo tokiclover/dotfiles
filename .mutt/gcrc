@@ -1,0 +1,21 @@
+set hostname="gmail.com"
+set imap_user="${my_gcrc_user}@${hostname}"
+set imap_pass="$my_gcrc_key"
+set folder="imaps://${imap_user}:${imap_pass}@imap.${hostname}:993"
+set spoolfile="+INBOX"
+set record="+Sent"
+set postponed="+Drafts"
+set trash="+Trash"
+set from="$imap_user"
+set realname="${my_gcrc_user}"
+set signature="$realname"
+set smtp_url="smtps://${imap_user}:${imap_pass}@smtp.${hostname}"
+
+set pgp_sign_as="$realname <$imap_user>"
+source ~/.mutt/pgprc
+
+account-hook $folder "set imap_user=$imap_user imap_pass=$my_gcrc_key"
+
+#
+# vim:fenc=utf-8:ft=muttrc:ts=2:sts=2:sw=2:expandtab
+#

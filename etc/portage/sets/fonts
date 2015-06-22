@@ -1,4 +1,7 @@
-# see t#905440 +bidi +cjk
+#
+# see t#905440 +bidi +cjk +unicode
+# for internationl locales support
+#
 media-fonts/baekmuk-fonts
 media-fonts/font-misc-meltho
 media-fonts/ja-ipafonts
@@ -25,6 +28,25 @@ media-fonts/sil-padauk
 media-fonts/terminus-font
 media-fonts/tibetan-machine-font
 
+#
+# FreeDesktop set (see font-misc-misc)
+#
+media-fonts/font-arabic-misc
+media-fonts/font-cursor-misc
+media-fonts/font-daewoo-misc
+media-fonts/font-dec-misc
+media-fonts/font-isas-misc
+media-fonts/font-jis-misc
+media-fonts/font-micro-misc
+media-fonts/font-misc-misc
+media-fonts/font-mutt-misc
+media-fonts/font-schumacher-misc
+media-fonts/font-sony-misc
+media-fonts/font-sun-misc
+
+#
+# A few ice miscalaneous fonts
+#
 media-fonts/dejavu
 media-fonts/anonymous-pro
 media-fonts/artwiz-latin1

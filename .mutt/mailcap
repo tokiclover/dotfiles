@@ -1,0 +1,12 @@
+#
+# $Header: ~/.mutt/mailcap Exp $
+#
+
+#text/html; netscape -remote openURL\(%s\)
+image/gif; feh %s
+image/jpg; feh %s
+image/tiff; feh %s
+image/png; feh %s
+application/pdf; mupdf %s
+application/pgp-keys; pgp -f < %s ; copiousoutput
+

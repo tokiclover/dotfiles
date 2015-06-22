@@ -60,6 +60,19 @@ else
 	function run-term { screen; }
 fi
 
+#
+# Define a few functions equivalent to ACPI key events
+#
+function acpi-default { /etc/acpi/default.sh "${@}"; }
+for cmd in volume{down,mute,up}; do
+	eval "function acpi-${cmd} { acpi-default 'button/${cmd}'; }"
+done
+for key in keyboard video; do
+	for cmd in brightness{down,up}; do
+		eval "function acpi-${key}-${cmd} { acpi-default '${key}/${cmd}'; }"
+	done
+done
+
 case "${TERM}" in
 	(rxvt*)
 for key in emacs-standard vi-insert; do
@@ -82,13 +95,30 @@ for key in emacs-standard vi-insert; do
 	bind -m "${key}" '"\eOb":redo'
 	bind -m "${key}" '"\eOc":forward-word'
 	bind -m "${key}" '"\eOd":backward-word'
+
+	bind -m "${key}" "\"${keyinfo[F10]}^\"":acpi-volumemute
+	bind -m "${key}" "\"${keyinfo[F11]}^\"":acpi-volumedown
+	bind -m "${key}" "\"${keyinfo[F12]}^\"":acpi-volumeup
+
+	bind -m "${key}" "\"${keyinfo[F3]}^\"":acpi-keyboard-brightnessdown
+	bind -m "${key}" "\"${keyinfo[F4]}^\"":acpi-keyboard-brightnessup
+	bind -m "${key}" "\"${keyinfo[F5]}^\"":acpi-video-brightnessdown
+	bind -m "${key}" "\"${keyinfo[F6]}^\"":acpi-video-brightnessup
 done
 	;;
-	(*)
 	(xterm*)
 for key in emacs-standard vi-insert; do
 	bind -m "${key}" '"\E[H":beginning-of-line'
 	bind -m "${key}" '"\E[F":end-of-line'
+
+	bind -m "${key}" "\"${keyinfo[F10]/\~/;5\~}\"":acpi-volumemute
+	bind -m "${key}" "\"${keyinfo[F11]/\~/;5\~}\"":acpi-volumedown
+	bind -m "${key}" "\"${keyinfo[F12]/\~/;5\~}\"":acpi-volumeup
+
+	bind -m "${key}" "\"${keyinfo[F3]/\~/;5\~}\"":acpi-keyboard-brightnessdown
+	bind -m "${key}" "\"${keyinfo[F4]/\~/;5\~}\"":acpi-keyboard-brightnessup
+	bind -m "${key}" "\"${keyinfo[F5]/\~/;5\~}\"":acpi-video-brightnessdown
+	bind -m "${key}" "\"${keyinfo[F6]/\~/;5\~}\"":acpi-video-brightnessup
 done
 	;;
 esac
@@ -110,7 +140,7 @@ for key in emacs-standard vi-insert; do
 	bind -m "${key}" "\"${keyinfo[F11]}\"":run-term
 	bind -m "${key}" "\"${keyinfo[F12]}\"":print-screen
 done
-unset key
+unset cmd key
 
 if [[ "${EDITOR}" =~ vi ]]; then
 	set -o vi

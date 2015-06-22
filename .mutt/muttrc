@@ -299,6 +299,10 @@ set imap_check_subscribed
 set ssl_force_tls = yes
 unset ssl_starttls
 
+#
+# Just account credential in ~/.mutt/key.gpg by defining my_<file>_{key,user}
+# for the appropriate account and be done with particular account settings.
+#
 source "gpg -qd ~/.mutt/key.gpg |"
 source ~/.mutt/gcrc
 folder-hook $folder "source ~/.mutt/gcrc"

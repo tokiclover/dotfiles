@@ -2,6 +2,9 @@
 # $Header: ${HOME}/.xinitrc, 2015/06/20 15:32:37            Exp $
 #
 
+#
+# Set up ssh/gpg-agent
+#
 if [ -r "${TMPDIR}"/env ]; then
 	while read line; do
 		export "${line}"
@@ -16,6 +19,9 @@ else
 	} > "${TMPDIR}"/env
 fi
 
+#
+# Set up basic X server settings
+#
 xset s off
 xset fp+ /usr/share/fonts/artwiz-latin1
 xset fp+ /usr/share/fonts/terminus
@@ -35,17 +41,37 @@ if [ -f ~/.color/icc/default.ic* ]; then
 	oyranos-monitor ~/.color/icc/default.ic*
 	oyranos-monitor-daemon &
 fi
-
 unclutter -idle 8 -noevents &
+
+#
+# Launch a few apps/daemons if available
+#
 dhcpcd-gtk >/dev/null 2>&1 &
 ladi-system-tray > ~/.log/ladi/ladi.log 2>&1 &
 urxvtd -q -o -f &
 
-case "$(tty | cut -b9-)" in
-	(1) exec enlightenment_start;;
-	(2) exec icewm-session      ;;
-	(3) exec openbox-session    ;;
+#
+# Start a WM depending on TTY login;
+# Or else, start a seesion passed as @arg-1
+#
+case "${1:-$(tty)}" in
+	(enligh*|*tty1) exec enlightenment_start;;
+	(icewm|*tty2)   exec icewm-session      ;;
+	(openbox|*tty3) exec openbox-session    ;;
 esac
+
+#
+# Set up a default/fallback session
+#
+if type -p enlightenment_start >/dev/null 2>&1; then
+	exec enlightenment_start
+elif type -p openbox-session   >/dev/null 2>&1; then
+	exec openbox-session
+elif type -p icewm-session   >/dev/null 2>&1; then
+	exec icewm-session
+else
+	xterm
+fi
 
 #
 # vim:fenc=utf-8:ft=sh:ci:pi:sts=2:sw=2:ts=2:

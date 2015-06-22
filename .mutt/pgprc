@@ -1,0 +1,27 @@
+#
+# $Header: ~/mutt/pgprc Exp $
+#
+# GnuPG-2.1 options
+#
+set pgp_autosign = no
+set pgp_use_gpg_agent = no
+set pgp_timeout = 600
+#set pgp_sign_as="(your key here)"
+set pgp_ignore_subkeys = no
+
+set pgp_decode_command="gpg %?p?--pinentry-mode loopback  --passphrase-fd 0? --verbose --no-auto-check-trustdb --batch --output - %f"
+set pgp_verify_command="gpg --pinentry-mode loopback --verbose --batch --output - --no-auto-check-trustdb --verify %s %f"
+set pgp_decrypt_command="gpg %?p?--pinentry-mode loopback --passphrase-fd 0? --verbose --batch --output - %f"
+set pgp_sign_command="gpg %?p?--pinentry-mode loopback --passphrase-fd 0? --verbose --batch --output - --armor --textmode %?a?-u %a? --detach-sign %f"
+set pgp_clearsign_command="gpg %?p?--pinentry-mode loopback --passphrase-fd 0? --verbose --batch --output - --armor --textmode %?a?-u %a? --detach-sign %f"
+set pgp_encrypt_sign_command="pgpewrap gpg %?p?--pinentry-mode loopback --passphrase-fd 0? --verbose --batch --textmode --trust-model always --output - %?a?-u %a? --armor --encrypt --sign --armor -- -r %r -- %f"
+set pgp_encrypt_only_command="pgpewrap gpg %?p?--pinentry-mode loopback --passphrase-fd 0? --verbose --batch --trust-model always --output --output - --encrypt --textmode --armor -- -r %r -- %f"
+set pgp_import_command="gpg %?p?--pinentry-mode loopback --passphrase-fd 0? --verbose --import -v %f"
+set pgp_export_command="gpg %?p?--pinentry-mode loopback --passphrase-fd 0? --verbose --export --armor %r"
+set pgp_verify_key_command="gpg %?p?--pinentry-mode loopback --passphrase-fd 0? --verbose --batch --fingerprint --check-sigs %r"
+set pgp_list_pubring_command="gpg %?p?--pinentry-mode loopback --passphrase-fd 0? --verbose --batch --with-colons --list-keys %r"
+set pgp_list_secring_command="gpg %?p?--pinentry-mode loopback --passphrase-fd 0? --verbose --batch --with-colons --list-secret-keys %r"
+
+#
+# vim:fenc=utf-8:ft=muttrc:ts=2:sts=2:sw=2:expandtab
+#

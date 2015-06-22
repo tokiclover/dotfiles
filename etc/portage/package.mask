@@ -24,3 +24,4 @@ dev-java/oracle-jre-bin
 =virtual/jdk-1.8.0
 =virtual/jre-1.8.0
 >app-shells/zsh-5.0.5
+>net-wireless/bluez-5.0

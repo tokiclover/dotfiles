@@ -1,7 +1,6 @@
 app-doc/doxygen dot
 app-emulation/qemu sasl smartcard tls vhost-net
 app-office/libreoffice java jemalloc
-app-portage/layman -python_targets_python2_7 subversion
 app-shell/zsh doc
 app-text/docbook-sgml-utils jadetex
 app-text/evince xps
@@ -13,9 +12,6 @@ dev-libs/DirectFB -egl -gles2
 dev-libs/apr-util ldap
 dev-libs/cyrus-sasl ldapdb
 dev-libs/efl -drm fribidi harfbuzz jp2k physics sound xim -wayland -gles
-dev-python/cryptography -python_targets_python2_7
-dev-python/pyopenssl -python_targets_python2_7
-dev-python/ssl-fetch -python_targets_python2_7
 dev-qt/qtgui gtkstyle
 dev-util/cmake doc
 dev-util/lv2-c++-tools doc
@@ -71,13 +67,15 @@ sys-fs/eudev gudev
 sys-kernel/git-sources:3.16.7 aufs bfq bfs ck fbcondecor -gentoo -hardened optimization reiser4 toi uksm
 sys-kernel/git-sources:3.18.9 aufs -bfq bfs ck fbcondecor -gentoo -hardened -optimization reiser4 -toi uksm
 sys-kernel/mkinitramfs-ll aufs bash btrfs dm-crypt dmraid jfs mdadm reiserfs squashfs xfs zfs zram zsh
+sys-libs/zlib minizip
 virtual/linux-sources firmware
 virtual/udev gudev
 www-client/firefox custom-cflags custom-optimization jit system-cairo system-icu system-jpeg system-sqlite
+x11-apps/intel-gpu-tools python_single_target_python3_3
 x11-libs/libdrm libkms
 x11-libs/libfm -automount
 x11-libs/libxcb xkb
-x11-misc/spacefm gtk3
+x11-misc/spacefm -gtk2 gtk3
 x11-misc/tint2 battery tint2conf
 x11-terms/rxvt-unicode 256-color blink
 x11-themes/ardoise-xcursor-theme minimal

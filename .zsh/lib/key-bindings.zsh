@@ -36,7 +36,7 @@ autoload -Uz copy-earlier-word
 zle -N copy-earlier-word
 
 case ${TERM} {
-	(rxvt*)
+	(rxvt*|screen*)
 bindkey -s '\EOa' '\C-[A'
 bindkey -s '\EOb' '\C-[B'
 bindkey -s '\EOc' '\C-[C'
@@ -58,9 +58,9 @@ for key in emacs viins; do
 	bindkey -M ${key} "\EOu" delete-char
 	bindkey -M ${key} "\EOM" accept-line
 
-	bindkey -M ${key} "${terminfo[kf10]}^" acpi-volumemute
-	bindkey -M ${key} "${terminfo[kf11]}^" acpi-volumedown
-	bindkey -M ${key} "${terminfo[kf12]}^" acpi-volumeup
+	bindkey -M ${key} "${terminfo[kf10]/\~/^}" acpi-volumemute
+	bindkey -M ${key} "${terminfo[kf11]/\~/^}" acpi-volumedown
+	bindkey -M ${key} "${terminfo[kf12]/\~/^}" acpi-volumeup
 done
 	;;
 	(xterm*)

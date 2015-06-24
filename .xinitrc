@@ -23,12 +23,10 @@ fi
 # Set up basic X server settings
 #
 xset s off
-for dir in ~/.fonts/*; do
+for dir in /usr/share/fonts/* ~/.fonts/*; do
 	[ -d "$dir" ] && xset fp+ "$dir"
 done
 unset dir
-xset fp+ /usr/share/fonts/artwiz-latin1
-xset fp+ /usr/share/fonts/terminus
 xset fp rehash
 
 [ -s ~/.Xresources ] && xrdb -load ~/.Xresources

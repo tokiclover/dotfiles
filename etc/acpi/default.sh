@@ -6,109 +6,106 @@
 # $Version: 2015/02/14 21:09:26                          Exp $
 #
 
-log() {
+log_event() {
 	logger -p daemon.notice "acpi: $*"
 }
 #
 # Unhandled Events helper
 #
-uhd() {
-	log "event unhandled: $*"
+unhandled_event() {
+	log_event "event unhandled: $*"
 }
 #
 # (Intel GPU) Brightness helper
 #
-btn() {
-	local BTF=/sys/class/backlight/intel_backlight/brightness
-	[ -e $BTF ] || return
-	local BTM=$(cat /sys/class/backlight/intel_backlight/max_brightness)
-	local BTN=$(cat $BTF) NEW=0 STP=24
+brightness() {
+	local cur FILE max step
+	FILE=/sys/class/backlight/intel_backlight/brightness
+	[ -e $FILE ] || return
+	cur="$(cat $FILE)" max="$(cat ${FILE%/*}/max_brightness)"
+	step="$(($max / 20 ))"
 
 	case "$1" in
-		up)   NEW=$(($BTN + $STP));;
-		down) NEW=$(($BTN - $STP));;
-		*)    return;;
+		(*up)   new="$(($cur + $step))";;
+		(*down) new="$(($cur - $step))";;
+		(*)    return;;
 	esac
-	if [ $NEW -lt 0 ]; then
-		NEW=0
-	elif [ $NEW -gt $BTM ]; then
-		NEW=$BTM
+	if [ "$new" -lt 0 ]; then
+		new=0
+	elif [ "$new" -gt "$max" ]; then
+		new="$max"
 	fi
-	echo $NEW >$BTF
+	echo "$new" >$FILE
 }
 
 set $*
-group=${1%/*}
-action=${1#*/}
-device=$2
-id=$3
-value=$4
+group="${1%/*}" action="${1#*/}"
+device="$2" id="$3" value="$4"
 
 [ -d /dev/snd ] && alsa=true || alsa=false
 [ -d /dev/oss ] && oss=true  || oss=false
 amixer="amixer -q set Master"
 ossmix="ossmix -- vmix0-outvol"
 
-case $group in
-	ac_adapter)
-		case $value in
-			*0) hprofile power.bat;;
-			*1) hprofile power.adp;;
-			*) uhd $*;;
+case "$group" in
+	(ac_adapter)
+		case "$value" in
+			(*0) hprofile power.bat ;;
+			(*1) hprofile power.adp ;;
+			(*) unhandled_event "$@";;
 		esac
 		;;
-	battery)
-		case $value in
-			*0|*1) hprofile power.adp;;
-			*) uhd $*;;
+	(battery)
+		case "$value" in
+			(*[01]) hprofile power.adp;;
+			(*) unhandled_event "$@"  ;;
 		esac
 		;;
 	button)
-		case $action in
-			lid)
+		case "$action" in
+			(lid)
 				case "$id" in
-					close) hibernate-ram;;
-					open) hprofile power;;
-					*) uhd $*;;
+					(close) hibernate-ram   ;;
+					(open) hprofile power   ;;
+					(*) unhandled_event "$@";;
 				esac
 				;;
-			power) shutdown -H now;;
-			sleep) hibernate-ram;;
-			mute) 
+			(power) shutdown -H now;;
+			(sleep) hibernate-ram  ;;
+			(mute) 
 				$alsa && $amixer toggle;;
-			volumeup) 
-				$alsa && $amixer 3dB+
-				$oss && $ossmix +3;;
-			volumedown) 
-				$alsa && $amixer 3dB-
-				$oss && $ossmix -3;;
-			*) uhd $*;;
+			(volumeup) 
+				$alsa && $amixer 3dB+ ||
+				($oss && $ossmix +3);;
+			(volumedown) 
+				$alsa && $amixer 3dB- ||
+				($oss && $ossmix -3);;
+			(*) unhandled_event "$@";;
 		esac
 		;;
-	cd)
-		case $action in
-			play|stop|next|prev) :;;
-			*) uhd $*;;
+	(cd)
+		case "$action" in
+			(play|stop|next|prev)   ;;
+			(*) unhandled_event "$@";;
 		esac
 		;;
-	jack)
-		case $id in
-			*plug) :;;
-			*) uhd $*;;
+	(jack)
+		case "$id" in
+			(*plug) ;;
+			(*) unhandled_event "$@";;
 		esac
 		;;
-	video)
-		case $action in
-			displayoff) :;;
-			brightness*) btn ${action#brightness};;
-			*) uhd $*;;
+	(video)
+		case "$action" in
+			(displayoff) ;;
+			(brightness*) brightness "$action";;
+			(*) unhandled_event "$@";;
 		esac
 		;;
-	*) uhd $*;;
+	(*) unhandled_event "$@";;
 esac
-
 unset alsa oss amixer ossmix group action device id
 
 #
-# vim:fenc=utf-8:ft=sh:ci:pi:sts=0:sw=4:ts=4:
+# vim:fenc=utf-8:ft=sh:ci:pi:sts=2:sw=2:ts=2:
 #

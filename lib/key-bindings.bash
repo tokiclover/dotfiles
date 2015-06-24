@@ -67,11 +67,6 @@ function acpi-default { /etc/acpi/default.sh "${@}"; }
 for cmd in volume{down,mute,up}; do
 	eval "function acpi-${cmd} { acpi-default 'button/${cmd}'; }"
 done
-for key in keyboard video; do
-	for cmd in brightness{down,up}; do
-		eval "function acpi-${key}-${cmd} { acpi-default '${key}/${cmd}'; }"
-	done
-done
 
 case "${TERM}" in
 	(rxvt*)
@@ -99,11 +94,6 @@ for key in emacs-standard vi-insert; do
 	bind -m "${key}" "\"${keyinfo[F10]}^\"":acpi-volumemute
 	bind -m "${key}" "\"${keyinfo[F11]}^\"":acpi-volumedown
 	bind -m "${key}" "\"${keyinfo[F12]}^\"":acpi-volumeup
-
-	bind -m "${key}" "\"${keyinfo[F3]}^\"":acpi-keyboard-brightnessdown
-	bind -m "${key}" "\"${keyinfo[F4]}^\"":acpi-keyboard-brightnessup
-	bind -m "${key}" "\"${keyinfo[F5]}^\"":acpi-video-brightnessdown
-	bind -m "${key}" "\"${keyinfo[F6]}^\"":acpi-video-brightnessup
 done
 	;;
 	(xterm*)
@@ -114,11 +104,6 @@ for key in emacs-standard vi-insert; do
 	bind -m "${key}" "\"${keyinfo[F10]/\~/;5\~}\"":acpi-volumemute
 	bind -m "${key}" "\"${keyinfo[F11]/\~/;5\~}\"":acpi-volumedown
 	bind -m "${key}" "\"${keyinfo[F12]/\~/;5\~}\"":acpi-volumeup
-
-	bind -m "${key}" "\"${keyinfo[F3]/\~/;5\~}\"":acpi-keyboard-brightnessdown
-	bind -m "${key}" "\"${keyinfo[F4]/\~/;5\~}\"":acpi-keyboard-brightnessup
-	bind -m "${key}" "\"${keyinfo[F5]/\~/;5\~}\"":acpi-video-brightnessdown
-	bind -m "${key}" "\"${keyinfo[F6]/\~/;5\~}\"":acpi-video-brightnessup
 done
 	;;
 esac
@@ -142,11 +127,10 @@ for key in emacs-standard vi-insert; do
 done
 unset cmd key
 
-if [[ "${EDITOR}" =~ vi ]]; then
-	set -o vi
-else
-	set -o emacs
-fi
+case "${EDITOR}" in
+	(*vi) set -o vi ;;
+	(*) set -o emacs;;
+esac
 
 #
 # vim:fenc=utf-8:tw=80:sw=2:sts=2:ts=2:

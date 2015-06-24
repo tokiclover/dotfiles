@@ -69,7 +69,7 @@ for cmd in volume{down,mute,up}; do
 done
 
 case "${TERM}" in
-	(rxvt*)
+	(rxvt*|screen*)
 for key in emacs-standard vi-insert; do
 	bind -m "${key}" '"\eOw":beginning-of-line'
 	bind -m "${key}" '"\eOq":end-of-line'
@@ -91,9 +91,9 @@ for key in emacs-standard vi-insert; do
 	bind -m "${key}" '"\eOc":forward-word'
 	bind -m "${key}" '"\eOd":backward-word'
 
-	bind -m "${key}" "\"${keyinfo[F10]}^\"":acpi-volumemute
-	bind -m "${key}" "\"${keyinfo[F11]}^\"":acpi-volumedown
-	bind -m "${key}" "\"${keyinfo[F12]}^\"":acpi-volumeup
+	bind -m "${key}" "\"${keyinfo[F10]/\~/^}\"":acpi-volumemute
+	bind -m "${key}" "\"${keyinfo[F11]/\~/^}\"":acpi-volumedown
+	bind -m "${key}" "\"${keyinfo[F12]/\~/^}\"":acpi-volumeup
 done
 	;;
 	(xterm*)

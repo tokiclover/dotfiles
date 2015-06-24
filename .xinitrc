@@ -23,6 +23,10 @@ fi
 # Set up basic X server settings
 #
 xset s off
+for dir in ~/.fonts/*; do
+	[ -d "$dir" ] && xset fp+ "$dir"
+done
+unset dir
 xset fp+ /usr/share/fonts/artwiz-latin1
 xset fp+ /usr/share/fonts/terminus
 xset fp rehash
@@ -60,17 +64,16 @@ case "${1:-$(tty)}" in
 	(openbox|*tty3) exec openbox-session    ;;
 esac
 
-#
-# Set up a default/fallback session
+## Set up a default/fallback session
 #
 if type -p enlightenment_start >/dev/null 2>&1; then
 	exec enlightenment_start
-elif type -p openbox-session   >/dev/null 2>&1; then
+elif type -p openbox-session >/dev/null 2>&1; then
 	exec openbox-session
-elif type -p icewm-session   >/dev/null 2>&1; then
+elif type -p icewm-session >/dev/null 2>&1; then
 	exec icewm-session
 else
-	xterm
+	xterm -geometry 80x24-0-0
 fi
 
 #

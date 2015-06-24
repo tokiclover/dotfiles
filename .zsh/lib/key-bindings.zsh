@@ -29,11 +29,6 @@ for cmd (volume{down,mute,up}) {
 	eval function acpi-${cmd} \{ acpi-default button/${cmd} \}
 	zle -N acpi-${cmd}
 }
-for key (keyboard video)
-	for cmd (brightness{down,up}) {
-		eval function acpi-${key}-${cmd} \{ acpi-default ${key}/${cmd} \}
-		zle -N acpi-${key}-${cmd}
-	}
 
 zle -N run-term
 zle -N print-screen
@@ -66,11 +61,6 @@ for key in emacs viins; do
 	bindkey -M ${key} "${terminfo[kf10]}^" acpi-volumemute
 	bindkey -M ${key} "${terminfo[kf11]}^" acpi-volumedown
 	bindkey -M ${key} "${terminfo[kf12]}^" acpi-volumeup
-
-	bindkey -M ${key} "${terminfo[kf3]}^" acpi-keyboard-brightnessdown
-	bindkey -M ${key} "${terminfo[kf4]}^" acpi-keyboard-brightnessup
-	bindkey -M ${key} "${terminfo[kf5]}^" acpi-video-brightnessdown
-	bindkey -M ${key} "${terminfo[kf6]}^" acpi-video-brightnessup
 done
 	;;
 	(xterm*)
@@ -81,11 +71,6 @@ for key in emacs viins; do
 	bindkey -M ${key} "${terminfo[kf10]/\~/;5\~}" acpi-volumemute
 	bindkey -M ${key} "${terminfo[kf11]/\~/;5\~}" acpi-volumedown
 	bindkey -M ${key} "${terminfo[kf12]/\~/;5\~}" acpi-volumeup
-
-	bindkey -M ${key} "${terminfo[kf3]/\~/;5\~}" acpi-keyboard-brightnessdown
-	bindkey -M ${key} "${terminfo[kf4]/\~/;5\~}" acpi-keyboard-brightnessup
-	bindkey -M ${key} "${terminfo[kf5]/\~/;5\~}" acpi-video-brightnessdown
-	bindkey -M ${key} "${terminfo[kf6]/\~/;5\~}" acpi-video-brightnessup
 done
 	;;
 esac

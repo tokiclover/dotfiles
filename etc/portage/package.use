@@ -1,6 +1,7 @@
 app-doc/doxygen dot
 app-emulation/qemu sasl smartcard tls vhost-net
 app-office/libreoffice java jemalloc
+app-portage/layman sync-plugin-portage -python_targets_python2_7 squashfs subversion
 app-shell/zsh doc
 app-text/docbook-sgml-utils jadetex
 app-text/evince xps
@@ -12,6 +13,9 @@ dev-libs/DirectFB -egl -gles2
 dev-libs/apr-util ldap
 dev-libs/cyrus-sasl ldapdb
 dev-libs/efl -drm fribidi harfbuzz jp2k physics sound xim -wayland -gles
+dev-python/cryptography
+dev-python/pyopenssl -python_targets_python2_7
+dev-python/ssl-fetch -python_targets_python2_7
 dev-qt/qtgui gtkstyle
 dev-util/cmake doc
 dev-util/lv2-c++-tools doc
@@ -24,6 +28,7 @@ media-gfx/imagemagick corefonts hdri
 media-gfx/ufraw contrast gimp
 media-libs/aubio doc examples
 media-libs/elementary -wayland
+
 media-libs/gegl raw
 media-libs/libcanberra -sound
 media-libs/libpng apng

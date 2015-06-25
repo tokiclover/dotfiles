@@ -49,16 +49,16 @@ alias eqm='equery m'
 
 alias qa=qatom
 alias qc=qcache
-alias qck=qcheck
+alias qk=qcheck
 alias qf=qfile
 alias qg=qgrep
 alias ql=qlist
-alias qlg=qlop
+alias qo=qlop
 alias qp=qpkg
 alias qm=qmerge
 alias qs=qsearch
 alias qz=qsize
-alias qbz=qtbz2
+alias qt=qtbz2
 alias qu=quse
 alias qx=qxpack
 

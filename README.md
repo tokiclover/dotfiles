@@ -20,6 +20,12 @@ USAGE
 	% git clone --recurse-submodules git://github.com/tokiclover/prezto.git .zprezto
 * and then exec your shell with `% exec $SHELL`
 
+* {BA,Z}sh Prompt Preview with Terminolog virtual terminal/Fixed font
+![](https://imgur.com/qWXRrc6.png)
+
+* {BA,Z}sh Prompt Preview with Rxvt-unicode virtual terminal/Terminus font
+![](https://imgur.com/FVjfmRj.png)
+
 FILES
 -----
 ### /bin

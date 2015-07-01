@@ -49,6 +49,7 @@ alias eqm='equery m'
 
 alias qa=qatom
 alias qc=qcache
+alias qd=qdepends
 alias qk=qcheck
 alias qf=qfile
 alias qg=qgrep
@@ -60,7 +61,7 @@ alias qs=qsearch
 alias qz=qsize
 alias qt=qtbz2
 alias qu=quse
-alias qx=qxpack
+alias qx=qxpak
 
 alias ydl=youtube-dl
 

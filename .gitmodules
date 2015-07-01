@@ -4,3 +4,6 @@
 [submodule ".vim/plugin/vim-scriptease"]
 	path = .vim/plugin/vim-scriptease
 	url = git://github.com/tpope/vim-scriptease.git
+[submodule "pentadactyl-solarized"]
+	path = .pentadactyl/modules/solarized
+	url = git://github.com/claytron/pentadactyl-solarized.git

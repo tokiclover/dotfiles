@@ -1,0 +1,52 @@
+"
+" $Header: ~/.pentadactyl/colors/sj-bright.penta, 2015/06/30 Exp $
+" vim:fenc=utf-8:ft=vim:
+"
+
+" Hints and formating                                                {{1
+" ----------------------------------------------------------------------
+highlight Hint font-family: cure; font-size: 10px; font-weight: normal; color: #f1c719; background-color: #080808; border-color: #b3930f; border-width: 0px; border-style: solid; padding: 0px 2px 0px 2px; 
+highlight HintElem background-color: #42ab9e; color: #080808;
+highlight HintActive background-color: #9bc6c0; color: #9bc6c0;
+
+" Status line                                                        {{2
+" ----------------------------------------------------------------------
+highlight StatusLine color: #4382c4; background: #080808; font-weight: normal !important; font-size: 10pt; font-family: "Anonymous Pro" !important;
+highlight StatusLineBroken color: #080808; background: #ff5b62; font-weight: normal !important; font-size: 10pt; font-family: "Anonymous Pro" !important; 
+highlight StatusLineExtended color: #080808; background: #4382c4; font-weight: normal !important; font-size: 10pt; font-family: "Anonymous Pro" !important;
+highlight StatusLineSecure color: #080808; background: #3ed421; font-weight: normal !important; font-size: 10pt; font-family: "Anonymous Pro" !important;
+
+" ----------------------------------------------------------------------
+highlight Normal color: #f1c719; background: #080808; font-size: 10pt; font-family: cure !important;
+highlight CmdLine color: #b3930f; background: #080808; font-size: 10pt;  font-family: cure !important;
+highlight InfoMsg color: #3ca034; background: #080808; font-size: 10pt; font-family: cure !important;
+highlight ModeMsg color: #3ed421; background: #080808; font-size: 10pt; font-family: cure !important;
+highlight MoreMsg color: #3ed421; background: #080808; font-size: 10pt; font-family: cure !important;
+highlight LineNr color: #286f8a; background: #080808; font-size: 10pt; font-family: cure !important;
+highlight Question color: #4382c4; background: #080808; font-size: 10pt; font-family: cure !important;
+highlight WarningMsg color: #a2363a; background: #080808; font-size: 10pt; font-family: cure !important;
+highlight ErrorMsg color: #ff5b62; background: #080808; font-size: 10pt; font-family: cure !important;
+highlight NonText background: #080808;
+highlight Null color: #4382c4;
+highlight Tag color: #4382c4;
+
+" Completion                                                         {{4
+" ----------------------------------------------------------------------
+highlight CompTitle color:  #746d76; background: #080808; font-weight: bold;
+highlight CompItem[selected] color: #42ab9e;  background: #080808;
+highlight CompDesc color: #42ab9e;
+
+" ----------------------------------------------------------------------
+highlight Title color: #fafafa;
+highlight Indicator color: #286f8a;
+highlight String color: #9bc6c0;
+highlight Number color: #9bc6c0;
+highlight Object color: #3ed421;
+highlight Function color: #4382c4;
+highlight URL color: #3ed421;
+
+" ----------------------------------------------------------------------
+highlight TabIconNumber color: #fafafa; font-weight: bold; font-size:8pt;
+highlight TabIcon padding: 0
+highlight TabText font-size: 8pt;
+

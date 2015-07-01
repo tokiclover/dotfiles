@@ -14,7 +14,8 @@ COPYING
 USAGE
 -----
 
-* clone the repository or repositories: 
+* clone the repository or repositories with `--recurse-submodules` to get
+everything in one shot cloning: 
 	% git clone git://github.com/tokiclover/dotfiles.git dotfiles
 * zsh users may clone my [fork][1] of [prezto][2]: 
 	% git clone --recurse-submodules git://github.com/tokiclover/prezto.git .zprezto

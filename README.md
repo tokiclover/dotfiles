@@ -16,9 +16,13 @@ USAGE
 
 * clone the repository or repositories with `--recurse-submodules` to get
 everything in one shot cloning: 
-	% git clone git://github.com/tokiclover/dotfiles.git dotfiles
+```
+    % git clone git://github.com/tokiclover/dotfiles.git dotfiles
+```
 * zsh users may clone my [fork][1] of [prezto][2]: 
-	% git clone --recurse-submodules git://github.com/tokiclover/prezto.git .zprezto
+```
+    % git clone --recurse-submodules git://github.com/tokiclover/prezto.git .zprezto
+```
 * and then exec your shell with `% exec $SHELL`
 
 * {BA,Z}sh Prompt Preview with Terminolog virtual terminal/Fixed font

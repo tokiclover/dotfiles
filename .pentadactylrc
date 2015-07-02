@@ -35,7 +35,7 @@ map <A-s> :set nss!=<A-Tab>
 map <A-S-s> :set nst!=<A-Tab>
 map <A-C-s> :set nsu!=<A-Tab>
 
-colorscheme sjc-bright
+colorscheme clover-bright
 
 javascript if (typeof hBookmark != 'undefined') liberator.loadScript('chrome://hatenabookmark/content/vimperator/plugin/hatenabookmark.js', {__proto__: this})
 

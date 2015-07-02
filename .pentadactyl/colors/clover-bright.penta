@@ -1,0 +1,146 @@
+"
+" $Header: ~/.pentadactyl/colors/clover-bright.penta, 2015/06/30   Exp $
+"
+" Foreground colors                                                 {{{2
+" ----------------------------------------------------------------------
+hi fg_blk color: #161616 !important;
+hi fg_bcy color: #42ab9e !important;
+hi fg_bre color: #a2363a !important;
+hi fg_ble color: #286f8a !important;
+hi fg_fgr color: #3ca034 !important;
+hi fg_fmg color: #746d76 !important;
+hi fg_fwh color: #e0e0e0 !important;
+hi fg_wht color: #fafafa !important;
+hi fg_ylw color: #f1c719 !important;
+hi fg_fyl color: #b3930f !important;
+hi fg_red color: #ff5b62 !important;
+hi fg_mag color: #b287ba !important;
+hi fg_blu color: #4382c4 !important;
+hi fg_cya color: #9bc6c0 !important;
+hi fg_grn color: #3ed421 !important;
+
+" Background colors                                                 {{{2
+" ----------------------------------------------------------------------
+hi bg_blk background-color: #080808 !important;
+hi bg_bcy background-color: #42ab9e !important;
+hi bg_bre background-color: #a2363a !important;
+hi bg_ble background-color: #286f8a !important;
+hi bg_fgr background-color: #3ca034 !important;
+hi bg_fmg background-color: #746d76 !important;
+hi bg_wht background-color: #e0e0e0 !important;
+hi bg_fwh background-color: #fafafa !important;
+hi bg_ylw background-color: #f1c719 !important;
+hi bg_fyl background-color: #b3930f !important;
+hi bg_red background-color: #ff5b62 !important;
+hi bg_mag background-color: #4382c4 !important;
+hi bg_blu background-color: #4382c4 !important;
+hi bg_cya background-color: #9bc6c0 !important;
+hi bg_grn background-color: #3ed421 !important;
+
+" Font definitions                                                  {{{2
+" ----------------------------------------------------------------------
+hi fn_cure font-family: cure;
+hi fn_ansi font-family: smoothansi;
+hi fn_anon font-family: "Anonymous Pro";
+hi fn_size font-size: 10pt;
+
+" Hints and formating                                               {{{1
+" ----------------------------------------------------------------------
+hi -l=fg_blk,bg_ylw,fn_ansi,fn_size Hint
+hi -l=fg_blk,bg_cya HintElem
+hi -l=fg_blk,bg_bcy HintActive
+
+" Status line                                                       {{{1
+" ----------------------------------------------------------------------
+hi -l=fg_blk,bg_ylw,fn_ansi,fn_size StatusLineNormal
+hi -l=fg_blk,bg_red,fn_ansi,fn_size StatusLineBroken
+hi -l=fg_blk,bg_mag,fn_ansi,fn_size StatusLineExtended
+hi -l=fg_blk,bg_grn,fn_ansi,fn_size StatusLineSecure
+hi -l=fg_blk,bg_blu,fn_ansi,fn_size StatusWarningMsg
+hi StatusQuestion -a color: inherit !important; background-color: inherit !important;
+
+" Command line                                                      {{{1
+" ----------------------------------------------------------------------
+hi -l=fg_ylw,bg_blk,fn_ansi,fn_size Normal
+hi -l=fg_fyl,bg_blk,fn_ansi,fn_size CmdLine
+hi -l=fg_grn,bg_blk,fn_ansi,fn_size InfoMsg
+hi -l=fg_blk,bg_ylw,fn_ansi,fn_size ModeMsg
+hi -l=fg_blk,bg_ylw,fn_ansi,fn_size MoreMsg
+hi -l=fg_blk,bg_ylw,fn_ansi,fn_size LineNr
+hi -l=fg_ylw,bg_blk,fn_ansi,fn_size Question
+hi -l=fg_fre,bg_blk,fn_ansi,fn_size WarningMsg
+hi -l=fg_red,bg_blk,fn_ansi,fn_size ErrorMsg
+hi -l=bg_blk NonText
+hi -l=fg_blu Null
+hi -l=fg_blu Tag
+
+" Completion                                                        {{{1
+" ----------------------------------------------------------------------
+hi -l=fg_blk,bg_fyl CompTitle -a font-weight: bold;
+hi -l=fg_cya CompItem[selected]
+hi -l=fg_mag CompDesc
+hi -l=fg_mag CompTitleSep height: 2px;
+
+" Other                                                             {{{1
+" ----------------------------------------------------------------------
+hi -l=fg_wht Title
+hi -l=fg_ble Indicator
+hi -l=fg_cya String
+hi -l=fg_cya Number
+hi -l=fg_grn Object
+hi -l=fg_blu Function
+hi -l=fg_grn URL
+hi -l=fg_wht TabIconNumber
+hi -l=fg_wht,fn_cure TabIconNumber -a font-weight: bold; font-size: 10pt;
+hi TabIcon padding: 0px;
+hi TabText font-size: 8pt;
+
+" Help                                                              {{{1
+" ----------------------------------------------------------------------
+hi -l=fg_fwh,bg_blk HelpBody -a
+hi -l=bg_wht Logo -a border: 4px solid #fafafa !important;
+hi -l=fg_blu HelpLink[href] -a
+hi -l=fg_blu HelpTopic -a
+hi -l=fg_blu HelpType -a margin-right: 2px;
+hi -l=fg_mag HelpInfoLabel -a
+hi -l=fg_mag HelpWarning -a
+hi -l=fg_mag HelpNote -a
+hi -l=fg_fyl HelpEx -a
+hi -l=fg_grn HelpKey -a
+hi -l=fg_red HelpKeyword -a
+hi -l=fg_red HelpTag -a
+hi -l=fg_grn HelpNewsTag -a
+hi -l=fg_ylw HelpHead -a
+" Using fg_fmg here for the border
+hi HelpBorder -a border-color: #746d76 !important;
+hi -l=fg_cya HelpSpec -a
+hi -l=fg_cya HelpArg -a
+hi -l=fg_cya HelpOptionalArg -a
+hi -l=fg_fmg HelpString -a
+hi -l=fg_cya HelpOpt -a
+" Help code blocks
+hi -l=fg_wht HelpXMLText -a
+hi -l=fg_ble,bg_fwh HelpXMLBase -a padding: 4px;
+hi -l=fg_blu HelpXMLTagStart -a
+hi -l=fg_blu HelpXMLTagEnd -a
+hi -l=fg_fyl HelpXMLAttribute -a
+hi -l=fg_blu HelpXMLString -a
+hi -l=fg_wht HelpXMLComment -a
+hi -l=fg_ble HelpXMLAttribute::after -a
+hi -l=fg_grn HelpXMLNamespace -a
+hi -l=fg_cya HelpXMLNamespace::after -a
+hi -l=fg_cya HelpXMLProcessing -a
+hi -l=fg_ble HelpXMLProcessing::before -a
+hi -l=fg_ble HelpXMLProcessing::after -a
+hi HelpXML -a border: none;
+hi HelpXMLBlock -a border: none;
+hi -l=fg_cya Boolean -a
+hi -l=fg_mag Keyword -a
+hi -l=fg_mag Function -a
+hi -l=fg_blu Null -a
+hi -l=fg_blu Number -a
+hi -l=fg_grn Object -a
+hi -l=fg_wht Comment -a
+"
+" vim:fenc=utf-8:ft=vim:fdm=marker:
+"

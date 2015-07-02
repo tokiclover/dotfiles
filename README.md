@@ -25,11 +25,14 @@ everything in one shot cloning:
 ```
 * and then exec your shell with `% exec $SHELL`
 
-* {BA,Z}sh Prompt Preview with Terminolog virtual terminal/Fixed font
+* {BA,Z}sh Prompt Preview with Terminology virtual terminal/Fixed font
 ![](https://imgur.com/qWXRrc6.png)
 
 * {BA,Z}sh Prompt Preview with Rxvt-unicode virtual terminal/Terminus font
 ![](https://imgur.com/FVjfmRj.png)
+
+* [pentadactyl][4] users may merge *www-misc/dactyl* packages from [bar][3]
+overlay to get current version without fetching the whole binary each time.
 
 FILES
 -----
@@ -59,6 +62,8 @@ FILES
 
 [1]: https://github.com/tokiclover/prezto
 [2]: https://github.com/sorin-ionescu/prezto
+[3]: https://github.com/tokiclover/bar-overlay
+[4]: http://5digits.org/pentadactyl
 
 ---
 vim:fenc=utf-8:

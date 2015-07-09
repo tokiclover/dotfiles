@@ -45,7 +45,7 @@ set help            # show the help lines
 set include         # always include messages when replying
 #set indent_string="> "    # how to quote replied text
 #set locale="C"     # locale to use for printing time
-set mailcap_path="~/.mutt/mailcap"
+set mailcap_path="~/.mailcap"
 set nomark_old      # no care about whether a message is old
 set mail_check=10   # how often to poll for new mail
 set mbox=+mbox      # where to store read messages

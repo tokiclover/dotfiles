@@ -9,7 +9,6 @@
 !-*-{ URxvt
 !-*- General settings -*-
 URxvt*termName:       rxvt-unicode-256color
-URxvt*font:           xft:terminus:size=8:antialias=false
 URxvt*allow_bold:     False
 !-*- Perl extensions -*-
 URxvt.perl-ext-common:default,clipboard,matcher,keyboard-select
@@ -41,12 +40,15 @@ URxvt*fadeColor:      #202020
 !-*- Fore/background -*-
 URxvt*background:     #151515
 URxvt*foreground:     #999
+!-*- Manpage -*-
+URxvt.colorIT:        magenta
+URxvt.colorBD:        yellow
+URxvt.colorUL:        cyan
 !-*-}
 
 !-*-{ XTerm settings
 !-*- General options
 XTerm*termName:       xterm-256color
-XTerm*faceName:       Terminus:pixelsize=8
 !XTerm*font:          -*-Terminus-r-*-*-8-*-*-*-*-*-*-*
 XTerm*allow_bold:     True
 XTerm*scrollBar:      False
@@ -61,8 +63,12 @@ XTerm*charClass:      33:48,35-38:48,39:43,42-47:48,58-59:48,61:48,63-64:48,126:
 !-*- Fore/background -*-
 XTerm*background:     #151515
 XTerm*foreground:     #999
+!-*- Manpages -*-
+*VT100.colorBDMode:   true
+*VT100.colorBD:       yellow
+*VT100.colorULMode:   true
+*VT100.colorUL:       cyan
 !-*-}
-
 !-*-{ Xcolors
 !-*- Black -*-
 *color0:              #101010

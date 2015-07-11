@@ -9,7 +9,6 @@
 !-*-{ URXVT
 !-*- General settings -*-
 URxvt*termName:       rxvt-unicode-256color
-URxvt*font:           xft:terminus:size=8:antialias=false
 URxvt*allow_bold:     True
 !-*- Perl extensions -*-
 URxvt.perl-ext-common:default,clipboard,matcher,keyboard-select
@@ -46,7 +45,6 @@ URxvt*foreground:     #999
 !-*-{ XTerm settings
 !-*- General options
 XTerm*termName:       xterm-256color
-XTerm*faceName:       Terminus:pixelsize=8
 !XTerm*font:          -*-Terminus-r-*-*-8-*-*-*-*-*-*-*
 XTerm*allow_bold:     True
 XTerm*scrollBar:      False

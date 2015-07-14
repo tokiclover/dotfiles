@@ -16,6 +16,13 @@ set enable-keypad On
 set enable-meta-key On
 set mark-modified-lines On
 #
+# Meta options
+#
+set meta-flag On
+set input-meta On
+set convert-meta On
+set output-meta On
+#
 # Set up a few completion options
 #
 set colored-stats On

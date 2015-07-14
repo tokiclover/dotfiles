@@ -20,7 +20,6 @@ dev-qt/qtgui gtkstyle
 dev-util/cmake doc
 dev-util/lv2-c++-tools doc
 dev-vcs/git subversion
-dev-vcs/git subvervion
 dev-vcs/subversion -dso
 mail-client/mutt gpg imap pop nntp sasl sidebar smime smtp
 media-fonts/unifont utils
@@ -28,7 +27,6 @@ media-gfx/imagemagick corefonts hdri
 media-gfx/ufraw contrast gimp
 media-libs/aubio doc examples
 media-libs/elementary -wayland
-
 media-libs/gegl raw
 media-libs/libcanberra -sound
 media-libs/libpng apng
@@ -53,6 +51,9 @@ net-libs/neon gnutls libproxy pkcs11
 net-misc/connman bluetooth tools
 net-misc/tor nat-pmp tor-hardening transparent-proxy
 net-nds/openldap sasl
+net-nntp/nzbget parcheck
+net-nntp/slrn uudeview
+net-nntp/tin gpg mime sasl spell
 net-p2p/rtorrent daemon
 net-print/cnijfilter backends -drivers gtk
 net-print/cups ppds
@@ -69,13 +70,12 @@ sys-fs/aufs-standalone -pax_kernel
 sys-fs/aufs-util fhsm kernel-builtin
 sys-fs/cryptsetup -gcrypt
 sys-fs/eudev gudev
-sys-kernel/git-sources:3.16.7 aufs bfq bfs ck fbcondecor -gentoo -hardened optimization reiser4 toi uksm
-sys-kernel/git-sources:3.18.9 aufs -bfq bfs ck fbcondecor -gentoo -hardened -optimization reiser4 -toi uksm
+sys-kernel/git-sources:3.18.16 aufs fbcondecor -hardened reiser4
 sys-kernel/mkinitramfs-ll aufs bash btrfs dm-crypt dmraid jfs mdadm reiserfs squashfs xfs zfs zram zsh
 sys-libs/zlib minizip
 virtual/linux-sources firmware
 virtual/udev gudev
-www-client/firefox custom-cflags custom-optimization jit system-cairo system-icu system-jpeg system-sqlite
+www-client/firefox custom-cflags custom-optimization jit system-cairo system-icu system-libvpx system-jpeg system-sqlite
 x11-apps/intel-gpu-tools python_single_target_python3_3
 x11-libs/libdrm libkms
 x11-libs/libfm -automount
@@ -88,6 +88,7 @@ x11-themes/e-gtk-theme -gnome minimal openbox
 x11-themes/efenniht minimal
 x11-wm/enlightenment -wayland
 x11-wm/icewm bidi
+media-plugins/emotion_generic_players -vlc
 #
 #-*-multilib-dependencies-*-
 #

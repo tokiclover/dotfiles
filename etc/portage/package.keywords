@@ -2,13 +2,10 @@ dev-perl/perl-URxvt::bar **
 dev-util/espionage **
 media-gfx/ephoto **
 =media-libs/mesa-10.6.9999 **
-media-plugins/deadbeef-plugins-jack **
 media-sound/a2jmidid **
-=media-sound/ardour-3.9999 **
+=media-sound/ardour-4.9999 **
 =media-sound/jack-audio-connection-kit-2.9999 **
-media-sound/ladish::bar **
 =media-video/ffmpeg-2.7.9999 **
+sys-apps/less **
 sys-fs/aufs-standalone **
 sys-fs/aufs-util **
-x11-plugins/ekbd **
-x11-plugins/entrance **

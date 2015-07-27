@@ -1,6 +1,8 @@
 #!/bin/zsh
 #
-# $Header: mkstage4.zsh,v 2.0 2014/08/31 13:08:56 -tclover Exp $
+# $Header: ~/bin/mkstage4.zsh                              Exp $
+# $Author: -tclover <tokiclover@gmail.com>                 Exp $
+# $Version: 2.0 2015/07/26 13:08:56                        Exp $
 # $License: MIT (or 2-clause/new/simplified BSD)           Exp $
 #
 
@@ -123,7 +125,7 @@ for (( ; $# > 0; ))
 :	${opts[-root]:=/}
 :	${opts[-dir]:=/mnt/bak/$(uname -m)}
 : ${opts[-tarball]:=stage4}
-:	${opts[-sdr-root]:=/aufs}
+:	${opts[-sdr-root]:=/squash}
 
 opts[-tarball]=${opts[-dir]}/${opts[-prefix]:l}-${opts[-tarball]}
 case ${opts[-compressor]} in
@@ -155,16 +157,13 @@ for file (${exclude}) opt+=(--exclude=${file})
 
 if (( ${+sdr} )) {
 	if (( ${+opts[-sdr-sys]} )) {
-		${sdr} -r${opts[-sdr-root]} -o0 -U -d${opts[-sdr-sys]}
+		${sdr} -q${opts[-sdr-root]} -o0 -u ${opts[-sdr-sys]}
 	}
 	if (( ${+opts[-squashd]} )) {
-		${sdr} -r${opts[-sdr-root]} -o0    -d${opts[-sdr-dir]}
+		${sdr} -q${opts[-sdr-root]} -o0    ${opts[-sdr-dir]}
 	}
 	for file (${opts[-sdr-root]}/**/*.squashfs) {
-		opt+=(
-			--exclude=${file} --exclude=${file%.sfs}/rr
-			--exclude=${${file%.sfs}#${opts[-sdr-root]}/}
-		)
+		opt+=(--exclude=${file} --exclude=${file%.*}/rr)
 		rsync -avuR ${file} ${opts[-dir]}/${opts[-sdr-root]:t}-${${opts[-prefix]}#*-}
 	}
 }

@@ -1,6 +1,8 @@
 #!/bin/bash
 #
-# $Header: mkstage4.bash,v 2.0 2014/08/31 13:08:56 -tclover Exp $
+# $Header: ~/bin/mkstage4.bash                              Exp $
+# $Author: -tclover <tokiclover@gmail.com>                  Exp $
+# $Version: 2.0 2015/07/26 13:08:56                         Exp $
 # $License: MIT (or 2-clause/new/simplified BSD)            Exp $
 #
 
@@ -131,14 +133,13 @@ for (( ; $# > 0; )); do
 	esac
 done
 
-[[ "${opts[prefix]}" ]] ||
-	opts[prefix]="$(uname -s)-$(uname -m)-$(uname -r | cut -d- -f1)"
-[[ "${opts[root]}" ]] || opts[root]=/
-[[ "${opts[dir]}" ]] || opts[dir]=/mnt/bak/"$(uname -m)"
-[[ "${opts[tarball]}" ]] && opts[tarball]="${opts[prefix]}-${opts[tarball]}" ||
-	opts[tarball]=${opts[prefix]}-stage4
-[[ "${opts[compressor]}" ]] || opts[compressor]=gzip
-[[ "${sdrroot}" ]] || sdrroot=/aufs
+:	${opts[prefix]:=$(uname -s)-$(uname -m)-$(uname -r | cut -d- -f1)}
+:	${opts[root]:=/}
+:	${opts[dir]:=/mnt/bak/$(uname -m)}
+:	${opts[tarball]:=${opts[prefix]}-stage4}
+:	${opts[tarball]:=${opts[prefix]}-${opts[tarball]}}
+:	${opts[compressor]:=gzip}
+:	${opts[sdr-root]:=/squash}
 opts[tarball]="${opts[dir]}/${opts[tarball]}"
 
 case "${opts[compressor]}" in
@@ -169,17 +170,13 @@ done
 
 if [[ "${sdr}" ]]; then
 	[[ "${opts[sdr-sys]}" ]] &&
-		${sdr} -r"${opts[sdr-root]}" -o0 -U -d"${opts[sdr-sys]}"
+		${sdr} -q${opts[sdr-root]} -o0 -u "${opts[sdr-sys]}"
 	[[ "${opts[sdr-dir]}" ]] &&
-		${sdr} -r"${opts[sdr-root]}" -o0  -d"${opts[sdr-dir]}"
+		${sdr} -q${opts[sdr-root]} -o0  "${opts[sdr-dir]}"
 
 	dirname="${opts[sdr-root]##*/}"
 	for file in $(find "${opts[sdr-root]}" -type f -iname '*.squashfs'); do
-		dir=${file%.squashfs}
-		opt+=(
-			"--exclude=${file}" "--exclude=${dir}/rr"
-			"--exclude=${dir#${opts[sdr-root]}/}"
-		)
+		opt+=(--exclude=${file} --exclude=${file%.squashfs}/rr)
 		rsync -avuR "${file}" "${opts[dir]}/${dirname}-${opts[prefix]#*-}"
 	done
 fi

@@ -31,7 +31,7 @@ function sprunge {
 		local arg
 		for arg; do
 			[ -f "${arg}" ] || continue
-			echo "Pasting... ${arg}"
+			pr-info "Pasting... ${arg}"
 			curl -F 'sprunge=<-' http://sprunge.us < "${arg}"
 		done;;
 	esac

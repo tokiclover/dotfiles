@@ -38,5 +38,18 @@ function sprunge {
 }
 
 #
+# @FUNCTION: network package search function
+# @USAGE: pkg-search <package>
+#
+function pkg-search {
+	local url="http://gentoo.zapto.org/packages/search?description"
+	case "${1}" in
+		([a-zA-Z]*) curl -s "${url}=${1}" | html2text -nobs \
+			| awk '/results for query/ { i=1 }; (i && $1 != "[Home]") { print }'
+		;;
+	esac
+}
+
+#
 # vim:fenc=utf-8:ft=sh:ci:pi:sts=2:sw=2:ts=2:
 #

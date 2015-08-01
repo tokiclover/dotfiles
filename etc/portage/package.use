@@ -13,7 +13,9 @@ dev-libs/DirectFB -egl -gles2
 dev-libs/apr-util ldap
 dev-libs/cyrus-sasl ldapdb
 dev-libs/efl -drm fribidi harfbuzz jp2k physics sound xim -wayland -gles
-dev-python/cryptography
+dev-python/enum34 -python_targets_python2_7
+dev-python/cryptography -python_targets_python2_7
+dev-python/ndg-httpsclient -python_targets_python2_7
 dev-python/pyopenssl -python_targets_python2_7
 dev-python/ssl-fetch -python_targets_python2_7
 dev-qt/qtgui gtkstyle
@@ -70,17 +72,19 @@ sys-fs/aufs-standalone -pax_kernel
 sys-fs/aufs-util fhsm kernel-builtin
 sys-fs/cryptsetup -gcrypt
 sys-fs/eudev gudev
-sys-kernel/git-sources:3.18.16 aufs fbcondecor -hardened reiser4
+sys-kernel/git-sources:3.18.9 aufs bfs ck fbcondecor -hardened reiser4 uksm
+sys-kernel/git-sources:3.18.18 aufs fbcondecor -hardened reiser4
 sys-kernel/mkinitramfs-ll aufs bash btrfs dm-crypt dmraid jfs mdadm reiserfs squashfs xfs zfs zram zsh
 sys-libs/zlib minizip
 virtual/linux-sources firmware
 virtual/udev gudev
 www-client/firefox custom-cflags custom-optimization jit system-cairo system-icu system-libvpx system-jpeg system-sqlite
+www-servers/uwsgi -uwsgi_plugins_rsyslog
 x11-apps/intel-gpu-tools python_single_target_python3_3
 x11-libs/libdrm libkms
 x11-libs/libfm -automount
 x11-libs/libxcb xkb
-x11-misc/spacefm -gtk2 gtk3
+x11-misc/spacefm -gtk2 gtk3 -video-thumbnails
 x11-misc/tint2 battery tint2conf
 x11-terms/rxvt-unicode 256-color blink
 x11-themes/ardoise-xcursor-theme minimal

@@ -60,6 +60,11 @@ FILES
 * functions.{ba,z}sh: a very few common helpers used in other scripts;
 * helpers.bash for extra bash helpers (zsh equivalent are `.zsh/functions`);
 
+MIRRORS
+-------
+
+* https://gitlab.com/tokiclover/dotfiles
+
 [1]: https://github.com/tokiclover/prezto
 [2]: https://github.com/sorin-ionescu/prezto
 [3]: https://github.com/tokiclover/bar-overlay

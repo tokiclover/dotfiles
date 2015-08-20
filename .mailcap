@@ -2,11 +2,76 @@
 # $Header: ~/.mutt/mailcap Exp $
 #
 
-#text/html; netscape -remote openURL\(%s\)
+#text/html; links -force-html %s
 image/gif; feh %s
 image/jpg; feh %s
 image/tiff; feh %s
 image/png; feh %s
+application/vnd.oasis.opendocument.text; libreoffice %s
+application/vnd.oasis.opendocument.text-flat-xml; libreoffice %s
+application/vnd.oasis.opendocument.text-template; libreoffice %s
+application/vnd.oasis.opendocument.text-web; libreoffice %s
+application/vnd.oasis.opendocument.text-master; libreoffice %s
+application/vnd.oasis.opendocument.text-master-master; libreoffice %s
+application/vnd.oasis.opendocument.graphics; libreoffice %s
+application/vnd.oasis.opendocument.graphics-flat-xml; libreoffice %s
+application/vnd.oasis.opendocument.graphics-template; libreoffice %s
+application/vnd.oasis.opendocument.presentation; libreoffice %s
+application/vnd.oasis.opendocument.presentation-flat-xml; libreoffice %s
+application/vnd.oasis.opendocument.presentation-template; libreoffice %s
+application/vnd.oasis.opendocument.spreadsheet; libreoffice %s
+application/vnd.oasis.opendocument.spreadsheet-flat-xml; libreoffice %s
+application/vnd.oasis.opendocument.spreadsheet-template; libreoffice %s
+application/vnd.oasis.opendocument.formula; libreoffice %s
+application/vnd.oasis.opendocument.database; libreoffice %s
+application/vnd.ms-excel; libreoffice %s
+application/vnd.ms-powerpoint; libreoffice %s
+application/vnd.stardivision.calc; libreoffice %s
+application/vnd.stardivision.chart; libreoffice %s
+application/vnd.stardivision.draw; libreoffice %s
+application/vnd.stardivision.impress; libreoffice %s
+application/vnd.stardivision.mail; libreoffice %s
+application/vnd.stardivision.math; libreoffice %s
+application/vnd.stardivision.writer; libreoffice %s
+application/vnd.sun.xml.calc; libreoffice %s
+application/vnd.sun.xml.calc.template; libreoffice %s
+application/vnd.sun.xml.draw; libreoffice %s
+application/vnd.sun.xml.draw.template; libreoffice %s
+application/vnd.sun.xml.impress; libreoffice %s
+application/vnd.sun.xml.impress.template; libreoffice %s
+application/vnd.sun.xml.math; libreoffice %s
+application/vnd.sun.xml.writer; libreoffice %s
+application/vnd.sun.xml.writer.global; libreoffice %s
+application/vnd.sun.xml.writer.template; libreoffice %s
+application/vnd.sun.xml.base; libreoffice %s
+application/vnd.wordperfect; libreoffice %s
+application/vnd.lotus-wordpro; libreoffice %s
+application/vnd.openofficeorg.extension; libreoffice %s
+application/vnd.openxmlformats-officedocument.wordprocessingml.document; libreoffice %s
+application/vnd.ms-word.document.macroenabled.12; libreoffice %s
+application/vnd.openxmlformats-officedocument.wordprocessingml.template; libreoffice %s
+application/vnd.ms-word.template.macroenabled.12; libreoffice %s
+application/vnd.openxmlformats-officedocument.spreadsheetml.sheet; libreoffice %s
+application/vnd.ms-excel.sheet.macroenabled.12; libreoffice %s
+application/vnd.openxmlformats-officedocument.spreadsheetml.template; libreoffice %s
+application/vnd.ms-excel.template.macroenabled.12; libreoffice %s
+application/vnd.openxmlformats-officedocument.presentationml.presentation; libreoffice %s
+application/vnd.ms-powerpoint.presentation.macroenabled.12; libreoffice %s
+application/vnd.openxmlformats-officedocument.presentationml.template; libreoffice %s
+application/vnd.ms-powerpoint.template.macroenabled.12; libreoffice %s
+application/vnd.ms-excel.sheet.binary.macroenabled.12; libreoffice %s
+application/octet-stream; libreoffice %s
+application/rtf; libreoffice %s
+application/msword; libreoffice %s
+application/x-hwp; libreoffice %s
+image/x-emf; libreoffice %s
+image/x-pcx; libreoffice %s
+image/x-photo-cd; libreoffice %s
+image/x-pict; libreoffice %s
+text/spreadsheet; libreoffice %s
 application/pdf; mupdf %s
 application/pgp-keys; pgp -f < %s ; copiousoutput
 
+#
+# vim:fenc=utf-8:ts=2:sts=2:sw=2:expandtab
+#

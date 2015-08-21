@@ -30,7 +30,7 @@ if [[ -f ~/.zprezto/init.zsh ]] {
 }
 
 for file (~/.zsh/lib/^(editor.zsh)*(.N)
-	.zsh/functions/prompt_clover_setup lib/{aliasrc,helpers})
+	~/.zsh/functions/prompt_clover_setup ~/lib/{aliasrc,helpers})
 	source $file
 
 #

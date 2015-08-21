@@ -12,7 +12,7 @@ dev-lang/python doc
 dev-libs/DirectFB -egl -gles2
 dev-libs/apr-util ldap
 dev-libs/cyrus-sasl ldapdb
-dev-libs/efl -drm fribidi harfbuzz jp2k physics sound xim -wayland -gles
+dev-libs/efl -drm fribidi harfbuzz jp2k physics sound xim -wayland -gles system-lz4
 dev-python/enum34 -python_targets_python2_7
 dev-python/cryptography -python_targets_python2_7
 dev-python/ndg-httpsclient -python_targets_python2_7

@@ -18,7 +18,7 @@ x11-themes/adwaita-icon-theme
 >=x11-libs/gtksourceview-3.14.0
 
 >=x11-wm/enlightenment-0.19.0:0.17
->www-client/firefox-32.0
+>www-client/firefox-39.0
 dev-java/oracle-jdk-bin
 dev-java/oracle-jre-bin
 =virtual/jdk-1.8.0

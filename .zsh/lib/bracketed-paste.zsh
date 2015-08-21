@@ -8,38 +8,44 @@
 #   Ref: http://invisible-island.net/xterm/ctlseqs/ctlseqs.html
 #
 # $Authors: 
-#   Mikael Magnusson 
-#     (Ref: http://www.zsh.org/mla/users/2011/msg00367.html)
-#   tokiclover <tokiclover@gamil.com> (Cleanup/Restore-keymap)
 #   Bart Schafer
 #     (Ref: http://www.zsh.org/mla/users/2015/msg00801.html
 #           Bracketed paste for zsh 4.3.x up to 5.0.8)
-# $Version: 1.0 2015/08/20 21:09:26                     Exp $
+# $Version: 2.0 2015/08/20 21:09:26                     Exp $
 #
 
-#
-# FIXME: This versin works pretty but if and only if nothing goes wrong
-#
 ZV=(${(pws:.:)ZSH_VERSION})
 if ! (( ${ZV[1]} >= 5 )) && ( (( ${ZV[2]} > 0 )) || (( ${ZV[3]} > 8 )) ) {
 
-typeset -g main_keymap=emacs # or viins as you prefer
-# Create keymap where all key strokes are self-insert-unmeta
-bindkey -N paste
-bindkey -R -M paste "^@"-"\M-^?" .self-insert-unmeta
-# Swap keymaps during paste
-function paste-begin {
-  bindkey -A paste main
-}
-zle -N paste-begin
 function paste-end {
-  bindkey -A ${main_keymap} main
+  :;
 }
 zle -N paste-end
-bindkey -M paste '\e[201~' paste-end
+function paste-begin {
+  local bp_PASTED
+  while zle .read-command; do
+    case "$REPLY" in
+      (paste-end) break;;
+      (*) bp_PASTED="$bp_PASTED$KEYS";;
+    esac
+  done
+  # This may not be necessary everywhere (fix newlines)
+  eval bp_PASTED=\$\{bp_PASTED:gs/$'\r'/$'\n'\}
+  if (( ARGC )); then
+     builtin typeset -g "$1"="$bp_PASTED"
+  else
+    if (( REGION_ACTIVE )); then
+       zle .kill-region
+    fi
+    LBUFFER="$LBUFFER$bp_PASTED"
+  fi
+}
+zle -N paste-begin
+# Haven't really tested with vicmd,
+# but should work with "bindkey -a"
 bindkey '\e[200~' paste-begin
-bindkey -a '\e[200~' paste-begin
-# Turn on paste mode of terminal while editing
+bindkey '\e[201~' paste-end
+# Still need this too in older shells
 PROMPT+=$'%{\e[?2004h%}'
 POSTEDIT=$'\e[?2004l'"$POSTEDIT"
 

@@ -17,6 +17,9 @@
 # $Version: 1.0 2015/08/20 21:09:26                     Exp $
 #
 
+#
+# FIXME: This versin works pretty but if and only if nothing goes wrong
+#
 ZV=(${(pws:.:)ZSH_VERSION})
 if ! (( ${ZV[1]} >= 5 )) && ( (( ${ZV[2]} > 0 )) || (( ${ZV[3]} > 8 )) ) {
 

@@ -11,67 +11,37 @@
 #   Mikael Magnusson 
 #     (Ref: http://www.zsh.org/mla/users/2011/msg00367.html)
 #   tokiclover <tokiclover@gamil.com> (Cleanup/Restore-keymap)
-# $Version: 2015/05/15 21:09:26                         Exp $
+#   Bart Schafer
+#     (Ref: http://www.zsh.org/mla/users/2015/msg00801.html
+#           Bracketed paste for zsh 4.3.x up to 5.0.8)
+# $Version: 1.0 2015/08/20 21:09:26                     Exp $
 #
 
-# Create a new keymap to use while pasting
+ZV=(${(pws:.:)ZSH_VERSION})
+if ! (( ${ZV[1]} >= 5 )) && ( (( ${ZV[2]} > 0 )) || (( ${ZV[3]} > 8 )) ) {
+
+typeset -g main_keymap=emacs # or viins as you prefer
+# Create keymap where all key strokes are self-insert-unmeta
 bindkey -N paste
-# Make everything in this keymap call our custom widget
-# with bracketed code sequences in paste mode
-bindkey -R -M paste "^@"-"\M-^?" paste-insert
-# First one need both -M viins and -M vicmd in vi mode
-for keymap (emacs viins vicmd)
-  bindkey -M $keymap '^[[200~' start-paste
-unset keymap
-bindkey -M paste '^[[201~' end-paste
-# Replace carriage returns by newlines when pasting newlines
-bindkey -M paste -s '^M' '^J'
-
-zle -N start-paste
-zle -N end-paste
-zle -N zle-line-init
-zle -N zle-line-finish
-zle -N zle-keymap-select
-zle -N paste-insert
-
-# Switch the active keymap to paste mode
-function start-paste {
-  _paste=1
+bindkey -R -M paste "^@"-"\M-^?" .self-insert-unmeta
+# Swap keymaps during paste
+function paste-begin {
   bindkey -A paste main
 }
-
-# Restore keymap, and insert all the pasted text in the command line which
-# has the effect of making the whole paste be single undo/redo event.
-function end-paste {
-  bindkey -e
-  LBUFFER+=$_paste_content
-  unset _paste_content
+zle -N paste-begin
+function paste-end {
+  bindkey -A ${main_keymap} main
 }
+zle -N paste-end
+bindkey -M paste '\e[201~' paste-end
+bindkey '\e[200~' paste-begin
+bindkey -a '\e[200~' paste-begin
+# Turn on paste mode of terminal while editing
+PROMPT+=$'%{\e[?2004h%}'
+POSTEDIT=$'\e[?2004l'"$POSTEDIT"
 
-function paste-insert {
-  _paste_content+=$KEYS
 }
-
-function zle-line-init {
-  # Send escape codes around pastes
-  case $_paste {
-    (1)
-    case $TERM {
-	    (rxvt*|xterm*|screen*) printf '\e[?2004h';;
-    };;
-  }
-}
-
-function zle-line-finish {
-  # Stop send escape codes around pastes
-  case $_paste {
-    (1)
-    case $TERM {
-	    (rxvt*|xterm*|screen*) printf '\e[?2004l';;
-	  }
-    unset _paste;;
-  }
-}
+unset ZV
 
 #
 # vim:fenc=utf-8:ft=zsh:ci:pi:sts=2:sw=2:ts=2:expandtab

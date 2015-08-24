@@ -3,7 +3,7 @@
 # $Header: $HOME/bin/browser-home-profile.zsh           Exp $
 # $Author: (c) 2012-15 -tclover <tokiclover@gmail.com>  Exp $
 # $License: MIT (or 2-clause/new/simplified BSD)        Exp $
-# $Version: 1.0 2015/05/14                              Exp $
+# $Version: 1.0 2015/08/24                              Exp $
 #
 # @DESCRIPTION: Set up and maintain browser home profile directory
 #   and cache directory in a tmpfs (or zram backed filesystem.)
@@ -90,12 +90,12 @@ function {
 	function {
 		local BROWSERS MOZ_BROWSERS set brs dir
 		MOZ_BROWSERS='aurora firefox icecat seamonkey'
-		BROWSERS='conkeror chrom epiphany midory opera otter qupzilla vivaldi'
+		BROWSERS='conkeror chrom epiphany midory opera otter netsirf qupzilla vivaldi'
 
 		case ${1} {
 			(*aurora|firefox*|icecat|seamonkey)
 				BROWSER=${1} PROFILE=mozilla/${1}; return;;
-			(conkeror*|*chrom*|epiphany|midory|opera*|otter*|qupzilla|vivaldi*)
+			(conkeror*|*chrom*|epiphany|midory|opera*|otter*|qupzilla|netsurf*|vivaldi*)
 				BROWSER=${1} PROFILE=config/${1} ; return;;
 		}
 

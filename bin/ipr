@@ -6,7 +6,9 @@
 # $Aythor: (c) 2011-2014 -tclover <tokiclover@gmail.com> Exp $
 # $License: MIT (or 2-clause/new/simplified BSD)         Exp $
 # $Version: 2.6 2014/11/11 21:09:26                      Exp $
-# $Reference: http://www.gentoo-wiki.info/HOWTO_Iptables_and_stateful_firewalls Exp $
+# $Reference:                                            Exp $
+#     http://www.gentoo-wiki.info/HOWTO_Iptables_and_stateful_firewalls 
+#     http://www.gentoo-wiki.info/HOWTO_Iptables_for_newbies
 #
 
 if [ -n "$ZSH_VERSION" ]; then
@@ -26,6 +28,8 @@ cat <<-EOF
 	-m, --module=[<modules>]     insert kernel coma separated list of kernel modules
 	    --mpd=[6600]             allow in/outbound from loop back device src for mpd
 	    --jabber=[5222,5269]     enable XMPP-client/server, short hand of '-s5222,5269'
+	    --nat                    enable masquarading for nat/router
+	    --snat                   enable snat instead for nat/router
 	-t, --torrent=[50550:50555]  enable torrent traffic on those ports
 	-s, --srv=pop3,pop3s         allow in/outbound for named services or ports
 	-S, --save=[ipt-rules]       save ip[6]tables rules to file, default to ipt-rules
@@ -42,7 +46,7 @@ die() {
 }
 
 opt=$(getopt -o '?46I::b:i:e:d::m::S::s:ht::' -l block:,ext-iface:,jabber::,ipset:: \
-	-l mpd::,torrent::,int-iface:,ipv:,dhcp::,module::,mpd,save::,srv: \
+	-l mpd::,torrent::,int-iface:,ipv:,dhcp::,module::,mpd,save::,srv:,snat,nat \
 	-l help -n ${0##*/} -- "$@" || usage)
 eval set -- "$opt"
 
@@ -63,6 +67,8 @@ while [ $# > 0 ]; do
 				ipv$i=true ipv=+" ipv$i"
 			done; shift 2;;
 		-S|--save) save=${2:-/var/lib/iptables/ipt-rules}; shift 2;;
+		--snat) snat=true;;
+		--nat) nat=true;;
 		-t|--torrent) torrent=${2:-50550:50555}; shift 2;;
 		-s|--srv) srv+=,$2; shift 2;;
 		--) shift; break;;
@@ -211,9 +217,10 @@ doipr() {
 	$ipt -A OUTPUT  -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
 	$ipt -A FORWARD -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
 
-	# Accept all traffic from loopback device if the IP matches any of our interfaces
-	$ipt -A INPUT -s $lbdip/$lbdmsk -d $ip -j ACCEPT
-	$ipt -A OUTPUT -s $lbdip/$lbdmsk -d $ip -j ACCEPT
+	# Allow MSQUARADING for NAT/Router
+	[ -n "$nat"  ] && $ipt -t nat -A POSTROUTING -o $ext -j MASQUERADE
+	# Allow NAT for bridged NAT/Router
+	[ -n "$snat" ] && $ipt -t nat -A POSTROUTING -o $ext -j SNAT --to $ip
 	# Block WAN access to internal network
 	$ipt -A INPUT   -i $ext ! -d $ip -j drop
 	# Block outbound ICMP (except for PING)

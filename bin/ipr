@@ -6,6 +6,7 @@
 # $Aythor: (c) 2011-2014 -tclover <tokiclover@gmail.com> Exp $
 # $License: MIT (or 2-clause/new/simplified BSD)         Exp $
 # $Version: 2.6 2014/11/11 21:09:26                      Exp $
+# $Reference: http://www.gentoo-wiki.info/HOWTO_Iptables_and_stateful_firewalls Exp $
 #
 
 if [ -n "$ZSH_VERSION" ]; then
@@ -155,9 +156,6 @@ doipr() {
 		$ipt -I INPUT -m set --match-set $b src,dst -j drop
 	done
 
-	# Accept all traffic from loopback device if the IP matches any of our interfaces.
-	$ipt -A INPUT -s   $lbdip${ipv4:+/$lbdmsk}   -j ACCEPT
-	$ipt -A OUTPUT -s   $lbdip${ipv4:+/$lbdmsk}   -j ACCEPT
 	echo -n "ipr: Blocking trafic to TCP/UDP port "
 	for p in $(echo "$bck" | sed 's/,/ /g'); do
 		echo -n "$p "

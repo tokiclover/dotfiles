@@ -36,37 +36,37 @@
 #keystate_scrolllock= enable
 
 "/etc/acpi/default.sh button/mute"
-  m:0x5 + c:76
+  m:0x40 + c:76
   XF86AudioMute
-  #Control+Shift + F10
+  #Super_L + F10
 "/etc/acpi/default.sh button/volumedown"
-  m:0x5 + c:95
+  m:0x40 + c:95
   XF86AudioLowerVolume
-  #Control+Shift + F11
+  #Super_L + F11
 "/etc/acpi/default.sh button/volumeup"
-  m:0x5 + c:96
+  m:0x40 + c:96
   XF86AudioRaiseVolume
-  #Control+Shift + F12
+  #Super_L + F12
 
 "/etc/acpi/default.sh video/brightnessup"
-  m:0x5 + c:72
+  m:0x40 + c:72
   XF86MonBrightnessUp
-  #Control+Shift + F6
+  #Super_L + F6
 "/etc/acpi/default.sh video/brightnessdown"
-  m:0x5 + c:71
+  m:0x40 + c:71
   XF86MonBrightnessDown
-  #Control+Shift + F5
+  #Super_L + F5
 "/etc/acpi/default.sh keyboard/brightnessup"
-  m:0x5 + c:70
+  m:0x40 + c:70
   XF86KbdBrightnessUp
-  #Control+Shift + F4
+  #Super_L + F4
 "/etc/acpi/default.sh keyboard/brightnessdown"
-  m:0x5 + c:69
+  m:0x40 + c:69
   XF86KbdBrightnessDown
-  #Control+Shift + F3
+  #Super_L + F3
 
 "/etc/acpi/default.sh button/sleep"
-  m:0x5 + c:67
+  m:0x40 + c:67
   XF86Sleep
   #Cnntrol+Shift + F1
 
@@ -87,7 +87,7 @@
 #"xterm"
 #  alt + c:0x29 + m:4 + mod2
 #
-## Control+Shift+a  release event starts rxvt
+## Super_L+a  release event starts rxvt
 #"rxvt"
 #  release+control+shift + a
 #

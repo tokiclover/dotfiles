@@ -85,7 +85,7 @@ case "$group" in
 		;;
 	(cd)
 		case "$action" in
-			(play|stop|next|prev) mpc "$action";;
+			(pause|play|stop|next|prev) mpc "$action";;
 			(*) unhandled_event "$@";;
 		esac
 		;;

@@ -102,6 +102,7 @@ for key in emacs-standard vi-insert; do
 	bind -m "${key}" "\"${keyinfo[F11]/\~/^}\"":acpi-volumedown
 	bind -m "${key}" "\"${keyinfo[F12]/\~/^}\"":acpi-volumeup
 done
+set enable-bracketed-paste On
 	;;
 	(xterm*)
 for key in emacs-standard vi-insert; do
@@ -112,6 +113,7 @@ for key in emacs-standard vi-insert; do
 	bind -m "${key}" "\"${keyinfo[F11]/\~/;5\~}\"":acpi-volumedown
 	bind -m "${key}" "\"${keyinfo[F12]/\~/;5\~}\"":acpi-volumeup
 done
+set enable-bracketed-paste On
 	;;
 esac
 #

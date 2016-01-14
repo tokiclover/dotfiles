@@ -13,6 +13,7 @@ dev-libs/DirectFB -egl -gles2
 dev-libs/apr-util ldap
 dev-libs/cyrus-sasl ldapdb
 dev-libs/efl -drm fribidi harfbuzz jp2k physics sound xim -wayland -gles system-lz4
+dev-libs/nss utils
 dev-python/enum34 -python_targets_python2_7
 dev-python/cryptography -python_targets_python2_7
 dev-python/ndg-httpsclient -python_targets_python2_7
@@ -34,6 +35,7 @@ media-libs/libcanberra -sound
 media-libs/libpng apng
 media-libs/lv2 plugins
 media-libs/mesa gbm openmax xa
+media-libs/libvpx postproc
 media-plugins/calf lv2
 media-plugins/tap-plugins doc
 media-sound/ardour lv2
@@ -78,7 +80,8 @@ sys-kernel/mkinitramfs-ll aufs bash btrfs dm-crypt dmraid jfs mdadm reiserfs squ
 sys-libs/zlib minizip
 virtual/linux-sources firmware
 virtual/udev gudev
-www-client/firefox custom-cflags custom-optimization jit system-cairo system-icu system-libvpx system-jpeg system-sqlite
+www-client/firefox custom-cflags custom-optimization -gmp-autoupdate jit system-cairo system-icu system-libvpx system-jpeg system-sqlite
+www-client/netsurf fbcon fbcon_frontend_x pdf-write
 www-servers/uwsgi -uwsgi_plugins_rsyslog
 x11-apps/intel-gpu-tools python_single_target_python3_3
 x11-libs/libdrm libkms

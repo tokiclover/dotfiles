@@ -217,9 +217,17 @@ doipr() {
 	$ipt -A OUTPUT  -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
 	$ipt -A FORWARD -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
 
-	# Allow MSQUARADING for NAT/Router
-	[ -n "$nat"  ] && $ipt -t nat -A POSTROUTING -o $ext -j MASQUERADE
-	# Allow NAT for bridged NAT/Router
+	# Allow MSQUARADING for NAT/DSL-Router
+	if [ -n "$nat"  ]; then
+		$ipt -t nat -A POSTROUTING -o $ext -j MASQUERADE
+		# NAT I/O
+		if [ -n "$ipv4" ]; then
+			$ipt -A PREROUTING  -t nat -j ACCEPT
+			$ipt -A POSTROUTING -t nat -j ACCEPT
+			$ipt -A OUTPUT      -t nat -j ACCEPT
+		fi
+	fi
+	# Allow NAT for bridged NAT/DSL-Router
 	[ -n "$snat" ] && $ipt -t nat -A POSTROUTING -o $ext -j SNAT --to $ip
 	# Block WAN access to internal network
 	$ipt -A INPUT   -i $ext ! -d $ip -j drop
@@ -236,11 +244,6 @@ doipr() {
 	fi
 
 	if [ -n "$ipv4" ]; then
-		# NAT I/O
-		$ipt -A PREROUTING  -t nat -j ACCEPT
-		$ipt -A POSTROUTING -t nat -j ACCEPT
-		$ipt -A OUTPUT      -t nat -j ACCEPT
-
 		# Blocking Broadcasts
 		$ipt -A INPUT   -i $ext -d   $msk -j drop
 		$ipt -A OUTPUT  -o $ext -d   $msk -j drop

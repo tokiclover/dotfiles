@@ -46,7 +46,7 @@ die() {
 }
 
 opt=$(getopt -o '?46I::b:i:e:d::m::S::s:ht::' -l block:,ext-iface:,jabber::,ipset:: \
-	-l mpd::,torrent::,int-iface:,ipv:,dhcp::,module::,mpd,save::,srv:,snat,nat \
+	-l mpd::,torrent::,int-iface:,ipv:,dhcp::,module::,mpd,save::,srv:,snat,nat:: \
 	-l help -n ${0##*/} -- "$@" || usage)
 eval set -- "$opt"
 
@@ -67,8 +67,8 @@ while [ $# > 0 ]; do
 				ipv$i=true ipv=+" ipv$i"
 			done; shift 2;;
 		-S|--save) save=${2:-/var/lib/iptables/ipt-rules}; shift 2;;
-		--snat) snat=true;;
-		--nat) nat=true;;
+		--snat) snat=true; shift;;
+		--nat) nat="${2:-true}"; shift 2;;
 		-t|--torrent) torrent=${2:-50550:50555}; shift 2;;
 		-s|--srv) srv+=,$2; shift 2;;
 		--) shift; break;;
@@ -220,6 +220,8 @@ doipr() {
 	# Allow MSQUARADING for NAT/DSL-Router
 	if [ -n "$nat"  ]; then
 		$ipt -t nat -A POSTROUTING -o $ext -j MASQUERADE
+		[ "$nat" = "int" ] && [ -n "$int" ] &&
+			$ipt -t nat -A POSTROUTING -o $ext -s $int -j MASQUERADE
 		# NAT I/O
 		if [ -n "$ipv4" ]; then
 			$ipt -A PREROUTING  -t nat -j ACCEPT

@@ -5,6 +5,7 @@ app-portage/layman sync-plugin-portage -python_targets_python2_7 squashfs subver
 app-shell/zsh doc
 app-text/docbook-sgml-utils jadetex
 app-text/evince xps
+app-text/zathura-meta cb djvu postscript
 dev-db/sqlite secure-delete
 dev-java/icedtea -javascript
 dev-lang/perl doc
@@ -31,6 +32,7 @@ media-gfx/ufraw contrast gimp
 media-libs/aubio doc examples
 media-libs/elementary -wayland
 media-libs/gegl raw
+media-libs/gexiv2 introspection
 media-libs/libcanberra -sound
 media-libs/libpng apng
 media-libs/lv2 plugins
@@ -43,15 +45,18 @@ media-sound/mpd faad wildmidi
 media-sound/ncmpcpp taglib visualizer
 media-sound/oss -pax_kernel
 media-sound/patchage jack-session
+media-sound/shntool mac
 media-sound/wildmidi -oss
 media-video/ffmpeg bluray cdio faac frei0r schroedinger vaapi vpx x265
-media-video/mpv bluray bs2b dvdnav encode vaapi vf-dlopen
+media-video/mpv bluray bs2b dvdnav encode vaapi vapoursynth
+media-video/vapoursynth python_targets_python3_4
 media-video/x264-encoder avs custom-cflags
 net-dialup/ppp eap-tls
 net-dns/dnsmasq uth-dns dhcp-tools dnssec script
 net-firewall/ipset -modules
 net-libs/gnutls pkcs11
 net-libs/neon gnutls libproxy pkcs11
+net-mail/notmuch mutt
 net-misc/connman bluetooth tools
 net-misc/tor nat-pmp tor-hardening transparent-proxy
 net-nds/openldap sasl
@@ -74,8 +79,8 @@ sys-fs/aufs-standalone -pax_kernel
 sys-fs/aufs-util fhsm kernel-builtin
 sys-fs/cryptsetup -gcrypt
 sys-fs/eudev gudev
-sys-kernel/git-sources:3.18.9 aufs bfs ck fbcondecor -hardened reiser4 uksm
 sys-kernel/git-sources:3.18.18 aufs fbcondecor -hardened reiser4
+sys-kernel/git-sources:3.18.25 -aufs fbcondecor -hardened reiser4
 sys-kernel/mkinitramfs-ll aufs bash btrfs dm-crypt dmraid jfs mdadm reiserfs squashfs xfs zfs zram zsh
 sys-libs/zlib minizip
 virtual/linux-sources firmware
@@ -83,7 +88,7 @@ virtual/udev gudev
 www-client/firefox custom-cflags custom-optimization -gmp-autoupdate jit system-cairo system-icu system-libvpx system-jpeg system-sqlite
 www-client/netsurf fbcon fbcon_frontend_x pdf-write
 www-servers/uwsgi -uwsgi_plugins_rsyslog
-x11-apps/intel-gpu-tools python_single_target_python3_3
+x11-apps/intel-gpu-tools python_single_target_python3_4
 x11-libs/libdrm libkms
 x11-libs/libfm -automount
 x11-libs/libxcb xkb
@@ -118,6 +123,7 @@ dev-libs/libev abi_x86_32
 dev-libs/libffi abi_x86_32
 dev-libs/libgcrypt abi_x86_32
 dev-libs/libgpg-error abi_x86_32
+dev-libs/libgudev abi_x86_32
 dev-libs/libpthread-stubs abi_x86_32
 dev-libs/libtasn1 abi_x86_32
 dev-libs/libverto abi_x86_32
@@ -154,6 +160,7 @@ sys-apps/keyutils abi_x86_32
 sys-apps/util-linux abi_x86_32
 sys-devel/llvm abi_x86_32
 sys-fs/eudev abi_x86_32
+sys-libs/binutils-libs abi_x86_32
 sys-libs/e2fsprogs-libs abi_x86_32
 sys-libs/gpm abi_x86_32
 sys-libs/ncurses abi_x86_32
@@ -235,3 +242,5 @@ x11-proto/xf86vidmodeproto abi_x86_32
 x11-proto/xineramaproto abi_x86_32
 x11-proto/xproto abi_x86_32
 x11-themes/gtk-engines abi_x86_32
+
+

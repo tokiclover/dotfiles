@@ -12,6 +12,9 @@ x11-misc/xcompmgr
 x11-misc/unclutter
 x11-misc/xcalib
 x11-misc/xsel
+x11-apps/xfd
+x11-apps/xfontsel
+x11-apps/xlsfonts
 x11-apps/setxkbmap
 x11-apps/xmodmap
 x11-apps/xcalc

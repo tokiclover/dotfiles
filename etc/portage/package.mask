@@ -7,6 +7,8 @@ app-emulation/emul-linux-x86-*
 media-video/libav
 >=x11-libs/libfm-1.2.3-r1
 >=lxde-base/menu-cache-1.0.0-r1
+>=sys-fs/udev-init-scripts-28
+>dev-libs/libcgroup-0.41
 
 >=media-sound/patchage-1.0
 >=app-text/evince-3.14.0
@@ -17,11 +19,22 @@ x11-themes/adwaita-icon-theme
 >=x11-themes/gnome-themes-standard-3.14.0
 >=x11-libs/gtksourceview-3.14.0
 
+>=dev-libs/efl-1.15.0
+>=media-libs/elementary-1.15.0
 >=x11-wm/enlightenment-0.19.0:0.17
+>=dev-python/python-efl-1.15.0
+>=media-plugins/evas_generic_loaders-1.15.0
+>=media-plugins/emotion_generic_players-1.15.0
+>=x11-terms/terminology-0.9.1
+
 >www-client/firefox-39.0
 dev-java/oracle-jdk-bin
 dev-java/oracle-jre-bin
 =virtual/jdk-1.8.0
 =virtual/jre-1.8.0
->app-shells/zsh-5.0.5
 >net-wireless/bluez-5.0
+
+=dev-libs/boost-1.57*
+=dev-libs/boost-build-1.57*
+=sys-devel/llvm-3.7*
+=sys-devel/clang-3.0*

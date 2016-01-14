@@ -220,8 +220,11 @@ doipr() {
 	# Allow MSQUARADING for NAT/DSL-Router
 	if [ -n "$nat"  ]; then
 		$ipt -t nat -A POSTROUTING -o $ext -j MASQUERADE
-		[ "$nat" = "int" ] && [ -n "$int" ] &&
-			$ipt -t nat -A POSTROUTING -o $ext -s $int -j MASQUERADE
+		case "$nat" in
+			(int*) [ -n "$int" ] &&
+				$ipt -t nat -A POSTROUTING -o $ext -s $int -j MASQUERADE
+				;;
+		esac
 		# NAT I/O
 		if [ -n "$ipv4" ]; then
 			$ipt -A PREROUTING  -t nat -j ACCEPT
@@ -239,13 +242,13 @@ doipr() {
 	# Allow to ping out
 	$ipt -A OUTPUT  -o $ext  -p $icmp  --$icmp-type 8 -m conntrack --ctstate NEW -j ACCEPT
 
-	if [ -n "$int" ]; then
-		$ipt -A INPUT    -i $int -s $msk -j ACCEPT
-		$ipt -A FORWARD  -o $int -s $msk -j ACCEPT
-		$ipt -A OUTPUT   -o $int -s $msk -j ACCEPT
-	fi
-
 	if [ -n "$ipv4" ]; then
+		# Accept trafic from internal interface
+		if [ -n "$int" ]; then
+			$ipt -A INPUT    -i $int -s $msk -j ACCEPT
+			$ipt -A FORWARD  -o $int -s $msk -j ACCEPT
+			$ipt -A OUTPUT   -o $int -s $msk -j ACCEPT
+		fi
 		# Blocking Broadcasts
 		$ipt -A INPUT   -i $ext -d   $msk -j drop
 		$ipt -A OUTPUT  -o $ext -d   $msk -j drop

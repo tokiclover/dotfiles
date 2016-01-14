@@ -79,10 +79,10 @@ done
 [ "${LC_ALL%.UTF-8}" = "$LC_ALL" ] || [ "${LC_ALL%.utf-8}" = "$LC_ALL" ] ||
 	export LC_ALL="en_US.UTF-8"
 
-awk="$(which awk)"
-grp="$(which grep)"
-ifc="$(which ifconfig)"
-sed="$(which sed)"
+awk="$(type -p awk 2>/dev/null)"
+grp="$(type -p grep 2>/dev/null)"
+ifc="$(type -p ifconfig 2>/dev/null)"
+sed="$(type -p sed 2>/dev/null)"
 
 for cmd in "$awk" "$grp" "$ifc" "$sed"; do
 	[ "$cmd" ] || die "basic command utilities not found"
@@ -95,10 +95,10 @@ fi
 :	${dhcp:=true}
 [ -n "$ipv4" ] || [ -n "$ipv6" ] || ipv4=true ipv6=true
 
-bck+=,0:1,13,98,111,137:139,161:162,445,517:518,520,1214,1999,3049,4329
-bck+=,6346,3128,8000,12345,65535,98,512:515,6112,1427,9000
-srv+=,git,domain,ssh,http,http-alt,https,ftp,ftp-data,ftps,ipp,imap2,imap3,imaps,mail
-srv+=,time,rsync,ircd,ircs,hkp,telnets,ftp,ftp-data,ntp
+bck="$bck,0:1,13,98,111,137:139,161:162,445,517:518,520,1214,1999,3049,4329"
+bck="$bck,6346,3128,8000,12345,65535,98,512:515,6112,1427,9000"
+srv="$srv,git,domain,ssh,http,http-alt,https,ftp,ftp-data,ftps,ipp,imap2,imap3,imaps,mail"
+srv="$srv,time,rsync,ircd,ircs,hkp,telnets,ftp,ftp-data,ntp"
 
 for i in $srv; do
 	[ "${bck/$i}" = "$bck" ] || bck="${bck/,$i/}"
@@ -109,9 +109,8 @@ iptable_nat ipt_MASQUERADE ipt_REDIRECT ipt_REJECT"
 [ -n "$ipv6" ] && module="$module ip6table_filter ip6table_mangle ip6table_raw
 ip6table_nat ip6t_MASQUERADE ip6t_REDIRECT ip6t_REJECT"
 
-for mod in ip_nat_ftp ip_nat_irc ip_conntrack_ftp ipt_conntrack_irc ipt_LOG \
-	$module
-do
+for mod in nf_nat_ftp nf_nat_irc nf_conntrack_ftp nf_conntrack_irc ipt_LOG \
+	$module; do
 	$grp -q "$mod" /proc/modules || modprobe "$mod"
 done
 
@@ -232,6 +231,9 @@ doipr() {
 			$ipt -A OUTPUT      -t nat -j ACCEPT
 		fi
 	fi
+	# Accept trafic from/out loop back device
+	$ipt -A INPUT -i $lbdif -s $lbdip -j ACCEPT
+	$ipt -A INPUT -i $lbdif -s $ip    -j ACCEPT
 	# Allow NAT for bridged NAT/DSL-Router
 	[ -n "$snat" ] && $ipt -t nat -A POSTROUTING -o $ext -j SNAT --to $ip
 	# Block WAN access to internal network

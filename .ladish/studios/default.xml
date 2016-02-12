@@ -2,7 +2,7 @@
 <!--
 ladish Studio configuration.
 -->
-<!-- Wed Apr  1 14:44:23 2015 -->
+<!-- Fri Feb 12 20:03:22 2016 -->
 <studio>
   <jack>
     <conf>
@@ -56,14 +56,14 @@ ladish Studio configuration.
           <port name="CH_7 R" uuid="a105cd1d-75f3-49fe-9f9d-52deb7502bc0" />
           <port name="CH_7 Out L" uuid="1bbebe55-d2cd-429e-b34e-e606d8a62fcb" />
           <port name="CH_7 Out R" uuid="ba7c3237-f02a-4c23-abb8-a9088a5e4767" />
-          <port name="Ch_1 L" uuid="2f371068-398c-41fb-ad20-facd4989d782" />
-          <port name="Ch_1 R" uuid="f6984ebf-7da8-41db-b557-56798bd4bf36" />
-          <port name="Ch_1 Out L" uuid="3fd8ae75-51e0-4cca-a917-3f9b91b8976b" />
-          <port name="Ch_1 Out R" uuid="91c2e945-a416-42e7-aa3f-523ad2c2bb8f" />
           <port name="CH_8 L" uuid="0bebd738-61ec-465e-9f46-dd1391aa9ed0" />
           <port name="CH_8 R" uuid="4166a98f-b8aa-43cf-ad9b-bfdf01a7a3e3" />
           <port name="CH_8 Out L" uuid="a4f86221-eb2b-40ec-ab8c-6ee58e097db8" />
           <port name="CH_8 Out R" uuid="2389acd8-ba9b-4ca8-9781-a14fcc62d9c8" />
+          <port name="CH_1 L" uuid="3b846b83-9896-4f8f-8194-403d931b3cc1" />
+          <port name="CH_1 R" uuid="022d2a13-5ee4-494d-b6cd-dfdcd92e4837" />
+          <port name="CH_1 Out L" uuid="be033324-65b1-438c-a7a5-9e384aaaa45a" />
+          <port name="CH_1 Out R" uuid="da289cea-2ec1-423c-831a-f20ff483ded2" />
         </ports>
       </client>
       <client name="calf" uuid="7ea2ad4a-45fe-4d49-aefa-903d9e11b6ef">
@@ -83,10 +83,28 @@ ladish Studio configuration.
           <port name="analyzer Out #2" uuid="31aabbc4-d47f-49d7-97ec-649ed0af3f24" />
         </ports>
       </client>
-      <client name="Music Player Daemon" uuid="2a64ff01-9994-4df0-8041-e744d6086dd5">
+      <client name="zita-j2a" uuid="aa3c06a4-1a34-4820-8b45-4c7e5cb97af2">
         <ports>
-          <port name="left" uuid="8a819cd4-41e6-4f12-909d-a0d014c3e567" />
-          <port name="right" uuid="ee8e1a49-ecac-400f-9210-3ac2d18c14e7" />
+          <port name="playback_1" uuid="204e173c-02e0-4224-a076-48dace9e9db3" />
+          <port name="playback_2" uuid="1a85c6e2-4a6b-4dd1-88b1-25e6a2632996" />
+        </ports>
+      </client>
+      <client name="zita-a2j" uuid="6d7fa806-8851-400a-b651-e28b39c1f01d">
+        <ports>
+          <port name="capture_1" uuid="5c040078-c78e-4a69-a2da-0d5ebe538e23" />
+          <port name="capture_2" uuid="d537685e-534c-4c62-8543-44dfb5ea7a1b" />
+        </ports>
+      </client>
+      <client name="alsa_in" uuid="26324fb1-80f4-4316-9990-1e96f9fe7944">
+        <ports>
+          <port name="capture_1" uuid="be58d19a-6e08-408f-a72f-0be16a4f2573" />
+          <port name="capture_2" uuid="548e7b27-6436-4696-a085-0a1d3ffd8136" />
+        </ports>
+      </client>
+      <client name="alsa_out" uuid="4a27f437-08a0-4de1-a14a-a7220c103ba7">
+        <ports>
+          <port name="playback_1" uuid="3b266a2e-565b-492c-965c-80e19f642f29" />
+          <port name="playback_2" uuid="1bff19e4-bff3-4d61-bfb3-8326488bd6d9" />
         </ports>
       </client>
     </clients>
@@ -110,8 +128,8 @@ ladish Studio configuration.
         <port name="capture_2" uuid="35a3d02f-4188-4831-ae42-3e24ea3fc09c" type="audio" direction="output" />
       </ports>
       <dict>
-        <key name="http://ladish.org/ns/canvas/x">1549.000000</key>
-        <key name="http://ladish.org/ns/canvas/y">842.000000</key>
+        <key name="http://ladish.org/ns/canvas/x">1701.000000</key>
+        <key name="http://ladish.org/ns/canvas/y">828.000000</key>
       </dict>
     </client>
     <client name="jack-mixer" uuid="cf3d9330-92f5-41cf-805a-009ab8392be0" naming="app" app="97d2e09a-9cfe-4fc2-9bd9-d7d6ae0110b0">
@@ -146,14 +164,14 @@ ladish Studio configuration.
         <port name="CH_7 R" uuid="a105cd1d-75f3-49fe-9f9d-52deb7502bc0" type="audio" direction="input" />
         <port name="CH_7 Out L" uuid="1bbebe55-d2cd-429e-b34e-e606d8a62fcb" type="audio" direction="output" />
         <port name="CH_7 Out R" uuid="ba7c3237-f02a-4c23-abb8-a9088a5e4767" type="audio" direction="output" />
-        <port name="Ch_1 L" uuid="2f371068-398c-41fb-ad20-facd4989d782" type="audio" direction="input" />
-        <port name="Ch_1 R" uuid="f6984ebf-7da8-41db-b557-56798bd4bf36" type="audio" direction="input" />
-        <port name="Ch_1 Out L" uuid="3fd8ae75-51e0-4cca-a917-3f9b91b8976b" type="audio" direction="output" />
-        <port name="Ch_1 Out R" uuid="91c2e945-a416-42e7-aa3f-523ad2c2bb8f" type="audio" direction="output" />
         <port name="CH_8 L" uuid="0bebd738-61ec-465e-9f46-dd1391aa9ed0" type="audio" direction="input" />
         <port name="CH_8 R" uuid="4166a98f-b8aa-43cf-ad9b-bfdf01a7a3e3" type="audio" direction="input" />
         <port name="CH_8 Out L" uuid="a4f86221-eb2b-40ec-ab8c-6ee58e097db8" type="audio" direction="output" />
         <port name="CH_8 Out R" uuid="2389acd8-ba9b-4ca8-9781-a14fcc62d9c8" type="audio" direction="output" />
+        <port name="CH_1 L" uuid="3b846b83-9896-4f8f-8194-403d931b3cc1" type="audio" direction="input" />
+        <port name="CH_1 R" uuid="022d2a13-5ee4-494d-b6cd-dfdcd92e4837" type="audio" direction="input" />
+        <port name="CH_1 Out L" uuid="be033324-65b1-438c-a7a5-9e384aaaa45a" type="audio" direction="output" />
+        <port name="CH_1 Out R" uuid="da289cea-2ec1-423c-831a-f20ff483ded2" type="audio" direction="output" />
       </ports>
       <dict>
         <key name="http://ladish.org/ns/canvas/x">1369.000000</key>
@@ -177,26 +195,52 @@ ladish Studio configuration.
         <port name="analyzer Out #2" uuid="31aabbc4-d47f-49d7-97ec-649ed0af3f24" type="audio" direction="output" />
       </ports>
       <dict>
-        <key name="http://ladish.org/ns/canvas/x">1528.000000</key>
-        <key name="http://ladish.org/ns/canvas/y">1010.000000</key>
+        <key name="http://ladish.org/ns/canvas/x">1534.000000</key>
+        <key name="http://ladish.org/ns/canvas/y">1011.000000</key>
       </dict>
     </client>
-    <client name="Music Player Daemon" uuid="29c0d991-7c30-41d2-b6af-ee91fdce249e" naming="app">
+    <client name="zita-j2a" uuid="b079e69b-652a-401b-bbfb-9b3580980553" naming="app" app="b8f56853-4021-440f-b5dc-588400debeff">
       <ports>
-        <port name="left" uuid="8a819cd4-41e6-4f12-909d-a0d014c3e567" type="audio" direction="output" />
-        <port name="right" uuid="ee8e1a49-ecac-400f-9210-3ac2d18c14e7" type="audio" direction="output" />
+        <port name="playback_1" uuid="204e173c-02e0-4224-a076-48dace9e9db3" type="audio" direction="input" />
+        <port name="playback_2" uuid="1a85c6e2-4a6b-4dd1-88b1-25e6a2632996" type="audio" direction="input" />
       </ports>
       <dict>
-        <key name="http://ladish.org/ns/canvas/x">1505.000000</key>
-        <key name="http://ladish.org/ns/canvas/y">1229.000000</key>
+        <key name="http://ladish.org/ns/canvas/x">1555.000000</key>
+        <key name="http://ladish.org/ns/canvas/y">1203.000000</key>
+      </dict>
+    </client>
+    <client name="zita-a2j" uuid="d6460cd1-2164-48f5-af6b-8a5f90df58f0" naming="app" app="bce20f8a-4e5a-4f2b-a1da-0aa44b4cc387">
+      <ports>
+        <port name="capture_1" uuid="5c040078-c78e-4a69-a2da-0d5ebe538e23" type="audio" direction="output" />
+        <port name="capture_2" uuid="d537685e-534c-4c62-8543-44dfb5ea7a1b" type="audio" direction="output" />
+      </ports>
+      <dict>
+        <key name="http://ladish.org/ns/canvas/x">1558.000000</key>
+        <key name="http://ladish.org/ns/canvas/y">1251.000000</key>
+      </dict>
+    </client>
+    <client name="alsa_in" uuid="19373b75-b770-4214-bdf9-77d120fbb838" naming="app" app="56ab62bc-79ea-4e94-b7b1-cf4ad775d47f">
+      <ports>
+        <port name="capture_1" uuid="be58d19a-6e08-408f-a72f-0be16a4f2573" type="audio" direction="output" />
+        <port name="capture_2" uuid="548e7b27-6436-4696-a085-0a1d3ffd8136" type="audio" direction="output" />
+      </ports>
+      <dict>
+        <key name="http://ladish.org/ns/canvas/x">1546.000000</key>
+        <key name="http://ladish.org/ns/canvas/y">882.000000</key>
+      </dict>
+    </client>
+    <client name="alsa_out" uuid="386d7b20-831c-45e7-a3c3-927a8a3302fd" naming="app" app="02d5bcb4-923c-4ed6-aa5c-28b38b3d73d6">
+      <ports>
+        <port name="playback_1" uuid="3b266a2e-565b-492c-965c-80e19f642f29" type="audio" direction="input" />
+        <port name="playback_2" uuid="1bff19e4-bff3-4d61-bfb3-8326488bd6d9" type="audio" direction="input" />
+      </ports>
+      <dict>
+        <key name="http://ladish.org/ns/canvas/x">1542.000000</key>
+        <key name="http://ladish.org/ns/canvas/y">929.000000</key>
       </dict>
     </client>
   </clients>
   <connections>
-    <connection port1="8a819cd4-41e6-4f12-909d-a0d014c3e567" port2="0316602b-7381-4102-a881-c7120085c303" />
-    <connection port1="ee8e1a49-ecac-400f-9210-3ac2d18c14e7" port2="6276ebae-9983-4c87-8c9a-9e5de2fa9f50" />
-    <connection port1="8a819cd4-41e6-4f12-909d-a0d014c3e567" port2="2f371068-398c-41fb-ad20-facd4989d782" />
-    <connection port1="ee8e1a49-ecac-400f-9210-3ac2d18c14e7" port2="f6984ebf-7da8-41db-b557-56798bd4bf36" />
     <connection port1="516d4f79-6f40-47c5-96b8-6dfdc88367c1" port2="d93ff8b7-e37e-44b9-bd9d-dfc9ce7a1108" />
     <connection port1="d2f02ced-619e-4c4d-83dd-fb98661aa220" port2="dec896fe-7eff-4884-bf26-cb4c0964fa80" />
     <connection port1="4b05d643-7865-46ed-8473-4287ae288594" port2="a8ced3a4-d55a-462f-99ca-b56003f5e57f" />
@@ -205,9 +249,25 @@ ladish Studio configuration.
     <connection port1="2b75f47a-70fc-4232-bb1a-bd33389d02bd" port2="8ddc522c-bd15-49e7-81c8-5c14a67e5818" />
     <connection port1="0c3be0ac-9d6a-4f78-9e98-ff09ef7bab61" port2="0316602b-7381-4102-a881-c7120085c303" />
     <connection port1="44003f34-16a7-4e88-b8dd-968646a5c3f8" port2="6276ebae-9983-4c87-8c9a-9e5de2fa9f50" />
+    <connection port1="bec23b2b-02e0-4901-a59c-7cbcb356af05" port2="204e173c-02e0-4224-a076-48dace9e9db3" />
+    <connection port1="35a3d02f-4188-4831-ae42-3e24ea3fc09c" port2="1a85c6e2-4a6b-4dd1-88b1-25e6a2632996" />
+    <connection port1="5c040078-c78e-4a69-a2da-0d5ebe538e23" port2="0316602b-7381-4102-a881-c7120085c303" />
+    <connection port1="d537685e-534c-4c62-8543-44dfb5ea7a1b" port2="6276ebae-9983-4c87-8c9a-9e5de2fa9f50" />
+    <connection port1="5c040078-c78e-4a69-a2da-0d5ebe538e23" port2="0bebd738-61ec-465e-9f46-dd1391aa9ed0" />
+    <connection port1="d537685e-534c-4c62-8543-44dfb5ea7a1b" port2="4166a98f-b8aa-43cf-ad9b-bfdf01a7a3e3" />
+    <connection port1="be58d19a-6e08-408f-a72f-0be16a4f2573" port2="0316602b-7381-4102-a881-c7120085c303" />
+    <connection port1="548e7b27-6436-4696-a085-0a1d3ffd8136" port2="6276ebae-9983-4c87-8c9a-9e5de2fa9f50" />
+    <connection port1="bec23b2b-02e0-4901-a59c-7cbcb356af05" port2="3b266a2e-565b-492c-965c-80e19f642f29" />
+    <connection port1="35a3d02f-4188-4831-ae42-3e24ea3fc09c" port2="1bff19e4-bff3-4d61-bfb3-8326488bd6d9" />
+    <connection port1="be58d19a-6e08-408f-a72f-0be16a4f2573" port2="3b846b83-9896-4f8f-8194-403d931b3cc1" />
+    <connection port1="548e7b27-6436-4696-a085-0a1d3ffd8136" port2="022d2a13-5ee4-494d-b6cd-dfdcd92e4837" />
   </connections>
   <applications>
-    <application name="jack-mixer" uuid="97d2e09a-9cfe-4fc2-9bd9-d7d6ae0110b0" terminal="false" level="0" autorun="true">jack_mixer -c ~%2F.config%2Fjack_mixer%2Fdefault</application>
-    <application name="calf" uuid="822262d6-37fb-4b3e-b3ea-5011c20dc013" terminal="false" level="1" autorun="true">calfjackhost --load ~%2F.config%2Fcalf%2Fdefault</application>
+    <application name="jack-mixer" uuid="97d2e09a-9cfe-4fc2-9bd9-d7d6ae0110b0" terminal="false" level="0" autorun="true">jack_mixer -c ~%2F.config%2Fjack_mixer%2Fdefault.xml</application>
+    <application name="calf" uuid="822262d6-37fb-4b3e-b3ea-5011c20dc013" terminal="false" level="1" autorun="true">calfjackhost --load ~%2F.config%2Fcalf%2Fdefault.xml</application>
+    <application name="alsa_out" uuid="02d5bcb4-923c-4ed6-aa5c-28b38b3d73d6" terminal="false" level="0" autorun="true">alsa_out -j capture_palp -d palp -q1</application>
+    <application name="alsa_in" uuid="56ab62bc-79ea-4e94-b7b1-cf4ad775d47f" terminal="false" level="0" autorun="true">alsa_in -j playback_calp -d calp -q1</application>
+    <application name="zita-j2a" uuid="b8f56853-4021-440f-b5dc-588400debeff" terminal="false" level="0" autorun="true">zita-j2a -d hw:Loopback,1,0 -r 48000 -p 256</application>
+    <application name="zita-a2j" uuid="bce20f8a-4e5a-4f2b-a1da-0aa44b4cc387" terminal="false" level="0" autorun="true">zita-a2j -d hw:Loopback,1,0 -r 48000 -p 256</application>
   </applications>
 </studio>

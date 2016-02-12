@@ -5,13 +5,13 @@
   <param name="level_in" value="1" />
   <param name="level_out" value="1" />
   <param name="amount" value="1" />
-  <param name="meter_in" value="0.0648651" />
-  <param name="meter_out" value="0.0708075" />
+  <param name="meter_in" value="0" />
+  <param name="meter_out" value="0" />
   <param name="clip_in" value="0" />
   <param name="clip_out" value="0" />
   <param name="drive" value="8.5" />
   <param name="blend" value="0" />
-  <param name="meter_drive" value="0.0275277" />
+  <param name="meter_drive" value="0" />
   <param name="freq" value="120" />
   <param name="listen" value="0" />
   <param name="floor_active" value="0" />
@@ -23,10 +23,10 @@
   <param name="bypass" value="0" />
   <param name="level_in" value="1" />
   <param name="level_out" value="1" />
-  <param name="meter_inL" value="0.0716737" />
-  <param name="meter_inR" value="0.0700801" />
-  <param name="meter_outL" value="0.0716737" />
-  <param name="meter_outR" value="0.0700801" />
+  <param name="meter_inL" value="0" />
+  <param name="meter_inR" value="0" />
+  <param name="meter_outL" value="0" />
+  <param name="meter_outR" value="0" />
   <param name="clip_inL" value="0" />
   <param name="clip_inR" value="0" />
   <param name="clip_outL" value="0" />
@@ -83,8 +83,8 @@
 </plugin>
 <plugin type="analyzer" instance-name="analyzer" input-index="5" output-index="5">
 <preset bank="0" program="0" plugin="analyzer" name="">
-  <param name="meter_L" value="0.0187683" />
-  <param name="meter_R" value="0.0283203" />
+  <param name="meter_L" value="0" />
+  <param name="meter_R" value="0" />
   <param name="clip_L" value="0" />
   <param name="clip_R" value="0" />
   <param name="analyzer_level" value="1.25" />

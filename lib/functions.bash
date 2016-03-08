@@ -1,17 +1,24 @@
 #
 # $Header:  ${HOME}/lib/functions.bash                   Exp $
-# $Author: (c) 2015 -tclover <tokiclover@gmail.com>      Exp $
+# $Author: (c) 2015-6 -tclover <tokiclover@gmail.com>    Exp $
 # $License: 2-clause/new/simplified BSD                  Exp $
-# $Version: 1.2 2015/05/14 21:09:26                      Exp $
+# $Version: 1.2 2016/03/08 21:09:26                      Exp $
 #
+
+#
+# Setup a few environment variables for pr-*() helper family
+#
+PR_COL="$(tput cols)"
+# the following should be set before calling pr-end()
+#PR_LEN=${PR_LEN}
 
 #
 # @FUNCTION: Print error message to stderr
 #
 pr-error()
 {
-	local PFX=${name:+" ${fg[5]}${name}:${color[none]}"}
-	echo -e${PR_EOL+n} "${PR_EOL+\n} ${color[bold]}${fg[1]}*${color[none]}${PFX} ${@}" >&2
+	local PFX="${name:${fg[5]}${name}:${color[none]}}"
+	echo -e${PR_EOL+n} "${PR_EOL}${color[bold]}${fg[1]}* ${color[none]}${PFX} ${@}" >&2
 }
 
 #
@@ -27,8 +34,8 @@ die()
 #
 pr-info()
 {
-	local PFX=${name:+" ${fg[3]}${name}:${color[none]}"}
-	echo -e${PR_EOL+n} "${PR_EOL+\n} ${color[bold]}${fg[4]}*${color[none]}${PFX} ${@}"
+	local PFX="${name:+${fg[3]}${name}:${color[none]}}"
+	echo -e${PR_EOL+n} "${PR_EOL}${color[bold]}${fg[4]}* ${color[none]}${PFX} ${@}"
 }
 
 #
@@ -36,8 +43,8 @@ pr-info()
 #
 pr-warn()
 {
-	local PFX=${name:+" ${fg[1]}${name}:${color[none]}"}
-	echo -e${PR_EOL+n} "${PR_EOL+\n} ${color[bold]}${fg[3]}*${color[none]}${PFX} ${@}"
+	local PFX="${name:+${fg[1]}${name}:${color[none]}}"
+	echo -e${PR_EOL+n} "${PR_EOL}${color[bold]}${fg[3]}* ${color[none]}${PFX} ${@}"
 }
 
 #
@@ -45,10 +52,11 @@ pr-warn()
 #
 pr-begin()
 {
-	[[ "${PR_EOL}" ]] && echo
-:	${PR_EOL=0}
-	local PFX=${name:+"${fg[5]}[${color[none]} ${fg[4]}${name}${color[none]}: ${fg[5]}]${color[none]}"}
-	echo -en " ${color[bold]}${PFX} ${@}"
+	echo -en "${PR_EOL}"
+	PR_EOL="\n"
+	PR_LEN=$((${#name}+${#*}))
+	local PFX="${name:+${fg[5]}[${color[none]}${fg[4]}${name}${color[none]}${fg[5]}]${color[none]}}"
+	echo -en "${color[bold]}${PFX} ${@}"
 }
 
 #
@@ -58,12 +66,13 @@ pr-end()
 {
 	local SFX
 	case "${1:-0}" in
-		(0) SFX="${fg[4]}[${color[none]} ${fg[2]}Ok${color[none]} ${fg[4]}]${color[none]}";;
-		(*) SFX="${fg[3]}[${color[none]} ${fg[1]}No${color[none]} ${fg[3]}]${color[none]}";;
+		(0) SFX="${fg[4]}[${color[none]}${fg[2]}Ok${color[none]}${fg[4]}]${color[none]}";;
+		(*) SFX="${fg[3]}[${color[none]}${fg[1]}No${color[none]}${fg[3]}]${color[none]}";;
 	esac
 	shift
-	echo -en " ${@} ${color[bold]}${SFX}\n"
-	PR_EOL=
+	PR_LEN=$((${PR_COL}-${PR_LEN}))
+	printf "%*b\n" "${PR_LEN}" "${@} ${color[bold]}${SFX}"
+	PR_EOL= PR_LEN=0
 }
 
 #

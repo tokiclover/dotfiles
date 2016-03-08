@@ -1,17 +1,24 @@
 #
 # $Header:  ${HOME}/lib//functions.zsh                   Exp $
-# $Author: (c) 2015 -tclover <tokiclover@gmail.com>      Exp $
+# $Author: (c) 2015-6 -tclover <tokiclover@gmail.com>    Exp $
 # $License: 2-clause/new/simplified BSD                  Exp $
-# $Version: 1.2 2015/05/14 21:09:26                      Exp $
+# $Version: 1.3 2016/03/08 21:09:26                      Exp $
 #
+
+#
+# Setup a few environment variables for pr-*() helper family
+#
+PR_COL="$(tput cols)"
+# the following should be set before calling pr-end()
+#PR_LEN=${PR_LEN}
 
 #
 # @FUNCTION: Print error message to stderr
 #
 pr-error()
 {
-	local PFX=${name:+" %F{magenta}${name}:"}
-	print -P${PR_EOL:+n} "${PR_EOL:+\n} %B%F{red}*${PFX}%b%f ${@}" >&2
+	local PFX=${name:+%F{magenta}${name}:}
+	print -P${PR_EOL:+n} "${PR_EOL}%B%F{red}* ${PFX}%b%f ${@}" >&2
 }
 
 #
@@ -19,8 +26,8 @@ pr-error()
 #
 pr-info()
 {
-	local PFX=${name:+" %F{yellow}${name}:"}
-	print -P${PR_EOL:+n} "${PR_EOL:+\n} %B%F{blue}*${PFX}%b%f ${@}"
+	local PFX=${name:+%F{yellow}${name}:}
+	print -P${PR_EOL:+n} "${PR_EOL}%B%F{blue}* ${PFX}%b%f ${@}"
 }
 
 #
@@ -28,8 +35,8 @@ pr-info()
 #
 pr-warn()
 {
-	local PFX=${name:+" %F{red}${name}:"}
-	print -P${PR_EOL:+n} "${PR_EOL:+\n} %B%F{yellow}*${CLR_RST}${PFX}%f%b ${@}"
+	local PFX=${name:+%F{red}${name}:}
+	print -P${PR_EOL:+n} "${PR_EOL}%B%F{yellow}* ${CLR_RST}${PFX}%f%b ${@}"
 }
 
 #
@@ -37,12 +44,11 @@ pr-warn()
 #
 pr-begin()
 {
-	case ${PR_EOL} {
-		(0) echo;;
-	}
-:	${PR_EOL=0}
-	local PFX=${name:+"%B%F{magenta}[%f %F{blue}${name}%f: %F{magenta}]%f%b"}
-	print -P " ${PFX} ${@}"
+	print -Pn "${PR_EOL}"
+	PR_EOL="\n"
+	PR_LEN=$((${#name}+${#*}))
+	local PFX=${name:+%B%F{magenta}[%f%F{blue}${name}%f%F{magenta}]%f%b}
+	print -Pn "${PFX} ${@}"
 }
 
 #
@@ -52,12 +58,14 @@ pr-end()
 {
 	local SFX
 	case ${1:-0} {
-		(0) SFX="%F{blue}[%f %F{green}Ok%f %F{blue}]%f";;
-		(*) SFX="%F{yellow}[%f %F{red}No%f %F{yellow}]%f";;
+		(0) SFX="%F{blue}[%f%F{green}Ok%f%F{blue}]%f";;
+		(*) SFX="%F{yellow}[%f%F{red}No%f%F{yellow}]%f";;
 	}
 	shift
-	print -P " ${@} %B${SFX}%b"
-	PR_EOL=
+	PR_LEN=$((${PR_COL}-${PR_LEN}))
+	printf "%*b" ${PR_LEN} $(print -P "${@} %B${SFX}%b")
+	print
+	PR_EOL= PR_LEN=0
 }
 
 #

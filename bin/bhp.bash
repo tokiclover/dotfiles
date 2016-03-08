@@ -186,7 +186,7 @@ function bhp {
 					{ pr-error "Failed to override the old tarball"; continue; }
 			fi
 			tar -X ${bhp[profile]}/.unpacked -Ocp ${bhp[profile]} | \
-				${bhp[compressor]} ${bhp[profile]}${ext} ||
+				${bhp[compressor]} ${bhp[profile]}${ext} &>/dev/null ||
 				{ pr-error "Failed to repack a new tarball"; continue; }
 		else
 			if [[ -f ${bhp[profile]}${ext} ]]; then

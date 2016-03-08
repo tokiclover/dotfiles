@@ -1,9 +1,9 @@
 #!/bin/bash
 #
 # $Header: $HOME/bin/browser-home-profile.bash          Exp $
-# $Author: (c) 2012-15 -tclover <tokiclover@gmail.com>  Exp $
+# $Author: (c) 2012-16 -tclover <tokiclover@gmail.com>  Exp $
 # $License: MIT (or 2-clause/new/simplified BSD)        Exp $
-# $Version: 1.0 2015/08/24                              Exp $
+# $Version: 1.0 2016/03/08                              Exp $
 #
 # @DESCRIPTION: Set up and maintain browser home profile directory
 #   and cache directory in a tmpfs (or zram backed filesystem.)
@@ -138,7 +138,7 @@ function bhp-init {
 		;;
 	esac
 
-:	${compressor:=lz4 -1 -}
+:	${compressor:=lz4 -1}
 :	${profile:=${PROFILE##*/}}
 :	${bhp[compressor]:=${compressor}}
 :	${bhp[profile]:=${profile}}
@@ -152,11 +152,11 @@ function bhp-init {
 	for dir in "${HOME}"/.${PROFILE} "${HOME}"/.cache/${PROFILE#config/}; do
 		[[ -d "${dir}" ]] || continue
 		grep -q "${dir}" /proc/mounts && continue
-		pr-begin "Setting up directory...\n"
+		pr-begin "Setting up directory..."
 
 		pushd "${dir%/*}" >${NULL} 2>&1 || continue
 		if [[ ! -f ${profile}${ext} ]] || [[ ! -f ${profile}.old${ext} ]]; then
-			tar -Ocp ${profile} | ${compressor} ${profile}${ext} ||
+			tar -cpf ${profile}${ext}  -I "${compressor}" ${profile} ||
 				{ pr-error "Failed to pack a tarball"; continue; }
 		fi
 		popd >${NULL} 2>&1
@@ -179,14 +179,14 @@ function bhp {
 	for dir in "${HOME}"/.{${bhp[PROFILE]},cache/${bhp[PROFILE]#config/}}; do
 		pushd "${dir%/*}" >${NULL} 2>&1 || continue
 
-		pr-begin "Setting up tarball...\n"
+		pr-begin "Setting up tarball..."
 		if [[ -f ${bhp[profile]}/.unpacked ]]; then
 			if [[ -f ${bhp[profile]}${ext} ]]; then
 				mv -f ${bhp[profile]}{,.old}${ext} ||
 					{ pr-error "Failed to override the old tarball"; continue; }
 			fi
-			tar -X ${bhp[profile]}/.unpacked -Ocp ${bhp[profile]} | \
-				${bhp[compressor]} ${bhp[profile]}${ext} &>/dev/null ||
+			tar -X ${bhp[profile]}/.unpacked -cpf ${bhp[profile]}${ext} \
+				-I "${bhp[compressor]}" ${bhp[profile]} ||
 				{ pr-error "Failed to repack a new tarball"; continue; }
 		else
 			if [[ -f ${bhp[profile]}${ext} ]]; then
@@ -196,7 +196,7 @@ function bhp {
 			else
 				pr-warn "No tarball found"
 			fi
-			${bhp[compressor]%% *} -cd ${tarball} | tar -xp &&
+			 tar -xpf ${tarball} -I "${bhp[compressor]}" &&
 				touch ${bhp[profile]}/.unpacked ||
 				pr-error "Failed to unpack the tarball"
 		fi

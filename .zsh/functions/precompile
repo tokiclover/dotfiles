@@ -4,18 +4,14 @@
 # $Header: $HOME/.zsh/functions/precompile               Exp $
 # $Aythor: (c) 2014 -tclover <tokiclover@gmail.com>      Exp $
 # $License: MIT (or 2-clause/new/simplified BSD)         Exp $
-# $Version: 0.2 2014/10/10 11:09:26                      Exp $
+# $Version: 0.2 2016/03/08 11:09:26                      Exp $
 #
 
-function usage {
-	cat <<-EOH
- usage: precompile [options]
+local usage="Usage: precompile [options]
    -f, --fpath-append    replace/append compiled file
    -s, --system-fpath    compile sytem wide fpath(s)
    -h, --help            print this help message
-EOH
-return
-}
+"
 
 setopt LOCAL_OPTIONS EXTENDED_GLOB NULL_GLOB
 
@@ -28,7 +24,7 @@ for (( ; $# > 0; ))
 			local system_fpath=true
 			shift;;
 		(-h|--help)
-			usage
+			print $usage
 			return;;
 		(*)
 			break;;

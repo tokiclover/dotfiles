@@ -1,9 +1,9 @@
 #!/bin/zsh
 #
 # $Header: $HOME/bin/browser-home-profile.zsh           Exp $
-# $Author: (c) 2012-15 -tclover <tokiclover@gmail.com>  Exp $
+# $Author: (c) 2012-16 -tclover <tokiclover@gmail.com>  Exp $
 # $License: MIT (or 2-clause/new/simplified BSD)        Exp $
-# $Version: 1.0 2015/08/24                              Exp $
+# $Version: 1.0 2016/03/08                              Exp $
 #
 # @DESCRIPTION: Set up and maintain browser home profile directory
 #   and cache directory in a tmpfs (or zram backed filesystem.)
@@ -138,7 +138,7 @@ function {
 		;;
 	}
 
-:	${compressor:=lz4 -1 -}
+:	${compressor:=lz4 -1}
 :	${profile:=${PROFILE:t}}
 :	${bhp[compressor]:=$compressor}
 :	${bhp[profile]:=$profile}
@@ -156,7 +156,7 @@ function {
 
 		pushd -q ${dir:h} || continue
 		if [[ ! -f ${profile}${ext} ]] || [[ ! -f ${profile}.old${ext} ]] {
-			tar -Ocp ${profile} | ${=compressor} ${profile}${ext} ||
+			tar -cpf ${profile}${ext} -I ${compressor} ${profile} ||
 				{ pr-error "Failed to pack a tarball"; continue; }
 		}
 		popd -q
@@ -183,8 +183,8 @@ function bhp {
 				mv -f ${bhp[profile]}{,.old}${ext} ||
 				{ pr-error "Failed to override the old tarball"; continue; }
 			}
-			tar -X ${bhp[profile]}/.unpacked -Ocp ${bhp[profile]} | \
-				${=bhp[compressor]} ${bhp[profile]}${ext} &>/dev/null ||
+			tar -X ${bhp[profile]}/.unpacked -cpf ${bhp[profile]}${ext} \
+				-I ${bhp[compressor]} ${bhp[profile]} ||
 				pr-error "Failed to repack a new tarball"
 		} else {
 			if [[ -f ${bhp[profile]}${ext} ]] {
@@ -193,7 +193,7 @@ function bhp {
 				tarball=${bhp[profile]}.old${ext}
 			} else { pr-error "No tarball found" }
 
-			${bhp[compressor][(w)1]} -cd ${tarball} | tar -xp &&
+			 tar -xpf ${tarball} -I ${bhp[compressor]} &&
 				touch ${bhp[profile]}/.unpacked ||
 				pr-error "Failed to unpack the profile"
 		}

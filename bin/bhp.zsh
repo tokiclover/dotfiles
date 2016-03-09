@@ -3,7 +3,7 @@
 # $Header: $HOME/bin/browser-home-profile.zsh           Exp $
 # $Author: (c) 2012-16 -tclover <tokiclover@gmail.com>  Exp $
 # $License: MIT (or 2-clause/new/simplified BSD)        Exp $
-# $Version: 1.0 2016/03/08                              Exp $
+# $Version: 1.2 2016/03/08                              Exp $
 #
 # @DESCRIPTION: Set up and maintain browser home profile directory
 #   and cache directory in a tmpfs (or zram backed filesystem.)
@@ -43,8 +43,12 @@ if [[ -f ${0:h}/../lib/functions.zsh ]] {
 }
 autoload -Uz mktmp
 
-function bhp-help {
-	cat <<-EOH
+#
+# Use an anonymous function to initialize
+#
+function {
+	function bhp-help {
+		cat <<-EOH
 usage: ${bhp[zero]} [OPTIONS] [BROWSER]
   -b, --browser=Web-Browser   Select a browser to set up
   -c, --compressor='lzop -1'  Use lzop compressor, default to lz4
@@ -53,12 +57,8 @@ usage: ${bhp[zero]} [OPTIONS] [BROWSER]
   -z, --zsh-exit-hook         Add an exit hook to Z Shell
   -h, --help                  Print help message and exit
 EOH
-}
+	}
 
-#
-# Use an anonymous function to initialize
-#
-function {
 	local ARGS DIR PROFILE browser char dir ext name=${bhp[zero]} profile tmpdir
 
 	ARGS=($(getopt \
@@ -88,25 +88,24 @@ function {
 	# Set up web-browser if any
 	#
 	function {
-		local BROWSERS MOZ_BROWSERS set brs dir
-		MOZ_BROWSERS='aurora firefox icecat seamonkey'
-		BROWSERS='conkeror chrom epiphany midory opera otter netsirf qupzilla vivaldi'
+		local browser group
+		local -A BROWSERS
+		BROWSERS[mozilla]="aurora firefox icecat seamonkey"
+		BROWSERS[config]="conkeror chrome chromium epiphany midory opera otter netsirf qupzilla vivaldi"
 
 		case ${1} {
-			(*aurora|firefox*|icecat|seamonkey)
+			(aurora|firefox|icecat|seamonkey)
 				BROWSER=${1} PROFILE=mozilla/${1}; return;;
-			(conkeror*|*chrom*|epiphany|midory|opera*|otter*|qupzilla|netsurf*|vivaldi*)
+			(conkeror|chrome|chromium|epiphany|midory|opera|otter|qupzilla|netsurf|vivaldi)
 				BROWSER=${1} PROFILE=config/${1} ; return;;
 		}
 
-		for set ("mozilla:${MOZ_BROWSERS}" "config:${BROWSERS}")
-			for brs (${=set#*:}) {
-				set=${set%:*}
-				for dir (${HOME}/.${set}/*${brs}*(N/))
-					if [[ -d ${dir} ]] {
-						BROWSER=${brs} PROFILE=${set}/${brs}
-						return
-					}
+		for key (${(k)BROWSERS[@]})
+			for browser (${=BROWSERS[${key}]}) {
+				if [[ -d ${HOME}/.${key}/${browser} ]] {
+					BROWSER=${browser} PROFILE=${key}/${browser}
+					return
+				}
 			}
 		return 111
 	} ${browser:-${BROWSER:-$1}}
@@ -157,7 +156,7 @@ function {
 		pushd -q ${dir:h} || continue
 		if [[ ! -f ${profile}${ext} ]] || [[ ! -f ${profile}.old${ext} ]] {
 			tar -cpf ${profile}${ext} -I ${compressor} ${profile} ||
-				{ pr-error "Failed to pack a tarball"; continue; }
+				{ pr-end 1 "Tarball"; continue; }
 		}
 		popd -q
 
@@ -181,21 +180,21 @@ function bhp {
 		if [[ -f ${bhp[profile]}/.unpacked ]] {
 			if [[ -f ${bhp[profile]}${ext} ]] {
 				mv -f ${bhp[profile]}{,.old}${ext} ||
-				{ pr-error "Failed to override the old tarball"; continue; }
+				{ pr-end 2 "Moving"; continue; }
 			}
 			tar -X ${bhp[profile]}/.unpacked -cpf ${bhp[profile]}${ext} \
 				-I ${bhp[compressor]} ${bhp[profile]} ||
-				pr-error "Failed to repack a new tarball"
+				pr-end 3 "Packing"
 		} else {
 			if [[ -f ${bhp[profile]}${ext} ]] {
 				tarball=${bhp[profile]}${ext}
 			} elif [[ -f ${bhp[profile]}.old${ext} ]] {
 				tarball=${bhp[profile]}.old${ext}
-			} else { pr-error "No tarball found" }
+			} else { pr-warn "No tarball found"; continue }
 
 			 tar -xpf ${tarball} -I ${bhp[compressor]} &&
 				touch ${bhp[profile]}/.unpacked ||
-				pr-error "Failed to unpack the profile"
+				pr-end 5 "Unpacking"
 		}
 		pr-end ${?}
 		popd -q

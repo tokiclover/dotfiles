@@ -8,9 +8,12 @@
 #
 # Setup a few environment variables for pr-*() helper family
 #
-PR_COL="$(tput cols)"
+typeset -A print_info
+print_info[cols]="$(tput cols)"
 # the following should be set before calling pr-end()
-#PR_LEN=${PR_LEN}
+#print_info[len]=${print_info[cols]}
+# and this keep updating print_info[cols]
+trap 'print_info[cols]="$(tput cols)"' WINCH
 
 #
 # @FUNCTION: Print error message to stderr
@@ -18,7 +21,7 @@ PR_COL="$(tput cols)"
 pr-error()
 {
 	local PFX="${name:+${fg[5]}${name}:${color[none]}}"
-	echo -e${PR_EOL+n} "${PR_EOL}${color[bold]}${fg[1]}* ${color[none]}${PFX} ${@}" >&2
+	echo -e${print_info[eol]+n} "${print_info[eol]}${color[bold]}${fg[1]}* ${color[none]}${PFX} ${@}" >&2
 }
 
 #
@@ -35,7 +38,7 @@ die()
 pr-info()
 {
 	local PFX="${name:+${fg[3]}${name}:${color[none]}}"
-	echo -e${PR_EOL+n} "${PR_EOL}${color[bold]}${fg[4]}* ${color[none]}${PFX} ${@}"
+	echo -e${print_info[eol]+n} "${print_info[eol]}${color[bold]}${fg[4]}* ${color[none]}${PFX} ${@}"
 }
 
 #
@@ -44,7 +47,7 @@ pr-info()
 pr-warn()
 {
 	local PFX="${name:+${fg[1]}${name}:${color[none]}}"
-	echo -e${PR_EOL+n} "${PR_EOL}${color[bold]}${fg[3]}* ${color[none]}${PFX} ${@}"
+	echo -e${print_info[eol]+n} "${print_info[eol]}${color[bold]}${fg[3]}* ${color[none]}${PFX} ${@}"
 }
 
 #
@@ -52,9 +55,9 @@ pr-warn()
 #
 pr-begin()
 {
-	echo -en "${PR_EOL}"
-	PR_EOL="\n"
-	PR_LEN=$((${#name}+${#*}))
+	echo -en "${print_info[eol]}"
+	print_info[eol]="\n"
+	print_info[len]=$((${#name}+${#*}))
 	local PFX="${name:+${fg[5]}[${color[none]}${fg[4]}${name}${color[none]}${fg[5]}]${color[none]}}"
 	echo -en "${color[bold]}${PFX} ${@}"
 }
@@ -70,9 +73,9 @@ pr-end()
 		(*) SFX="${fg[3]}[${color[none]}${fg[1]}No${color[none]}${fg[3]}]${color[none]}";;
 	esac
 	shift
-	PR_LEN=$((${PR_COL}-${PR_LEN}))
-	printf "%*b\n" "${PR_LEN}" "${@} ${color[bold]}${SFX}"
-	PR_EOL= PR_LEN=0
+	print_info[len]=$((${print_info[cols]}-${print_info[len]}))
+	printf "%*b\n" "${print_info[len]}" "${@} ${color[bold]}${SFX}"
+	print_info[eol]= print_info[len]=0
 }
 
 #
@@ -118,7 +121,7 @@ eval_colors()
 	done
 }
 
-if [ -t 1 ] && yesno "${COLOR:-Yes}"; then
+if [ -t 1 ] && yesno "${PRINT_COLOR:-Yes}"; then
 	typeset -a bg fg; typeset -A color
 	eval_colors
 fi

@@ -8,9 +8,12 @@
 #
 # Setup a few environment variables for pr-*() helper family
 #
-PR_COL="$(tput cols)"
+typeset -A print_info
+print_info[cols]="$(tput cols)"
 # the following should be set before calling pr-end()
-#PR_LEN=${PR_LEN}
+#print_info[len]=${print_info[len]}
+# and this keep updating print_info[cols]
+trap 'print_info[cols]=$(tput cols)' WINCH
 
 #
 # @FUNCTION: Print error message to stderr
@@ -18,7 +21,7 @@ PR_COL="$(tput cols)"
 pr-error()
 {
 	local PFX=${name:+%F{magenta}${name}:}
-	print -P${PR_EOL:+n} "${PR_EOL}%B%F{red}* ${PFX}%b%f ${@}" >&2
+	print -P${print_info[eol]:+n} "${print_info[eol]}%B%F{red}* ${PFX}%b%f ${@}" >&2
 }
 
 #
@@ -27,7 +30,7 @@ pr-error()
 pr-info()
 {
 	local PFX=${name:+%F{yellow}${name}:}
-	print -P${PR_EOL:+n} "${PR_EOL}%B%F{blue}* ${PFX}%b%f ${@}"
+	print -P${print_info[eol]:+n} "${print_info[eol]}%B%F{blue}* ${PFX}%b%f ${@}"
 }
 
 #
@@ -36,7 +39,7 @@ pr-info()
 pr-warn()
 {
 	local PFX=${name:+%F{red}${name}:}
-	print -P${PR_EOL:+n} "${PR_EOL}%B%F{yellow}* ${CLR_RST}${PFX}%f%b ${@}"
+	print -P${print_info[eol]:+n} "${print_info[eol]}%B%F{yellow}* ${CLR_RST}${PFX}%f%b ${@}"
 }
 
 #
@@ -44,9 +47,9 @@ pr-warn()
 #
 pr-begin()
 {
-	print -Pn "${PR_EOL}"
-	PR_EOL="\n"
-	PR_LEN=$((${#name}+${#*}))
+	print -Pn "${print_info[eol]}"
+	print_info[eol]="\n"
+	print_info[len]=$((${#name}+${#*}))
 	local PFX=${name:+%B%F{magenta}[%f%F{blue}${name}%f%F{magenta}]%f%b}
 	print -Pn "${PFX} ${@}"
 }
@@ -62,10 +65,10 @@ pr-end()
 		(*) SFX="%F{yellow}[%f%F{red}No%f%F{yellow}]%f";;
 	}
 	shift
-	PR_LEN=$((${PR_COL}-${PR_LEN}))
-	printf "%*b" ${PR_LEN} $(print -P "${@} %B${SFX}%b")
+	print_info[len]=$((${print_info[cols]}-${print_info[len]}))
+	printf "%*b" ${print_info[len]} $(print -P "${@} %B${SFX}%b")
 	print
-	PR_EOL= PR_LEN=0
+	print_info[eol]= print_info[len]=0
 }
 
 #
@@ -86,7 +89,7 @@ yesno()
 #
 # Set up (terminal) colors
 #
-if [ -t 1 ] && yesno ${COLOR:-Yes}; then
+if [ -t 1 ] && yesno ${PRINT_COLOR:-Yes}; then
 	autoload colors zsh/terminfo
 	if (( ${terminfo[colors]} >= 8 )) { colors }
 fi

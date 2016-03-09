@@ -17,7 +17,7 @@ PR_COL="$(tput cols)"
 #
 pr-error()
 {
-	local PFX="${name:${fg[5]}${name}:${color[none]}}"
+	local PFX="${name:+${fg[5]}${name}:${color[none]}}"
 	echo -e${PR_EOL+n} "${PR_EOL}${color[bold]}${fg[1]}* ${color[none]}${PFX} ${@}" >&2
 }
 

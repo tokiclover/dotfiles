@@ -3,7 +3,7 @@
 # $Header: $HOME/bin/browser-home-profile.zsh           Exp $
 # $Author: (c) 2012-16 -tclover <tokiclover@gmail.com>  Exp $
 # $License: MIT (or 2-clause/new/simplified BSD)        Exp $
-# $Version: 1.2 2016/03/08                              Exp $
+# $Version: 1.3 2016/03/30                              Exp $
 #
 # @DESCRIPTION: Set up and maintain browser home profile directory
 #   and cache directory in a tmpfs (or zram backed filesystem.)
@@ -28,7 +28,6 @@
 #
 
 typeset -A bhp
-NULL=/dev/null
 case ${0:t} in
 	(bhp*|browser-home-profile*) bhp[zero]=${0:t};;
 	(*) bhp[zero]=bhp;;
@@ -41,7 +40,6 @@ if [[ -f ${0:h}/../lib/functions.zsh ]] {
 		print -P " %F{red}*%f %1x: %F{yellow}%U%I%u:%f $@" >&2
 	}
 }
-autoload -Uz mktmp
 
 #
 # Use an anonymous function to initialize
@@ -54,15 +52,17 @@ usage: ${bhp[zero]} [OPTIONS] [BROWSER]
   -c, --compressor='lzop -1'  Use lzop compressor, default to lz4
   -t, --tmpdir=DIR            Set up a particular TMPDIR
   -p, --profile=PROFILE       Select a particular profile
+  -s, --set                   Set up tarball archives
   -z, --zsh-exit-hook         Add an exit hook to Z Shell
   -h, --help                  Print help message and exit
 EOH
 	}
 
 	local ARGS DIR PROFILE browser char dir ext name=${bhp[zero]} profile tmpdir
+	local set_tarball=false
 
 	ARGS=($(getopt \
-		-o b:c:hp:t:z -l browser:,compressor:,help,profile:,tmpdir:,zsh-exit-hook \
+		-o b:c:hp:st:z -l browser:,compressor:,help,profile:,set,tmpdir:,zsh-exit-hook \
 		-n ${bhp[zero]} -s sh -- "${@}"))
 	if (( ${?} != 0 )) {
 		return 111
@@ -72,15 +72,17 @@ EOH
 	while true; do
 	case ${1} {
 			(-h|--help) bhp-help; return 128;;
-			(-c|--compressor) compressor=${2};;
-			(-b|--browser) browser=${2};;
-			(-p|--profile) PROFILE=${2};;
-			(-t|--tmpdir) tmpdir=${2};;
+			(-c|--compressor) compressor=${2}; shift;;
+			(-b|--browser) browser=${2}      ; shift;;
+			(-p|--profile) PROFILE=${2}      ; shift;;
+			(-t|--tmpdir) tmpdir=${2}        ; shift;;
+			(-s|--set)  set_tarball=true    ;;
 			(-z|--zsh-exit-hook)
-				autoload -Uz add-zsh-hook
-				add-zsh-hook zshexit bhp;;
-			(*) shift; break;;
+				functions -u add-zsh-hook
+				add-zsh-hook zshexit bhp     ;;
+			(*) shift; break               ;;
 		}
+		shift
 	done
 	setopt LOCAL_OPTIONS EXTENDED_GLOB
 
@@ -91,13 +93,12 @@ EOH
 		local browser group
 		local -A BROWSERS
 		BROWSERS[mozilla]="aurora firefox icecat seamonkey"
-		BROWSERS[config]="conkeror chrome chromium epiphany midory opera otter netsirf qupzilla vivaldi"
+		BROWSERS[config]="conkeror chrome chromium epiphany midory opera otter netsurf qupzilla vivaldi"
 
-		case ${1} {
-			(aurora|firefox|icecat|seamonkey)
-				BROWSER=${1} PROFILE=mozilla/${1}; return;;
-			(conkeror|chrome|chromium|epiphany|midory|opera|otter|qupzilla|netsurf|vivaldi)
-				BROWSER=${1} PROFILE=config/${1} ; return;;
+		if [[ ${BROWSERS[mozilla]} == *${1}* ]] {
+				BROWSER=${1} PROFILE=mozilla/${1}; return;
+		} elif [[ ${BROWSERS[config]} == *${1}* ]] {
+				BROWSER=${1} PROFILE=config/${1} ; return;
 		}
 
 		for key (${(k)BROWSERS[@]})
@@ -143,14 +144,17 @@ EOH
 :	${bhp[profile]:=$profile}
 :	${bhp[PROFILE]:=$PROFILE}
 :	${tmpdir:=${TMPDIR:-/tmp/$USER}}
-:	${ext=.tar.$compressor[(w)1]}
+:	${ext:=.tar.$compressor[(w)1]}
 
 	[[ -d ${tmpdir} ]] || mkdir -p -m 1700 ${tmpdir} ||
 		{ pr-error "No suitable directory found"; return 114; }
 
 	for dir (${HOME}/.${PROFILE} ${HOME}/.cache/${PROFILE#config/}) {
 		[[ -d ${dir} ]] || continue
-		grep -q ${dir} /proc/mounts && continue
+		if grep -qw "${dir}" /proc/mounts; then
+			${set_tarball} && bhp ${dir}
+			continue
+		fi
 		pr-begin "Setting up directory..."
 
 		pushd -q ${dir:h} || continue
@@ -158,15 +162,19 @@ EOH
 			tar -cpf ${profile}${ext} -I ${compressor} ${profile} ||
 				{ pr-end 1 "Tarball"; continue; }
 		}
-		popd -q
 
 		case ${dir} {
 			(*.cache/*) char=c;;
 			(*) char=p;;
 		}
-		DIR=$(mktmp -p ${tmpdir}  -d bh${char}-XXXXXX)
+		DIR=$(mktemp -p ${tmpdir} -d bh${char}-XXXXXX)
 		sudo mount --bind ${DIR} ${dir} || pr-error "Failed to mount ${DIR}"
 		pr-end ${?}
+
+		if ${set_tarball}; then
+			bhp ${dir}
+		fi
+		popd -q
 	}
 } "${@}"
 BHP_RET=${?}
@@ -174,7 +182,8 @@ BHP_RET=${?}
 function bhp {
 	local ext=.tar.${bhp[compressor][(w)1]} name=bhp tarball
 
-	for dir (${HOME}/.{${bhp[PROFILE]},cache/${bhp[PROFILE]#config/}}) {
+	for dir (${@:-${HOME}/.{${bhp[PROFILE]},cache/${bhp[PROFILE]#config/}}}) {
+		[[ -d ${dir} ]] || continue
 		pushd -q ${dir:h} || continue
 		pr-begin "Setting up tarball..."
 		if [[ -f ${bhp[profile]}/.unpacked ]] {

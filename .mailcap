@@ -1,10 +1,11 @@
 #
-# $Header: ~/.mutt/mailcap Exp $
+# $Id: ~/.mailcap Exp $
 #
 
-#text/html; links -force-html %s
+text/html; lynx %s
 image/gif; feh %s
 image/jpg; feh %s
+image/jpeg; feh %s
 image/tiff; feh %s
 image/png; feh %s
 application/vnd.oasis.opendocument.text; libreoffice %s

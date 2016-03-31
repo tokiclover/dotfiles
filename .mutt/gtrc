@@ -7,7 +7,7 @@ set record="+Sent"
 set postponed="+Drafts"
 set trash="+Trash"
 set from="$imap_user"
-set realname="${my_gcrc_user}"
+set realname="${my_gtrc_user}"
 set signature="$realname"
 set smtp_url="smtps://${imap_user}:${imap_pass}@smtp.${hostname}"
 

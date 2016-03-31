@@ -3,7 +3,7 @@
 # $Header: $HOME/bin/browser-home-profile.bash          Exp $
 # $Author: (c) 2012-16 -tclover <tokiclover@gmail.com>  Exp $
 # $License: MIT (or 2-clause/new/simplified BSD)        Exp $
-# $Version: 1.2 2016/03/08                              Exp $
+# $Version: 1.3 2016/03/30                              Exp $
 #
 # @DESCRIPTION: Set up and maintain browser home profile directory
 #   and cache directory in a tmpfs (or zram backed filesystem.)
@@ -55,14 +55,16 @@ usage: bhp [OPTIONS] [Browser-Home-Profile]
   -c, --compressor='lzop -1'  Use lzop compressor, default to lz4
   -t, --tmpdir=DIR            Set up a particular TMPDIR
   -p, --profile=PROFILE       Select a particular profile
+  -s, --set                   Set up tarball archives
   -h, --help                  Print help message and exit
 EOH
 	}
 
 	local ARGS DIR PROFILE browser char dir ext name="${bhp[zero]}" profile tmpdir
+	local set_tarball=false
 
 	ARGS=($(getopt \
-		-o b:c:hp:t: -l browser:,compressor:,help,profile:,tmpdir: \
+		-o b:c:hp:st: -l browser:,compressor:,help,profile:,set,tmpdir: \
 		-n ${bhp[zero]} -s sh -- "${@}"))
 	if (( ${?} != 0 )); then
 		return 111
@@ -71,13 +73,15 @@ EOH
 
 	while true; do
 		case "${1}" in
-			(-b|--browser) browser="${2}";;
-			(-c|--compressor) compressor="${2}";;
-			(-p|--profile) bhp[profile]="${2}";;
-			(-h|--help) bhp-help; return 128;;
-			(-t|--tmpdir) tmpdir="${2}";;
-			(*) shift; break;;
+			(-b|--browser) browser="${2}"     ;;
+			(-c|--compressor) compressor="${2}"; shift;;
+			(-p|--profile) bhp[profile]="${2}" ; shift;;
+			(-t|--tmpdir) tmpdir="${2}"        ; shift;;
+			(-s|--set)  set_tarball=true      ;;
+			(-h|--help) bhp-help; return 128  ;;
+			(*) shift; breaki                 ;;
 		esac
+		shift
 	done
 
 	#
@@ -89,12 +93,11 @@ EOH
 		BROWSERS[mozilla]='aurora firefox icecat seamonkey'
 		BROWSERS[config]='conkeror chrome chromium epiphany midory opera otter netsurf qupzilla vivaldi'
 
-		case "${1}" in
-			(aurora|firefox|icecat|seamonkey)
-				BROWSER="${1}" PROFILE="mozilla/${1}"; return;;
-			(conkeror|chrome|chromium|epiphany|midory|opera|otter|netsurf|qupzilla|vivaldi)
-				BROWSER="${1}" PROFILE="config/${1}" ; return;;
-		esac
+		if [[ "${BROWSERS[mozilla]}" == *${1}* ]]; then
+				BROWSER="${1}" PROFILE="mozilla/${1}"; return;
+		elif [[ "${BROWSERS[config]}" == *${1}* ]]; then
+				BROWSER="${1}" PROFILE="config/${1}" ; return;
+			fi
 
 		for key in "${!BROWSERS[@]}"; do
 			for browser in ${BROWSERS[${key}]}; do
@@ -142,14 +145,17 @@ EOH
 :	${bhp[profile]:=${profile}}
 :	${bhp[PROFILE]:=${PROFILE}}
 :	${tmpdir:=${TMPDIR:-/tmp/$USER}}
-:	${ext=.tar.${compressor%% *}}
+:	${ext:=.tar.${compressor%% *}}
 
 	[[ -d "${tmpdir}" ]] || mkdir -p -m 1700 "${tmpdir}" ||
 		{ pr-error "No suitable directory found"; return 114; }
 
 	for dir in "${HOME}"/.${PROFILE} "${HOME}"/.cache/${PROFILE#config/}; do
 		[[ -d "${dir}" ]] || continue
-		grep -q "${dir}" /proc/mounts && continue
+		if grep -qw "${dir}" /proc/mounts; then
+			${set_tarball} && bhp "${dir}"
+			continue
+		fi
 		pr-begin "Setting up directory..."
 
 		pushd "${dir%/*}" >${NULL} 2>&1 || continue
@@ -157,15 +163,19 @@ EOH
 			tar -cpf ${profile}${ext}  -I "${compressor}" ${profile} ||
 				{ pr-end 1 "Tarball"; continue; }
 		fi
-		popd >${NULL} 2>&1
 
 		case "${dir}" in
 			(*.cache/*) char=c;;
 			(*) char=p;;
 		esac
-		DIR="$(mktmp -p "${tmpdir}"  -d bh${char}-XXXXXX)"
+		DIR="$(mktemp -p "${tmpdir}"  -d bh${char}-XXXXXX)"
 		sudo mount --bind "${DIR}" "${dir}" || pr-error "Failed to mount ${DIR}"
 		pr-end "${?}"
+
+		if ${set_tarball}; then
+			bhp "${dir}"
+		fi
+		popd >${NULL} 2>&1
 	done
 }
 bhp-init "${@}"
@@ -174,7 +184,8 @@ BHP_RET="${?}"
 function bhp {
 	local ext=.tar.${bhp[compressor]%% *} name=bhp tarball
 
-	for dir in "${HOME}"/.{${bhp[PROFILE]},cache/${bhp[PROFILE]#config/}}; do
+	for dir in ${@:-"${HOME}"/.{${bhp[PROFILE]},cache/${bhp[PROFILE]#config/}}}; do
+		[[ -d "${dir}" ]] || continue
 		pushd "${dir%/*}" >${NULL} 2>&1 || continue
 
 		pr-begin "Setting up tarball..."

@@ -25,6 +25,14 @@ pr-error()
 }
 
 #
+# @FUNCTION: Print error message to stderr & exit
+#
+die()
+{
+	local ret=${?}; pr-error "${@}"; return ${ret}
+}
+
+#
 # @FUNCTION: Print info message to stdout
 #
 pr-info()

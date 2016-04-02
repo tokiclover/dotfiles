@@ -1,6 +1,5 @@
-#
+
 # $Header: ${HOME}/.zlogin                              Exp $
-# $Version: 2015/05/15                                  Exp $
 #
 
 # auto startx depending on the tty

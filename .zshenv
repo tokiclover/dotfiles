@@ -1,6 +1,5 @@
 #
 # $Header: ${HOME}/.zshenv                              Exp $
-# $Version: 2015/05/15                                  Exp $
 #
 
 export ZDOTDIR="${HOME}"

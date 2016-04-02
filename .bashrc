@@ -1,6 +1,5 @@
 #
 # $Header: ${HOME}/.bashrc                              Exp $
-# $Version: 2015/05/15                                  Exp $
 #
 
 shopt -qs extglob

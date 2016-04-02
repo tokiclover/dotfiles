@@ -1,6 +1,5 @@
 #
 # $Header: ${HOME}/.bash_profile                        Exp $
-# $Version: 2015/05/15                                  Exp $
 #
 
 shopt -s cdspell

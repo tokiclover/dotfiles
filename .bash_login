@@ -1,6 +1,5 @@
 #
 # $Header: ${HOME}/.bash_login                          Exp $
-# $Version: 2015/05/15                                  Exp $
 #
 
 # auto startx depending on the tty

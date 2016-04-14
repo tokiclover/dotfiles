@@ -9,11 +9,11 @@
 # Setup a few environment variables for pr-*() helper family
 #
 typeset -A print_info
-print_info[cols]="$(tput cols)"
+print_info[cols]="${COLUMNS}"
 # the following should be set before calling pr-end()
 #print_info[len]=${print_info[cols]}
 # and this keep updating print_info[cols]
-trap 'print_info[cols]="$(tput cols)"' WINCH
+trap 'print_info[cols]="${COLUMNS}"' WINCH
 
 #
 # @FUNCTION: Print error message to stderr

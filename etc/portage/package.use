@@ -1,21 +1,19 @@
 app-doc/doxygen dot
-app-emulation/qemu sasl smartcard tls vhost-net
-app-office/libreoffice java jemalloc
+app-emulation/qemu smartcard tls vhost-net
+app-office/libreoffice jemalloc
 app-portage/layman sync-plugin-portage -python_targets_python2_7 squashfs subversion
 app-shell/zsh doc
 app-text/docbook-sgml-utils jadetex
 app-text/evince xps
 app-text/zathura-meta cb djvu postscript
+dev-cpp/gtkmm:3.0 -wayland
 dev-db/sqlite secure-delete
-dev-java/icedtea -javascript
 dev-lang/perl doc
 dev-lang/python doc
 dev-libs/DirectFB -egl -gles2
 dev-libs/apr-util ldap
-dev-libs/cyrus-sasl ldapdb
 dev-libs/efl -drm fribidi harfbuzz jp2k physics sound xim -wayland -gles system-lz4
 dev-libs/nss utils
-dev-python/enum34 -python_targets_python2_7
 dev-python/cryptography -python_targets_python2_7
 dev-python/ndg-httpsclient -python_targets_python2_7
 dev-python/pyopenssl -python_targets_python2_7
@@ -25,7 +23,7 @@ dev-util/cmake doc
 dev-util/lv2-c++-tools doc
 dev-vcs/git subversion
 dev-vcs/subversion -dso
-mail-client/mutt gpg imap pop nntp sasl sidebar smime smtp
+mail-client/mutt gpg imap pop nntp sidebar smime smtp
 media-fonts/unifont utils
 media-gfx/imagemagick corefonts hdri
 media-gfx/ufraw contrast gimp
@@ -38,6 +36,7 @@ media-libs/libpng apng
 media-libs/lv2 plugins
 media-libs/mesa gbm openmax xa
 media-libs/libvpx postproc
+media-libs/xine-lib aalib bluray dts dxr3 mmap
 media-plugins/calf lv2
 media-plugins/tap-plugins doc
 media-sound/ardour lv2
@@ -59,10 +58,9 @@ net-libs/neon gnutls libproxy pkcs11
 net-mail/notmuch mutt
 net-misc/connman bluetooth tools
 net-misc/tor nat-pmp tor-hardening transparent-proxy
-net-nds/openldap sasl
 net-nntp/nzbget parcheck
 net-nntp/slrn uudeview
-net-nntp/tin gpg mime sasl spell
+net-nntp/tin gpg mime spell
 net-p2p/rtorrent daemon
 net-print/cnijfilter backends -drivers gtk
 net-print/cups ppds
@@ -81,7 +79,7 @@ sys-fs/cryptsetup -gcrypt
 sys-fs/eudev gudev
 sys-kernel/git-sources:3.18.18 aufs fbcondecor -hardened reiser4
 sys-kernel/git-sources:3.18.25 -aufs fbcondecor -hardened reiser4
-sys-kernel/mkinitramfs-ll aufs bash btrfs dm-crypt dmraid jfs mdadm reiserfs squashfs xfs zfs zram zsh
+sys-kernel/mkinitramfs-ll aufs bash btrfs dm-crypt dmraid jfs mdadm reiserfs squashfs xfs zram zsh
 sys-libs/zlib minizip
 virtual/linux-sources firmware
 virtual/udev gudev
@@ -89,6 +87,7 @@ www-client/firefox custom-cflags custom-optimization -gmp-autoupdate jit system-
 www-client/netsurf fbcon fbcon_frontend_x pdf-write
 www-servers/uwsgi -uwsgi_plugins_rsyslog
 x11-apps/intel-gpu-tools python_single_target_python3_4
+x11-libs/gtk+:3 -wayland
 x11-libs/libdrm libkms
 x11-libs/libfm -automount
 x11-libs/libxcb xkb
@@ -149,6 +148,7 @@ media-libs/jbigkit abi_x86_32
 media-libs/libjpeg-turbo abi_x86_32
 media-libs/libomxil-bellagio abi_x86_32
 media-libs/libpng abi_x86_32
+media-libs/libepoxy abi_x86_32
 media-libs/mesa abi_x86_32
 media-libs/tiff abi_x86_32
 net-libs/gnutls abi_x86_32
@@ -158,6 +158,7 @@ sys-apps/attr abi_x86_32
 sys-apps/dbus abi_x86_32
 sys-apps/keyutils abi_x86_32
 sys-apps/util-linux abi_x86_32
+sys-devel/gettext abi_x86_32
 sys-devel/llvm abi_x86_32
 sys-fs/eudev abi_x86_32
 sys-libs/binutils-libs abi_x86_32

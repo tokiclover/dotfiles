@@ -13,7 +13,6 @@ media-sound/alsa-utils
 media-sound/ecasound
 media-sound/mpd
 media-sound/ncmpc
-media-sound/ncmpcpp
 media-sound/oss
 media-sound/timidity++
 media-video/ffmpeg

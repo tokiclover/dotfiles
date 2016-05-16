@@ -61,7 +61,7 @@ application/vnd.ms-powerpoint.presentation.macroenabled.12; libreoffice %s
 application/vnd.openxmlformats-officedocument.presentationml.template; libreoffice %s
 application/vnd.ms-powerpoint.template.macroenabled.12; libreoffice %s
 application/vnd.ms-excel.sheet.binary.macroenabled.12; libreoffice %s
-application/octet-stream; libreoffice %s
+application/octet-stream; vim %s
 application/rtf; libreoffice %s
 application/msword; libreoffice %s
 application/x-hwp; libreoffice %s

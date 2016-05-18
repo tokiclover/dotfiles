@@ -87,7 +87,7 @@ set sort=threads    # primary sorting method
 #set sort_aux=reverse-date-received  # how to sort subthreads
 #set sort_aux=last-date    # date of the last message in thread
 set sort_browser=reverse-date  # how to sort files in the dir browser
-set spoolfile='~/.mutt/mail'  # where new mail is located
+#set spoolfile='~/mail/new'  # where new mail is located
 set status_format="-%r-Mutt: %f [Msgs:%?M?%M/?%m%?n? New:%n?%?d? Del:%d?%?F? Flag:%F?%?t? Tag:%t?%?p? Post:%p?%?b? Inc:%b?  %l]---(%s)-%>-(%P)---"
 #set status_on_top  # some people prefer the status bar on top
 #set strict_threads # don't thread by subject
@@ -245,15 +245,6 @@ save-hook ^judge +diplomacy
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 #
-# Mailboxes to watch for new mail
-#
-#  mailboxes <path1> [ <path2> ... ]
-#
-
-#mailboxes `echo ~/mail/*`
-
-# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-#
 # Specify the order of the headers to appear when displaying a message
 #
 #  hdr_order <hdr1> [ <hdr2> ... ]
@@ -299,15 +290,41 @@ set imap_check_subscribed
 set ssl_force_tls = yes
 unset ssl_starttls
 
+#source /etc/mutt/notmuch-mutt.rc
+
 #
-# Just account credential in ~/.mutt/key.gpg by defining my_<file>_{key,user}
-# for the appropriate account and be done with particular account settings.
+# ~/.mutt/key.gpg provide credentials by defining my_<file>_{key,user} which
+# are used by each ~/.mutt/<fil> to define account settings and be done with
+# particular account settings; or else, use a single account with the following
+# fetchmail/sendmail macro definition (NO MULTI ACCOUNT SUPPORT FOR NOW).
 #
 source "gpg -qd ~/.mutt/key.gpg |"
-source ~/.mutt/gcrc
-folder-hook $folder "source ~/.mutt/gcrc"
+#source ~/.mutt/gcrc
+#folder-hook $folder "source ~/.mutt/gcrc"
 source ~/.mutt/gtrc
 folder-hook $folder "source ~/.mutt/gtrc"
+
+#
+# Fetch mail with an MTA
+#
+#set mbox_type=mbox
+#set move=no
+#set spoolfile="${folder}/${imap_user}"
+#macro index,pager I "<shell-escape>fetchmail --all --verbose --logfile \
+#  ~/.log/fetchmail.log --port 993 --proto IMAP --ssl --sslproto SSL3 --sslcertck \
+#  --smtpname smtps://smtp.${hostname} --user ${imap_user} \
+#  --mda '/usr/bin/procmail -m ~/.procmailrc ${imap_user} -d %s' \
+#  -D localhost imap.${hostname}<Enter>"
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#
+# Mailboxes to watch for new mail
+#
+#  mailboxes <path1> [ <path2> ... ]
+#
+
+mailboxes ! +slrn +fetchmail +mutt
+mailboxes `echo ~/mail/*`
 
 #
 # vim:fenc=utf-8:ft=muttrc:ts=2:sts=2:sw=2:expandtab

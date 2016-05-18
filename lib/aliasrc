@@ -63,7 +63,8 @@ alias qt=qtbz2
 alias qu=quse
 alias qx=qxpak
 
-alias ydl=youtube-dl
+alias yd=youtube-dl
+alias yg=you-get
 
 #
 # vim:fenc=utf-8:ft=sh:ci:pi:sts=0:sw=2:ts=2:

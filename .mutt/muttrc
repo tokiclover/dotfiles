@@ -292,9 +292,10 @@ unset ssl_starttls
 
 #source /etc/mutt/notmuch-mutt.rc
 
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 #
 # ~/.mutt/key.gpg provide credentials by defining my_<file>_{key,user} which
-# are used by each ~/.mutt/<fil> to define account settings and be done with
+# are used by each ~/.mutt/<file> to define account settings and be done with
 # particular account settings; or else, use a single account with the following
 # fetchmail/sendmail macro definition (NO MULTI ACCOUNT SUPPORT FOR NOW).
 #
@@ -303,10 +304,10 @@ source "gpg -qd ~/.mutt/key.gpg |"
 #folder-hook $folder "source ~/.mutt/gcrc"
 source ~/.mutt/gtrc
 folder-hook $folder "source ~/.mutt/gtrc"
-
 #
-# Fetch mail with an MTA
+# Fetch mail with an MTA (by pressing I)
 #
+#mailboxes ${imap_user} spam-${imap_user}
 #set mbox_type=mbox
 #set move=no
 #set spoolfile="${folder}/${imap_user}"
@@ -322,9 +323,7 @@ folder-hook $folder "source ~/.mutt/gtrc"
 #
 #  mailboxes <path1> [ <path2> ... ]
 #
-
 mailboxes ! +slrn +fetchmail +mutt
-mailboxes `echo ~/mail/*`
 
 #
 # vim:fenc=utf-8:ft=muttrc:ts=2:sts=2:sw=2:expandtab

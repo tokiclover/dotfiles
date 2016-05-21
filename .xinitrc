@@ -49,7 +49,7 @@ unclutter -idle 8 -noevents &
 # Launch a few apps/daemons if available
 #
 dhcpcd-gtk >/dev/null 2>&1 &
-ladi-system-tray > ~/.log/ladi/ladi.log 2>&1 &
+ladi-system-tray > ~/.log/ladi.log 2>&1 &
 urxvtd -q -o -f &
 
 #

@@ -3,10 +3,7 @@ sys-apps/systemd
 sys-auth/polkit
 sys-auth/consolekit
 media-sound/pulseaudio
-app-emulation/emul-linux-x86-*
 media-video/libav
->=x11-libs/libfm-1.2.3-r1
->=lxde-base/menu-cache-1.0.0-r1
 >=sys-fs/udev-init-scripts-28
 >=sys-apps/openrc-0.18.0
 sys-kernel/git-sources::gentoo
@@ -25,7 +22,3 @@ dev-java/oracle-jre-bin
 =virtual/jdk-1.8.0
 =virtual/jre-1.8.0
 >net-wireless/bluez-5.0
-
-=sys-devel/llvm-3.7*
-=sys-devel/clang-3.0*
->=sys-kernel/linux-headers-4.5

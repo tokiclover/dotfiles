@@ -6,13 +6,12 @@ app-shell/zsh doc
 app-text/docbook-sgml-utils jadetex
 app-text/evince xps
 app-text/zathura-meta cb djvu postscript
-dev-cpp/gtkmm:3.0 -wayland
 dev-db/sqlite secure-delete
 dev-lang/perl doc
 dev-lang/python doc
 dev-libs/DirectFB -egl -gles2
 dev-libs/apr-util ldap
-dev-libs/efl -drm fribidi harfbuzz jp2k physics sound xim -wayland -gles system-lz4
+dev-libs/efl -drm fribidi harfbuzz jp2k physics sound xim -gles system-lz4 -wayland
 dev-libs/nss utils
 dev-python/cryptography -python_targets_python2_7
 dev-python/ndg-httpsclient -python_targets_python2_7
@@ -42,10 +41,8 @@ media-plugins/tap-plugins doc
 media-sound/ardour lv2
 media-sound/mpd faad wildmidi
 media-sound/ncmpcpp taglib visualizer
-media-sound/oss -pax_kernel
 media-sound/patchage jack-session
 media-sound/shntool mac
-media-sound/wildmidi -oss
 media-video/ffmpeg bluray cdio faac frei0r schroedinger vaapi vpx x265
 media-video/mpv bluray bs2b dvdnav encode vaapi vapoursynth
 media-video/vapoursynth python_targets_python3_4
@@ -77,7 +74,6 @@ sys-fs/aufs-standalone -pax_kernel
 sys-fs/aufs-util fhsm kernel-builtin
 sys-fs/cryptsetup -gcrypt
 sys-fs/eudev gudev
-sys-kernel/git-sources:3.18.18 aufs fbcondecor -hardened reiser4
 sys-kernel/git-sources:3.18.25 -aufs fbcondecor -hardened reiser4
 sys-kernel/mkinitramfs-ll aufs bash btrfs dm-crypt dmraid jfs mdadm reiserfs squashfs xfs zram zsh
 sys-libs/zlib minizip
@@ -87,7 +83,6 @@ www-client/firefox custom-cflags custom-optimization -gmp-autoupdate jit system-
 www-client/netsurf fbcon fbcon_frontend_x pdf-write
 www-servers/uwsgi -uwsgi_plugins_rsyslog
 x11-apps/intel-gpu-tools python_single_target_python3_4
-x11-libs/gtk+:3 -wayland
 x11-libs/libdrm libkms
 x11-libs/libfm -automount
 x11-libs/libxcb xkb

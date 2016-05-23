@@ -290,8 +290,10 @@ doiface()
 		if [ -n "$netmask" ]; then
 			dorules
 			[ -n "$save" ] && $ipt-save >$save
+			return 0
 		else
 			pr_warn "No netmask found, nothing to be done; try adding -6 (IPv6)"
+			return 1
 		fi
 	elif [ -n "$ipv6" ]; then
 		icmp=icmpv6 ipt="$(which ip6tables) --modprobe=$(which modprobe)"
@@ -310,8 +312,10 @@ doiface()
 		if [ -n "$inet" ]; then
 			dorules
 			[ -n "$save" ] && $ipt-save >${save/ipt/ip6t}
+			return 0
 		else
 			pr_warn "No netmask found, nothing to be done; try removing -6 (IPv6)"
+			return 1
 		fi
 	fi
 }

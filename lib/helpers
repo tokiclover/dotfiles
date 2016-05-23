@@ -16,12 +16,11 @@ function genpwd {
 # @FUNCTION: Mount/fstab info helper
 # @ARG: [OPTIONS] DIR
 #
-mount-info()
-{
+function mount-info {
 	local arg args fs src opts opt ret
 
 	src=/proc/mounts
-	args="$(getopt -o F:fo: -l fstab,fsys:,options: -n mount_info -s sh -- "${@}")"
+	args="$(getopt -o F:fo: -l fstab,fsys:,options: -n mount-info -s sh -- "${@}")"
 	eval set -- ${args}
 
 	while true; do

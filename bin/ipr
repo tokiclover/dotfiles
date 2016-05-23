@@ -41,18 +41,21 @@ exit $?
 
 pr_info()
 {
-	echo -e "\e[1;34m* \e[0;35m${0##*/}\e[0m: ${@}"
+	echo -e "\e[1;34m* INFO:\e[0;35m${0##*/}\e[0m: ${@}"
 }
 pr_error()
 {
-	echo -e "\e[1;31m* \e[0;35m${0##*/}\e[0m: ${@}" >&2
+	echo -e "\e[1;31m* ERROR:\e[0;36m${0##*/}\e[0m: ${@}" >&2
+}
+pr_warn()
+{
+	echo -e "\e[1;33m* WARN:\e[0;32m${0##*/}\e[0m: ${@}" >&2
 }
 die()
 {
 	local ret="$?"; pr_error "$@"; exit "$ret"
 }
 
-awk="$(type -p awk      || exit)"
 grp="$(type -p grep     || exit)"
 ifc="$(type -p ifconfig || exit)"
 sed="$(type -p sed      || exit)"
@@ -269,24 +272,47 @@ dorules()
 doiface()
 {
 	local broadcast icmp iface=$1 lbdiface=lo lbdnetmask netmask net inet icmp ipt
+
 	if [ -n "$ipv4" ]; then
 		icmp=icmp ipt="$(which iptables) --modprobe=$(which modprobe)"
-		eval set -- $($ifc $ext | $awk '/inet / {print $2, $4, $6}')
-		broadcast="$3" inet="$1" netmask="$3"
-		eval set -- $($ifc  $lbdiface | $awk '/inet / {print $2, $4}')
-		lbdinet="$1" lbdnetmask="$2"
+
+		for interface in "$ext:" "$lbdiface:lbd"; do
+			eval set -- $($ifc ${interface%:*} | $sed -nre '/inet /p')
+			while [ $# -gt 0 ]; do
+				eval "${interface#*:}${1}=${2}"
+				shift 2
+			done
+		done
+		pr_info "lbdinet=$lbdinet ldbnetmask=$lbdnetmask"
 		pr_info "inet=$inet broadcast=$broadcast netmask=$netmask"
+
 		$ipt -F; $ipt -X
-		[ -n "$netmask" ] && dorules
-		[ -n "$save" ] && $ipt-save >$save
+		if [ -n "$netmask" ]; then
+			dorules
+			[ -n "$save" ] && $ipt-save >$save
+		else
+			pr_warn "No netmask found, nothing to be done; try adding -6 (IPv6)"
+		fi
 	elif [ -n "$ipv6" ]; then
 		icmp=icmpv6 ipt="$(which ip6tables) --modprobe=$(which modprobe)"
-		inet="$($ifc  $iface | $awk '/inet6 / {print $2}')"
-		lbdinet="$($ifc  $lbdiface $awk '/inet6 / {print $2}')"
+
+		for interface in "$ext:" "$lbdiface:lbd"; do
+			args="$($ifc ${interface%:*} | $sed -nre '/inet6 /p')"
+			eval set -- ${args%scopeid*}
+			while [ $# -gt 0 ]; do
+				eval "${interface#*:}${1%6}=${2}"
+				shift 2
+			done
+		done
 		pr_info "inet=$inet lbdinet=$lbdinet"
+
 		$ipt -F; $ipt -X
-		dorules
-		[ -n "$save" ] && $ipt-save >${save/ipt/ip6t}
+		if [ -n "$inet" ]; then
+			dorules
+			[ -n "$save" ] && $ipt-save >${save/ipt/ip6t}
+		else
+			pr_warn "No netmask found, nothing to be done; try removing -6 (IPv6)"
+		fi
 	fi
 }
 
@@ -297,8 +323,6 @@ elif [ -n "$int" ]; then
 else 
 	usage
 fi
-
-unset awk block dhcp dhcp_server ext ipv ipv4 ipv6 ifc int ipt grp kmod module services
 
 #
 # vim:fenc=utf-8:ci:pi:sts=0:sw=4:ts=4:

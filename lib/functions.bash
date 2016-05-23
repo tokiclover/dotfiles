@@ -127,36 +127,5 @@ if [ -t 1 ] && yesno "${PRINT_COLOR:-Yes}"; then
 fi
 
 #
-# @FUNCTION: Mount/fstab info helper
-# @ARG: [-f] DIR
-#
-mount_info()
-{
-	local DIR DST SRC args d opts ret
-
-	SRC=/proc/mounts
-	args=($(getopt -o F:f -l fstab,fsys: -n mount_info -s sh -- "${@}"))
-	eval set -- "${args[@]}"
-
-	while true; do
-	case "${1}" in
-		(-f|--fstab) SRC=/etc/fstab;;
-		(-F|--fsys*) FS=${2}; shift;;
-		(*) shift; break;;
-	esac
-	shift
-	done
-	DIR="${1}"
-	DST=($(sed -nre "s|(^[^#].*${1}[[:space:]].*${FS})[[:space:]].*$|\1|p" ${SRC}))
-
-	for d in "${DST[@]}"; do
-		case "${DIR}" in
-			("${d}") ret=0; break;;
-		esac
-	done
-	return "${ret:-1}"
-}
-
-#
 # vim:fenc=utf-8:ft=sh:ci:pi:sts=2:sw=2:ts=2:
 #

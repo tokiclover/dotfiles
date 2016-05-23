@@ -1,7 +1,7 @@
-[submodule ".zprezto"]
+[submodule "zprezto"]
 	path = .zprezto
 	url = git://github.com/tokiclover/zprezto.git
-[submodule ".vim/plugin/vim-scriptease"]
+[submodule "vim-scriptease"]
 	path = .vim/plugin/vim-scriptease
 	url = git://github.com/tpope/vim-scriptease.git
 [submodule "pentadactyl-solarized"]

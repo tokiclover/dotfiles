@@ -21,7 +21,7 @@ trap 'print_info[cols]="${COLUMNS:=$(tput cols)}"' WINCH
 pr-error()
 {
 	local PFX="${name:+${fg[5]}${name}:${color[none]}}"
-	echo -e${print_info[eol]+n} "${print_info[eol]}${color[bold]}${fg[1]}* ${color[none]}${PFX} ${@}" >&2
+	echo -e${print_info[eol]+n} "${print_info[eol]}${color[bold]}${fg[1]}ERROR:${color[none]}${PFX} ${@}" >&2
 }
 
 #
@@ -38,7 +38,7 @@ die()
 pr-info()
 {
 	local PFX="${name:+${fg[3]}${name}:${color[none]}}"
-	echo -e${print_info[eol]+n} "${print_info[eol]}${color[bold]}${fg[4]}* ${color[none]}${PFX} ${@}"
+	echo -e${print_info[eol]+n} "${print_info[eol]}${color[bold]}${fg[4]}INFO:${color[none]}${PFX} ${@}"
 }
 
 #
@@ -47,7 +47,7 @@ pr-info()
 pr-warn()
 {
 	local PFX="${name:+${fg[1]}${name}:${color[none]}}"
-	echo -e${print_info[eol]+n} "${print_info[eol]}${color[bold]}${fg[3]}* ${color[none]}${PFX} ${@}"
+	echo -e${print_info[eol]+n} "${print_info[eol]}${color[bold]}${fg[3]}WARN:${color[none]}${PFX} ${@}"
 }
 
 #

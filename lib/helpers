@@ -1,8 +1,8 @@
 #
-# $Header: ${HOME}/helpers                              Exp $
-# $Author: (c) 2012-15 -tclover <tokiclover@gmail.com>  Exp $
-# $License: MIT (or 2-clause/new/simplified BSD)        Exp $
-# $Version: 2015/07/28 21:09:26                         Exp $
+# $Header: ${HOME}/helpers                                Exp $
+# $Author: (c) 2012-16 tokiclover <tokiclover@gmail.com>  Exp $
+# $License: MIT (or 2-clause/new/simplified BSD)          Exp $
+# $Version: 2016/05/20 21:09:26                           Exp $
 #
 
 #
@@ -11,6 +11,49 @@
 function genpwd {
 	openssl rand -base64 48
 }
+
+#
+# @FUNCTION: Mount/fstab info helper
+# @ARG: [OPTIONS] DIR
+#
+mount-info()
+{
+	local arg args fs src opts opt ret
+
+	src=/proc/mounts
+	args="$(getopt -o F:fo: -l fstab,fsys:,options: -n mount_info -s sh -- "${@}")"
+	eval set -- ${args}
+
+	while true; do
+	case "${1}" in
+		(-f|--fstab) src=/etc/fstab;;
+		(-F|--fsys*) fs="${2}"; shift;;
+		(-o|--options) opts="${2}"; shift;;
+		(*) shift; break;;
+	esac
+	shift
+	done
+
+	arg="${1}"
+	eval set -- $(sed -nre "s|(^[^#].*${1}[[:space:]].*${fs})[[:space:]].*$|\1|p" ${src})
+	[ -z "${1}" ] && return 1
+
+	if [ -n "${opts}" ]; then
+		local IFS="${IFS},"
+		for opt in ${opts}; do
+			case "${opt}" in
+				(*${4}*)  ;;
+				(*) return 1;;
+			esac
+		done
+	fi
+
+	case "${arg}" in
+		(${1}|${2}) return 0;;
+	esac
+	return 1
+}
+
 #
 # @FUNCION: simple xev key code
 #

@@ -25,7 +25,7 @@ function prompt_clover_precmd {
 	zstyle ':vcs_info:*:prompt:*' check-for-changes true
 	zstyle ':vcs_info:*:prompt:*' unstagedstr '*'
 	zstyle ':vcs_info:*:prompt:*' actionformats '%a'
-	zstyle ':vcs_info:*:prompt:*' formats '·%s·%b%u'
+	zstyle ':vcs_info:*:prompt:*' formats '·%s:%b%u'
 	zstyle ':vcs_info:*:prompt:*' branchformat '%b'
 	zstyle ':vcs_info:*:prompt:*' nvcsformats ''
 	vcs_info 'prompt'

@@ -21,7 +21,7 @@ trap 'print_info[cols]=${COLUMNS:=$(tput cols)}' WINCH
 pr-error()
 {
 	local PFX=${name:+%F{magenta}${name}:}
-	print -P${print_info[eol]:+n} "${print_info[eol]}%B%F{red}* ${PFX}%b%f ${@}" >&2
+	print -P${print_info[eol]:+n} "${print_info[eol]}%B%F{red}ERROR:${PFX}%b%f ${@}" >&2
 }
 
 #
@@ -38,7 +38,7 @@ die()
 pr-info()
 {
 	local PFX=${name:+%F{yellow}${name}:}
-	print -P${print_info[eol]:+n} "${print_info[eol]}%B%F{blue}* ${PFX}%b%f ${@}"
+	print -P${print_info[eol]:+n} "${print_info[eol]}%B%F{blue}INFO:${PFX}%b%f ${@}"
 }
 
 #
@@ -47,7 +47,7 @@ pr-info()
 pr-warn()
 {
 	local PFX=${name:+%F{red}${name}:}
-	print -P${print_info[eol]:+n} "${print_info[eol]}%B%F{yellow}* ${CLR_RST}${PFX}%f%b ${@}"
+	print -P${print_info[eol]:+n} "${print_info[eol]}%B%F{yellow}WARN:${CLR_RST}${PFX}%f%b ${@}"
 }
 
 #

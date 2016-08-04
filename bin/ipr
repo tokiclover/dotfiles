@@ -113,10 +113,8 @@ iptable_nat ipt_MASQUERADE ipt_REDIRECT ipt_REJECT"
 [ -n "$ipv6" ] && module="$module ip6table_filter ip6table_mangle ip6table_raw
 ip6table_nat ip6t_MASQUERADE ip6t_REDIRECT ip6t_REJECT"
 
-for mod in nf_nat_ftp nf_nat_irc nf_conntrack_ftp nf_conntrack_irc ipt_LOG \
-	$module; do
-	$grp -q "$mod" /proc/modules || modprobe "$mod"
-done
+modprobe nf_nat_ftp nf_nat_irc nf_conntrack_ftp nf_conntrack_irc ipt_LOG \
+	$module >/dev/null 2>&1
 
 if [ -n "$ipv4" ]; then
 	echo 1 >/proc/sys/net/ipv4/tcp_syncookies
@@ -199,7 +197,6 @@ dorules()
 		pr_info "Opening TCP Output over $lbdinet:$mpd for MPD"
 		$ipt -A INPUT  -p tcp --dport $mpd -s $lbdinet --syn -m conntrack --ctstate NEW -j ACCEPT
 		$ipt -A OUTPUT -p tcp --dport $mpd -s $lbdinet --syn -m conntrack --ctstate NEW -j ACCEPT
-
 	fi
 	
 	if [ -n "$torrent" ]; then
@@ -224,11 +221,8 @@ dorules()
 	# Allow MSQUARADING for NAT/DSL-Router
 	if [ -n "$nat"  ]; then
 		$ipt -t nat -A POSTROUTING -o $ext -j MASQUERADE
-		case "$nat" in
-			(int*) [ -n "$int" ] &&
-				$ipt -t nat -A POSTROUTING -o $ext -s $int -j MASQUERADE
-				;;
-		esac
+		$ipt -A FORWARD -i $ext -j ACCEPT
+		$ipt -A FORWARD -o $ext -j ACCEPT
 		# NAT I/O
 		if [ -n "$ipv4" ]; then
 			$ipt -A PREROUTING  -t nat -j ACCEPT
@@ -239,6 +233,7 @@ dorules()
 	# Accept trafic from/out loop back device
 	$ipt -A INPUT -i $lbdiface -s $lbdinet -j ACCEPT
 	$ipt -A INPUT -i $lbdiface -s $inet    -j ACCEPT
+	# accept trafic from internal interface
 	# Allow NAT for bridged NAT/DSL-Router
 	[ -n "$snat" ] && $ipt -t nat -A POSTROUTING -o $ext -j SNAT --to $inet
 	# Block WAN access to internal network
@@ -246,16 +241,31 @@ dorules()
 	# Block outbound ICMP (except for PING)
 	$ipt -A OUTPUT  -o $ext -p $icmp ! --$icmp-type 8 -j drop
 	$ipt -A FORWARD -o $ext -p $icmp ! --$icmp-type 8 -j drop
-	# Allow to ping out
-	$ipt -A OUTPUT  -o $ext  -p $icmp  --$icmp-type 8 -m conntrack --ctstate NEW -j ACCEPT
+	# Allow to ping
+	$ipt -A  OUTPUT  -o $ext  -p $icmp  --$icmp-type 8 -m conntrack --ctstate NEW -j ACCEPT
+	$ipt -A   INPUT  -i $ext  -p $icmp  --$icmp-type 8 -m conntrack --ctstate NEW -j ACCEPT
+	$ipt -A FORWARD  -o $ext  -p $icmp  --$icmp-type 8 -m conntrack --ctstate NEW -j ACCEPT
 
 	if [ -n "$ipv4" ]; then
 		# Accept trafic from internal interface
 		if [ -n "$int" ]; then
-			$ipt -A INPUT    -i $int -s $netmask -j ACCEPT
-			$ipt -A FORWARD  -o $int -s $netmask -j ACCEPT
-			$ipt -A OUTPUT   -o $int -s $netmask -j ACCEPT
+			for interface in ${int//,/ }; do
+				eval set -- $($ifc ${interface%:*} | $sed -nre '/inet /p')
+				while [ $# -gt 0 ]; do
+					eval "${interface}${1}=${2}"
+					shift 2
+				done
+				case "$nat" in
+					(int*) [ -n "$int" ] &&
+					eval $ipt -t nat -A POSTROUTING -o $ext -s \$${interface}inet/24 -j MASQUERADE
+					;;
+				esac
+				eval $ipt -A INPUT    -i $interface -s \$${interface}inet/24 -j ACCEPT
+				eval $ipt -A FORWARD  -o $interface -s \$${interface}inet/24 -j ACCEPT
+				eval $ipt -A OUTPUT   -o $interface -s \$${interface}inet/24 -j ACCEPT
+			done
 		fi
+
 		# Blocking Broadcasts
 		$ipt -A INPUT   -i $ext -d   $netmask -j drop
 		$ipt -A OUTPUT  -o $ext -d   $netmask -j drop
@@ -263,6 +273,7 @@ dorules()
 		# An additional Egress check
 		$ipt -A OUTPUT  ! -o $ext -s $netmask -j drop
 	fi
+
 	# Block and log what me may have forgot
 	$ipt -A INPUT   -j drop
 	$ipt -A OUTPUT  -j reject

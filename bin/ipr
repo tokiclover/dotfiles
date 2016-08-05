@@ -22,6 +22,7 @@ cat <<-EOF
 	-b, --block='1863 ntp'       block service or port 1863,ntp
 	-i, --int-iface=eth0         use eth0 internal interface
 	-e, --ext-iface=wlan0        use wlan0 external interface
+	-v, --vmn-iface=vmnet8       use vmnet8 virtual interface
 	-d, --dhcp=[<server_ip>]     enable dhcp, use dhcp server IP
 	-4, --ipv=4                  short hand for --ipv=4
 	-6, --ipv=6                  short hand for --ipv=6
@@ -60,9 +61,9 @@ grp="$(type -p grep     || exit)"
 ifc="$(type -p ifconfig || exit)"
 sed="$(type -p sed      || exit)"
 
-opt=$(getopt -o '?46I::b:i:e:d::m::S::s:ht::' -l block:,ext-iface:,jabber::,ipset:: \
+opt=$(getopt -o '?46I::b:i:e:d::m::S::s:ht::v:' -l block:,ext-iface:,jabber::,ipset:: \
 	-l mpd::,torrent::,int-iface:,ipv:,dhcp::,module::,mpd,save::,service:,snat,nat:: \
-	-l help -n ${0##*/} -- "$@" || usage)
+	-l help,vmn-iface: -n ${0##*/} -- "$@" || usage)
 eval set -- "$opt"
 
 while [ $# > 0 ]; do
@@ -70,6 +71,7 @@ while [ $# > 0 ]; do
 		--snat) snat=true; shift;;
 		-e|--ext-iface) ext=$2; shift 2;;
 		-i|--int-iface) int=$2; shift 2;;
+		-v|--vmn-iface) vmn=$2; shift 2;;
 		--nat) nat="${2:-true}"; shift 2;;
 		-4) ipv4=true ipv="$ipv ipv4"; shift;;
 		-6) ipv6=true ipv="$ipv ipv6"; shift;;
@@ -221,8 +223,6 @@ dorules()
 	# Allow MSQUARADING for NAT/DSL-Router
 	if [ -n "$nat"  ]; then
 		$ipt -t nat -A POSTROUTING -o $ext -j MASQUERADE
-		$ipt -A FORWARD -i $ext -j ACCEPT
-		$ipt -A FORWARD -o $ext -j ACCEPT
 		# NAT I/O
 		if [ -n "$ipv4" ]; then
 			$ipt -A PREROUTING  -t nat -j ACCEPT
@@ -231,13 +231,11 @@ dorules()
 		fi
 	fi
 	# Accept trafic from/out loop back device
-	$ipt -A INPUT -i $lbdiface -s $lbdinet -j ACCEPT
-	$ipt -A INPUT -i $lbdiface -s $inet    -j ACCEPT
+	$ipt -A INPUT  -i $lbdiface -s $inet -j ACCEPT
+	$ipt -A OUTPUT -o $lbdiface -s $inet -j ACCEPT
 	# accept trafic from internal interface
 	# Allow NAT for bridged NAT/DSL-Router
 	[ -n "$snat" ] && $ipt -t nat -A POSTROUTING -o $ext -j SNAT --to $inet
-	# Block WAN access to internal network
-	$ipt -A INPUT   -i $ext ! -d $inet -j drop
 	# Block outbound ICMP (except for PING)
 	$ipt -A OUTPUT  -o $ext -p $icmp ! --$icmp-type 8 -j drop
 	$ipt -A FORWARD -o $ext -p $icmp ! --$icmp-type 8 -j drop
@@ -246,26 +244,22 @@ dorules()
 	$ipt -A   INPUT  -i $ext  -p $icmp  --$icmp-type 8 -m conntrack --ctstate NEW -j ACCEPT
 	$ipt -A FORWARD  -o $ext  -p $icmp  --$icmp-type 8 -m conntrack --ctstate NEW -j ACCEPT
 
+	# Accept trafic from internal interface
+	for interface in ${int//,/ } ${vmn//,/ }; do
+		eval set -- $($ifc ${interface%:*} | $sed -nre '/inet /p')
+		while [ $# -gt 0 ]; do
+			eval "${interface}${1}=${2}"
+			shift 2
+		done
+		eval $ipt -A INPUT    -i $interface -s \$${interface}inet -j ACCEPT
+		eval $ipt -A FORWARD  -i $interface -s \$${interface}inet -j ACCEPT
+		eval $ipt -A OUTPUT   -o $interface -s \$${interface}inet -j ACCEPT
+	done
+	for interface in ${vmn//,/ }; do
+		eval $ipt -A INPUT    -i $ext -d \$${interface}inet -j ACCEPT
+		eval $ipt -A FORWARD  -o $ext -d \$${interface}inet -j ACCEPT
+	done
 	if [ -n "$ipv4" ]; then
-		# Accept trafic from internal interface
-		if [ -n "$int" ]; then
-			for interface in ${int//,/ }; do
-				eval set -- $($ifc ${interface%:*} | $sed -nre '/inet /p')
-				while [ $# -gt 0 ]; do
-					eval "${interface}${1}=${2}"
-					shift 2
-				done
-				case "$nat" in
-					(int*) [ -n "$int" ] &&
-					eval $ipt -t nat -A POSTROUTING -o $ext -s \$${interface}inet/24 -j MASQUERADE
-					;;
-				esac
-				eval $ipt -A INPUT    -i $interface -s \$${interface}inet/24 -j ACCEPT
-				eval $ipt -A FORWARD  -o $interface -s \$${interface}inet/24 -j ACCEPT
-				eval $ipt -A OUTPUT   -o $interface -s \$${interface}inet/24 -j ACCEPT
-			done
-		fi
-
 		# Blocking Broadcasts
 		$ipt -A INPUT   -i $ext -d   $netmask -j drop
 		$ipt -A OUTPUT  -o $ext -d   $netmask -j drop
@@ -274,6 +268,8 @@ dorules()
 		$ipt -A OUTPUT  ! -o $ext -s $netmask -j drop
 	fi
 
+	# Block WAN access to internal network
+	$ipt -A INPUT   -i $ext ! -d $inet -j drop
 	# Block and log what me may have forgot
 	$ipt -A INPUT   -j drop
 	$ipt -A OUTPUT  -j reject

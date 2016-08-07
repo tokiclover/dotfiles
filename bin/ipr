@@ -251,13 +251,20 @@ dorules()
 			eval "${interface}${1}=${2}"
 			shift 2
 		done
-		eval $ipt -A INPUT    -i $interface -s \$${interface}inet -j ACCEPT
-		eval $ipt -A FORWARD  -i $interface -s \$${interface}inet -j ACCEPT
-		eval $ipt -A OUTPUT   -o $interface -s \$${interface}inet -j ACCEPT
-	done
-	for interface in ${vmn//,/ }; do
-		eval $ipt -A INPUT    -i $ext -d \$${interface}inet -j ACCEPT
-		eval $ipt -A FORWARD  -o $ext -d \$${interface}inet -j ACCEPT
+		if [ -n "$ipv4" ]; then
+			eval network="\$${interface}inet/24"
+		else
+			eval network="\${${interface}inet%:*}:/64"
+		fi
+		$ipt -A INPUT    -i $interface -s $network -j ACCEPT
+		$ipt -A FORWARD  -i $interface -s $network -j ACCEPT
+		$ipt -A OUTPUT   -o $interface -s $network -j ACCEPT
+		case ",${vmn}," in
+			(*,${interface},*)
+			$ipt -A INPUT    -i $ext -d $network -j ACCEPT
+			$ipt -A FORWARD  -o $ext -d $network -j ACCEPT
+			;;
+		esac
 	done
 	if [ -n "$ipv4" ]; then
 		# Blocking Broadcasts

@@ -44,8 +44,8 @@ device="$2" id="$3" value="$4"
 
 [ -d /dev/snd ] && alsa=true || alsa=false
 [ -d /dev/oss ] && oss=true  || oss=false
-amixer="amixer -q set Master"
-ossmix="ossmix -- vmix0-outvol"
+amixer="/usr/bin/amixer -q set Master"
+ossmix="/usr/bin/ossmix -- vmix0-outvol"
 
 case "$group" in
 	(ac_adapter)
@@ -70,8 +70,14 @@ case "$group" in
 					(*) unhandled_event "$@";;
 				esac
 				;;
-			(power) shutdown -H now;;
-			(sleep) hibernate-ram  ;;
+			(power)
+				if [ $(pgrep runit) = 1 ]; then
+					/lib/sv/bin/sv-shutdown -0
+				else
+					/sbin/shutdown -H now
+				fi
+				;;
+			(sleep) /usr/bin/slock; /usr/sbin/hibernate-ram;;
 			(mute) 
 				$alsa && $amixer toggle;;
 			(volumeup) 
@@ -85,7 +91,7 @@ case "$group" in
 		;;
 	(cd)
 		case "$action" in
-			(pause|play|stop|next|prev) mpc "$action";;
+			(pause|play|stop|next|prev) /usr/bin/mpc "$action";;
 			(*) unhandled_event "$@";;
 		esac
 		;;

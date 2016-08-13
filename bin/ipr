@@ -22,15 +22,12 @@ cat <<-EOF
 	-b, --block='1863 ntp'       block service or port 1863,ntp
 	-i, --int-iface=eth0         use eth0 internal interface
 	-e, --ext-iface=wlan0        use wlan0 external interface
-	-v, --vmn-iface=vmnet8       use vmnet8 virtual interface
 	-d, --dhcp=[<server_ip>]     enable dhcp, use dhcp server IP
 	-4, --ipv=4                  short hand for --ipv=4
 	-6, --ipv=6                  short hand for --ipv=6
 	-m, --module=[<modules>]     insert kernel coma separated list of kernel modules
 	    --mpd=[6600]             allow in/outbound from loop back device src for mpd
 	    --jabber=['5222 5269']   enable XMPP-client/server, short hand of '-s5222,5269'
-	    --nat                    enable masquarading for nat/router
-	    --snat                   enable snat instead for nat/router
 	-t, --torrent=[50550:50555]  enable torrent traffic on those ports
 	-s, --service='pop3 pop3s'   allow in/outbound for named services or ports
 	-S, --save=[ipt-rules]       save ip[6]tables rules to file, default to ipt-rules
@@ -61,18 +58,15 @@ grp="$(type -p grep     || exit)"
 ifc="$(type -p ifconfig || exit)"
 sed="$(type -p sed      || exit)"
 
-opt=$(getopt -o '?46I::b:i:e:d::m::S::s:ht::v:' -l block:,ext-iface:,jabber::,ipset:: \
-	-l mpd::,torrent::,int-iface:,ipv:,dhcp::,module::,mpd,save::,service:,snat,nat:: \
-	-l help,vmn-iface: -n ${0##*/} -- "$@" || usage)
+opt=$(getopt -o '?46I::b:i:e:d::m::S::s:ht::' -l block:,ext-iface:,jabber::,ipset:: \
+	-l mpd::,torrent::,int-iface:,ipv:,dhcp::,module::,mpd,save::,servicea,help: \
+	-n ${0##*/} -- "$@" || usage)
 eval set -- "$opt"
 
 while [ $# > 0 ]; do
 	case $1 in
-		--snat) snat=true; shift;;
 		-e|--ext-iface) ext=$2; shift 2;;
 		-i|--int-iface) int=$2; shift 2;;
-		-v|--vmn-iface) vmn=$2; shift 2;;
-		--nat) nat="${2:-true}"; shift 2;;
 		-4) ipv4=true ipv="$ipv ipv4"; shift;;
 		-6) ipv6=true ipv="$ipv ipv6"; shift;;
 		--mpd) mpd=${2:-6600}        ; shift 2;;
@@ -115,7 +109,7 @@ iptable_nat ipt_MASQUERADE ipt_REDIRECT ipt_REJECT"
 [ -n "$ipv6" ] && module="$module ip6table_filter ip6table_mangle ip6table_raw
 ip6table_nat ip6t_MASQUERADE ip6t_REDIRECT ip6t_REJECT"
 
-modprobe nf_nat_ftp nf_nat_irc nf_conntrack_ftp nf_conntrack_irc ipt_LOG \
+modprobe -a nf_nat_ftp nf_nat_irc nf_conntrack_ftp nf_conntrack_irc ipt_LOG \
 	$module >/dev/null 2>&1
 
 if [ -n "$ipv4" ]; then
@@ -141,7 +135,7 @@ done
 
 dorules()
 {
-	local net port srv
+	local port srv
 	# Deny then accept: this keeps holes from opening up while we close ports and such
 	$ipt -P INPUT      DROP
 	$ipt -P OUTPUT     DROP
@@ -220,22 +214,9 @@ dorules()
 	$ipt -A OUTPUT  -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
 	$ipt -A FORWARD -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
 
-	# Allow MSQUARADING for NAT/DSL-Router
-	if [ -n "$nat"  ]; then
-		$ipt -t nat -A POSTROUTING -o $ext -j MASQUERADE
-		# NAT I/O
-		if [ -n "$ipv4" ]; then
-			$ipt -A PREROUTING  -t nat -j ACCEPT
-			$ipt -A POSTROUTING -t nat -j ACCEPT
-			$ipt -A OUTPUT      -t nat -j ACCEPT
-		fi
-	fi
 	# Accept trafic from/out loop back device
 	$ipt -A INPUT  -i $lbdiface -s $inet -j ACCEPT
 	$ipt -A OUTPUT -o $lbdiface -s $inet -j ACCEPT
-	# accept trafic from internal interface
-	# Allow NAT for bridged NAT/DSL-Router
-	[ -n "$snat" ] && $ipt -t nat -A POSTROUTING -o $ext -j SNAT --to $inet
 	# Block outbound ICMP (except for PING)
 	$ipt -A OUTPUT  -o $ext -p $icmp ! --$icmp-type 8 -j drop
 	$ipt -A FORWARD -o $ext -p $icmp ! --$icmp-type 8 -j drop
@@ -244,8 +225,7 @@ dorules()
 	$ipt -A   INPUT  -i $ext  -p $icmp  --$icmp-type 8 -m conntrack --ctstate NEW -j ACCEPT
 	$ipt -A FORWARD  -o $ext  -p $icmp  --$icmp-type 8 -m conntrack --ctstate NEW -j ACCEPT
 
-	# Accept trafic from internal interface
-	for interface in ${int//,/ } ${vmn//,/ }; do
+	for interface in ${int//,/ }; do
 		eval set -- $($ifc ${interface%:*} | $sed -nre '/inet /p')
 		while [ $# -gt 0 ]; do
 			eval "${interface}${1}=${2}"
@@ -254,19 +234,15 @@ dorules()
 		if [ -n "$ipv4" ]; then
 			eval network="\$${interface}inet/24"
 		else
-			eval network="\${${interface}inet%:*}:/64"
+			eval network="\$${interface}inet/64"
 		fi
-		$ipt -A INPUT    -i $interface -s $network -j ACCEPT
-		$ipt -A FORWARD  -i $interface -s $network -j ACCEPT
-		$ipt -A OUTPUT   -o $interface -s $network -j ACCEPT
-		case ",${vmn}," in
-			(*,${interface},*)
-			$ipt -A INPUT    -i $ext -d $network -j ACCEPT
-			$ipt -A FORWARD  -o $ext -d $network -j ACCEPT
-			;;
-		esac
+		eval address="\$${interface}inet"
+		# Allow MSQUARADING for NAT/DSL-Router
+		$ipt -A PREROUTING  -t nat -d $inet    -j DNAT --to-destination ${address%.*}.128-254
+		$ipt -A POSTROUTING -t nat -s $network -j SNAT --to-source $inet
+		$ipt -t nat -A POSTROUTING -o $ext -s $network -j MASQUERADE
 	done
-	if [ -n "$ipv4" ]; then
+	if [ -n "$ipv4" -a -n "$BROADCAST" ]; then
 		# Blocking Broadcasts
 		$ipt -A INPUT   -i $ext -d   $netmask -j drop
 		$ipt -A OUTPUT  -o $ext -d   $netmask -j drop
@@ -285,7 +261,7 @@ dorules()
 
 doiface()
 {
-	local broadcast icmp iface=$1 lbdiface=lo lbdnetmask netmask net inet icmp ipt
+	local broadcast icmp iface=$1 lbdiface=lo lbdnetmask netmask inet icmp ipt
 
 	if [ -n "$ipv4" ]; then
 		icmp=icmp ipt="$(which iptables) --modprobe=$(which modprobe)"
@@ -297,10 +273,16 @@ doiface()
 				shift 2
 			done
 		done
+		net="$inet/24"
 		pr_info "lbdinet=$lbdinet ldbnetmask=$lbdnetmask"
 		pr_info "inet=$inet broadcast=$broadcast netmask=$netmask"
 
-		$ipt -F; $ipt -X
+		$ipt -F
+		$ipt -t nat -F PREROUTING
+		$ipt -t nat -F POSTROUTING
+		$ipt -t nat -F OUTPUT
+		$ipt -t mangle -F
+		$ipt -X
 		if [ -n "$netmask" ]; then
 			dorules
 			[ -n "$save" ] && $ipt-save >$save
@@ -320,9 +302,16 @@ doiface()
 				shift 2
 			done
 		done
+		inet="$inet6"
+		net="$inet6/64"
 		pr_info "inet=$inet lbdinet=$lbdinet"
 
-		$ipt -F; $ipt -X
+		$ipt -F
+		$ipt -t nat -F PREROUTING
+		$ipt -t nat -F POSTROUTING
+		$ipt -t nat -F OUTPUT
+		$ipt -t mangle -F
+		$ipt -X
 		if [ -n "$inet" ]; then
 			dorules
 			[ -n "$save" ] && $ipt-save >${save/ipt/ip6t}

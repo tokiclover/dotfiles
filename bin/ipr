@@ -16,7 +16,8 @@ if [ -n "$ZSH_VERSION" ]; then
 	setopt SH_WORD_SPLIT
 fi
 
-usage() {
+usage()
+{
 cat <<-EOF
  usage: ${0##*/} [-e wlan0] [-i eth0] [-4|-6] [OPTIONS]
 	-b, --block='1863 ntp'       block service or port 1863,ntp
@@ -60,7 +61,8 @@ sed="$(type -p sed      || exit)"
 
 opt=$(getopt -o '?46I::b:i:e:d::m::S::s:ht::' -l block:,ext-iface:,jabber::,ipset:: \
 	-l mpd::,torrent::,int-iface:,ipv:,dhcp::,module::,mpd,save::,servicea,help: \
-	-n ${0##*/} -- "$@" || usage)
+	-n ${0##*/} -- "$@")
+[ "$?" = 0 ] || usage 1
 eval set -- "$opt"
 
 while [ $# > 0 ]; do

@@ -5,7 +5,7 @@
 # $Header: ipr                                           Exp $
 # $Aythor: (c) 2011-6 tokiclover <tokiclover@gmail.com>  Exp $
 # $License: MIT (or 2-clause/new/simplified BSD)         Exp $
-# $Version: 2.7 2016/03/30 21:09:26                      Exp $
+# $Version: 3.0 2016/08/08 21:09:26                      Exp $
 # $Reference:                                            Exp $
 #     http://www.gentoo-wiki.info/HOWTO_Iptables_and_stateful_firewalls 
 #     http://www.gentoo-wiki.info/HOWTO_Iptables_for_newbies
@@ -38,21 +38,21 @@ EOF
 exit $?
 }
 
-pr_info()
+info()
 {
 	echo -e "\e[1;34mINFO:\e[0;35m${0##*/}\e[0m: ${@}"
 }
-pr_error()
+error()
 {
 	echo -e "\e[1;31mERROR:\e[0;36m${0##*/}\e[0m: ${@}" >&2
 }
-pr_warn()
+warn()
 {
 	echo -e "\e[1;33mWARN:\e[0;32m${0##*/}\e[0m: ${@}" >&2
 }
 die()
 {
-	local ret="$?"; pr_error "$@"; exit "$ret"
+	local ret="$?"; error "$@"; exit "$ret"
 }
 
 grp="$(type -p grep     || exit)"
@@ -162,7 +162,7 @@ dorules()
 		$ipt -I INPUT -m set --match-set "$net" src,dst -j drop
 	done
 
-	pr_info "Blocking trafic to TCP/UDP port: "
+	info "Blocking trafic to TCP/UDP port: "
 	for port in $block; do
 		echo -n "$port,"
 		for type in tcp udp; do
@@ -181,9 +181,12 @@ dorules()
 		fi
 		$ipt -A INPUT  -p udp -i $ext $port ${dhcp_server:+-s $dhcp_server} -j ACCEPT
 		$ipt -A OUTPUT -p udp -o $ext $port ${dhcp_server:+-s $dhcp_server} -j ACCEPT
+		$ipt -A INPUT   -i $ext -s $net -j ACCEPT
+		$ipt -A OUTPUT  -o $ext -s $net -j ACCEPT
+		$ipt -A FORWARD -o $ext -s $net -j ACCEPT
 	fi
 	
-	pr_info "Allowing inside systems to use service: "
+	info "Allowing inside systems to use service: "
 	for port in $services; do
 		echo -n "$port,"
 		$ipt -A OUTPUT  -o $ext  -p tcp --dport $port --syn -m conntrack --ctstate NEW -j ACCEPT
@@ -192,18 +195,18 @@ dorules()
 	echo ""
 	
 	if [ -n "$mpd" ]; then
-		pr_info "Opening TCP Output over $lbdinet:$mpd for MPD"
+		info "Opening TCP Output over $lbdinet:$mpd for MPD"
 		$ipt -A INPUT  -p tcp --dport $mpd -s $lbdinet --syn -m conntrack --ctstate NEW -j ACCEPT
 		$ipt -A OUTPUT -p tcp --dport $mpd -s $lbdinet --syn -m conntrack --ctstate NEW -j ACCEPT
 	fi
 	
 	if [ -n "$torrent" ]; then
 		# turning off DHT tracking for torrent
-		pr_info "Disabling tracking on ${torrent#*:}-udp-port PREROUTING and OUTPUT"
+		info "Disabling tracking on ${torrent#*:}-udp-port PREROUTING and OUTPUT"
 		$ipt -t raw -A PREROUTING -i $ext -p udp --dport ${torrent#*:} -j NOTRACK
 		$ipt -t raw -A OUTPUT     -o $ext -p udp --sport ${torrent#*:} -j NOTRACK
 		# Torrents ports
-		pr_info "Opening $torrent port for torrent"
+		info "Opening $torrent port for torrent"
 		$ipt -A INPUT -p tcp --dport $torrent -i $ext --syn -m conntrack --ctstate NEW -j ACCEPT
 		$ipt -A INPUT -p udp --dport $torrent -i $ext       -m conntrack --ctstate NEW -j ACCEPT
 		$ipt -A OUTPUT -p tcp -o $ext -j ACCEPT
@@ -217,6 +220,8 @@ dorules()
 	$ipt -A FORWARD -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
 
 	# Accept trafic from/out loop back device
+	$ipt -A INPUT  -i $lbdiface -s $lbdinet -j ACCEPT
+	$ipt -A OUTPUT -o $lbdiface -s $lbdinet -j ACCEPT
 	$ipt -A INPUT  -i $lbdiface -s $inet -j ACCEPT
 	$ipt -A OUTPUT -o $lbdiface -s $inet -j ACCEPT
 	# Block outbound ICMP (except for PING)
@@ -226,6 +231,7 @@ dorules()
 	$ipt -A  OUTPUT  -o $ext  -p $icmp  --$icmp-type 8 -m conntrack --ctstate NEW -j ACCEPT
 	$ipt -A   INPUT  -i $ext  -p $icmp  --$icmp-type 8 -m conntrack --ctstate NEW -j ACCEPT
 	$ipt -A FORWARD  -o $ext  -p $icmp  --$icmp-type 8 -m conntrack --ctstate NEW -j ACCEPT
+	$ipt -A FORWARD  -o $ext -s $net -j ACCEPT
 
 	for interface in ${int//,/ }; do
 		eval set -- $($ifc ${interface%:*} | $sed -nre '/inet /p')
@@ -239,9 +245,16 @@ dorules()
 			eval network="\$${interface}inet/64"
 		fi
 		eval address="\$${interface}inet"
-		# Allow MSQUARADING for NAT/DSL-Router
-		$ipt -A PREROUTING  -t nat -d $inet    -j DNAT --to-destination ${address%.*}.128-254
+		$ipt -A INPUT   -i $interface -s $network -d $network -j ACCEPT
+		$ipt -A INPUT   -i $interface -s $network -d $net     -j ACCEPT
+		$ipt -A OUTPUT  -o $interface -s $network -d $network -j ACCEPT
+		$ipt -A OUTPUT  -o $interface -s $network -d $net     -j ACCEPT
+		$ipt -A FORWARD -o $interface -s $network -j ACCEPT
+		# Allow NAT-ing for internal interfaces
+		$ipt -A INPUT       -t nat -d $inet    -j SNAT --to-source ${address%.*}.128-${address%.*}.254
+		$ipt -A PREROUTING  -t nat -d $inet    -j DNAT --to-destination ${address%.*}.128-${address%.*}.254
 		$ipt -A POSTROUTING -t nat -s $network -j SNAT --to-source $inet
+		$ipt -A OUTPUT      -t nat -s $network -j DNAT --to-destination $inet
 		$ipt -t nat -A POSTROUTING -o $ext -s $network -j MASQUERADE
 	done
 	if [ -n "$ipv4" -a -n "$BROADCAST" ]; then
@@ -276,13 +289,13 @@ doiface()
 			done
 		done
 		net="$inet/24"
-		pr_info "lbdinet=$lbdinet ldbnetmask=$lbdnetmask"
-		pr_info "inet=$inet broadcast=$broadcast netmask=$netmask"
+		info "lbdinet=$lbdinet ldbnetmask=$lbdnetmask"
+		info "inet=$inet broadcast=$broadcast netmask=$netmask"
 
 		$ipt -F
-		$ipt -t nat -F PREROUTING
-		$ipt -t nat -F POSTROUTING
-		$ipt -t nat -F OUTPUT
+		for table in PREROUTING POSTROUTING INPUT OUTPUT; do
+			$ipt -t nat -F $table
+		done
 		$ipt -t mangle -F
 		$ipt -X
 		if [ -n "$netmask" ]; then
@@ -290,7 +303,7 @@ doiface()
 			[ -n "$save" ] && $ipt-save >$save
 			return 0
 		else
-			pr_warn "No netmask found, nothing to be done; try adding -6 (IPv6)"
+			warn "No netmask found, nothing to be done; try adding -6 (IPv6)"
 			return 1
 		fi
 	elif [ -n "$ipv6" ]; then
@@ -306,20 +319,19 @@ doiface()
 		done
 		inet="$inet6"
 		net="$inet6/64"
-		pr_info "inet=$inet lbdinet=$lbdinet"
+		info "inet=$inet lbdinet=$lbdinet"
 
 		$ipt -F
-		$ipt -t nat -F PREROUTING
-		$ipt -t nat -F POSTROUTING
-		$ipt -t nat -F OUTPUT
-		$ipt -t mangle -F
+		for table in PREROUTING POSTROUTING INPUT OUTPUT; do
+			$ipt -t nat -F $table
+		done
 		$ipt -X
 		if [ -n "$inet" ]; then
 			dorules
 			[ -n "$save" ] && $ipt-save >${save/ipt/ip6t}
 			return 0
 		else
-			pr_warn "No netmask found, nothing to be done; try removing -6 (IPv6)"
+			warn "No netmask found, nothing to be done; try removing -6 (IPv6)"
 			return 1
 		fi
 	fi

@@ -9,6 +9,7 @@
 # $Reference:                                            Exp $
 #     http://www.gentoo-wiki.info/HOWTO_Iptables_and_stateful_firewalls 
 #     http://www.gentoo-wiki.info/HOWTO_Iptables_for_newbies
+#     http://www.karlrupp.net/en/computer/nat_tutorial
 #
 
 if [ -n "$ZSH_VERSION" ]; then

@@ -8,7 +8,6 @@
 # $Version: 3.0 2016/08/08 21:09:26                      Exp $
 # $Reference:                                            Exp $
 #     http://www.gentoo-wiki.info/HOWTO_Iptables_and_stateful_firewalls 
-#     http://www.gentoo-wiki.info/HOWTO_Iptables_for_newbies
 #     http://www.karlrupp.net/en/computer/nat_tutorial
 #
 
@@ -246,10 +245,11 @@ dorules()
 			eval network="\$${interface}inet/64"
 		fi
 		eval address="\$${interface}inet"
+		# Accepet traffic from/to internal interfaces
 		$ipt -A INPUT   -i $interface -s $network -d $network -j ACCEPT
-		$ipt -A INPUT   -i $interface -s $network -d $net     -j ACCEPT
+		$ipt -A INPUT   -i $interface -s $network -d $inet    -j ACCEPT
 		$ipt -A OUTPUT  -o $interface -s $network -d $network -j ACCEPT
-		$ipt -A OUTPUT  -o $interface -s $network -d $net     -j ACCEPT
+		$ipt -A OUTPUT  -o $interface -s $network -d $inet    -j ACCEPT
 		$ipt -A FORWARD -o $interface -s $network -j ACCEPT
 		# Allow NAT-ing for internal interfaces
 		$ipt -A INPUT       -t nat -d $inet    -j SNAT --to-source ${address%.*}.128-${address%.*}.254

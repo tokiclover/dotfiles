@@ -246,11 +246,11 @@ dorules()
 		fi
 		eval address="\$${interface}inet"
 		# Accepet traffic from/to internal interfaces
-		$ipt -A INPUT   -i $interface -s $network -d $network -j ACCEPT
-		$ipt -A INPUT   -i $interface -s $network -d $inet    -j ACCEPT
-		$ipt -A OUTPUT  -o $interface -s $network -d $network -j ACCEPT
-		$ipt -A OUTPUT  -o $interface -s $network -d $inet    -j ACCEPT
-		$ipt -A FORWARD -o $interface -s $network -j ACCEPT
+		$ipt -A INPUT   -s $network -d $network -j ACCEPT
+		$ipt -A INPUT   -s $network -d $net     -j ACCEPT
+		$ipt -A OUTPUT  -s $network -d $network -j ACCEPT
+		$ipt -A OUTPUT  -s $network -d $net     -j ACCEPT
+		$ipt -A FORWARD -s $network -j ACCEPT
 		# Allow NAT-ing for internal interfaces
 		$ipt -A INPUT       -t nat -d $inet    -j SNAT --to-source ${address%.*}.128-${address%.*}.254
 		$ipt -A PREROUTING  -t nat -d $inet    -j DNAT --to-destination ${address%.*}.128-${address%.*}.254

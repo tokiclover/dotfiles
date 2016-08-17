@@ -252,9 +252,9 @@ dorules()
 		$ipt -A OUTPUT  -s $network -d $inet    -j ACCEPT
 		$ipt -A FORWARD -s $network -j ACCEPT
 		# Allow NAT-ing for internal interfaces
-		$ipt -A INPUT       -t nat -d $inet    -j SNAT --to-source ${address%.*}.128-${address%.*}.254
-		$ipt -A PREROUTING  -t nat -d $inet    -j DNAT --to-destination ${address%.*}.128-${address%.*}.254
-		$ipt -A POSTROUTING -t nat -s $network -j SNAT --to-source $inet
+		$ipt -A INPUT       -t nat -d $inet    -j SNAT --to-source      $address
+		$ipt -A PREROUTING  -t nat -d $inet    -j DNAT --to-destination $address
+		$ipt -A POSTROUTING -t nat -s $network -j SNAT --to-source      $inet
 		$ipt -A OUTPUT      -t nat -s $network -j DNAT --to-destination $inet
 		$ipt -t nat -A POSTROUTING -o $ext -s $network -j MASQUERADE
 	done

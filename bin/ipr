@@ -179,8 +179,8 @@ dorules()
 		elif [ "$ipv6" ]; then
 			port="--sport 546:547 --dport 546:547"
 		fi
-		$ipt -A INPUT  -p udp -i $ext $port ${dhcp_server:+-s $dhcp_server} -j ACCEPT
-		$ipt -A OUTPUT -p udp -o $ext $port ${dhcp_server:+-s $dhcp_server} -j ACCEPT
+		$ipt -A INPUT  -p udp $port ${dhcp_server:+-s $dhcp_server} -j ACCEPT
+		$ipt -A OUTPUT -p udp $port ${dhcp_server:+-s $dhcp_server} -j ACCEPT
 		$ipt -A INPUT   -i $ext -s $net -j ACCEPT
 		$ipt -A OUTPUT  -o $ext -s $net -j ACCEPT
 		$ipt -A FORWARD -o $ext -s $net -j ACCEPT
@@ -247,9 +247,9 @@ dorules()
 		eval address="\$${interface}inet"
 		# Accepet traffic from/to internal interfaces
 		$ipt -A INPUT   -s $network -d $network -j ACCEPT
-		$ipt -A INPUT   -s $network -d $net     -j ACCEPT
+		$ipt -A INPUT   -s $network -d $inet    -j ACCEPT
 		$ipt -A OUTPUT  -s $network -d $network -j ACCEPT
-		$ipt -A OUTPUT  -s $network -d $net     -j ACCEPT
+		$ipt -A OUTPUT  -s $network -d $inet    -j ACCEPT
 		$ipt -A FORWARD -s $network -j ACCEPT
 		# Allow NAT-ing for internal interfaces
 		$ipt -A INPUT       -t nat -d $inet    -j SNAT --to-source ${address%.*}.128-${address%.*}.254

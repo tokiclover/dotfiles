@@ -252,10 +252,14 @@ dorules()
 		$ipt -A OUTPUT  -s $network -d $inet    -j ACCEPT
 		$ipt -A FORWARD -s $network -j ACCEPT
 		# Allow NAT-ing for internal interfaces
-		$ipt -A INPUT       -t nat -d $inet    -j SNAT --to-source      $address
-		$ipt -A PREROUTING  -t nat -d $inet    -j DNAT --to-destination $address
-		$ipt -A POSTROUTING -t nat -s $network -j SNAT --to-source      $inet
-		$ipt -A OUTPUT      -t nat -s $network -j DNAT --to-destination $inet
+		# XXX: conflict when using a DHCP server on the internal interface
+		#      (for virtual LAN for example); so, this should be used only
+		#      to redirect ports/service per virtual/guest machine
+		#$ipt -A INPUT       -t nat -d $inet    -j SNAT --to-source      $address
+		#$ipt -A PREROUTING  -t nat -d $inet    -j DNAT --to-destination $address
+		#$ipt -A POSTROUTING -t nat -s $network -j SNAT --to-source      $inet
+		#$ipt -A OUTPUT      -t nat -s $network -j DNAT --to-destination $inet
+		# Allow NAT/MASQERADE for internal interfaces
 		$ipt -t nat -A POSTROUTING -o $ext -s $network -j MASQUERADE
 	done
 	if [ -n "$ipv4" -a -n "$BROADCAST" ]; then

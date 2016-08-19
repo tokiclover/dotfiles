@@ -242,9 +242,9 @@ dorules()
 		done
 		eval address="\$${interface}inet"
 		# Accepet traffic from/to internal interfaces
-		$ipt -A INPUT   -i $interface -s $address/$CIDR -j ACCEPT
-		$ipt -A OUTPUT  -o $interface -s $address/$CIDR -j ACCEPT
-		$ipt -A FORWARD -o $interface -s $address/$CIDR -j ACCEPT
+		$ipt -A INPUT   -s $address/$CIDR -j ACCEPT
+		$ipt -A OUTPUT  -s $address/$CIDR -j ACCEPT
+		$ipt -A FORWARD -s $address/$CIDR -j ACCEPT
 		# Allow NAT-ing for internal interfaces
 		# XXX: conflict when using a DHCP server on the internal interface
 		#      (for virtual LAN for example); so, this should be used only
@@ -254,7 +254,7 @@ dorules()
 		#$ipt -A POSTROUTING -t nat -s $address -j SNAT --to-source      $inet
 		#$ipt -A OUTPUT      -t nat -s $address -j DNAT --to-destination $inet
 		# Allow NAT/MASQERADE for internal interfaces
-		$ipt -t nat -A POSTROUTING -o $ext -s $address/$CIDR -j MASQUERADE
+		$ipt -t nat -A POSTROUTING -s $address/$CIDR -j MASQUERADE
 	done
 	if [ -n "$ipv4" -a -n "$BROADCAST" ]; then
 		# Blocking Broadcasts

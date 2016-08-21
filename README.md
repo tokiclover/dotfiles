@@ -60,6 +60,11 @@ FILES
 * functions.{ba,z}sh: a very few common helpers used in other scripts;
 * helpers.bash for extra bash helpers (zsh equivalent are `.zsh/functions`);
 
+### /etc
+
+* etc/qemu/qemu-vlan: virtual LAN, network, manager for virtualization emulators
+like QEMU, UML,...;
+
 MIRRORS
 -------
 

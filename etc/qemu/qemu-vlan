@@ -152,7 +152,7 @@ usage: $argv0 --br=vnet1 --num=4 [--if=eth0|--dhcp=dnsmasq] [--vde] --(start|sto
   -d, --dhcp=dnsmasq     use DHCP client/server for virtual network/switch
   -i, --if=eth1          hardware interface to use for bridged network
   -b, --br=vnet2         bridge interface to use (default to vnet3)
-  -c, --cf=vnet2.conf    configuration file to use (default to \$br.conf)
+  -c, --cf=vnet2.conf    configuration file to use (auto generated)
   -n, --num=6            number of tap interface to set up
   -s, --start            start virtual (private) network
   -S, --stop             stop virtual (private) network

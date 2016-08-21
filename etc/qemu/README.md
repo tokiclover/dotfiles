@@ -110,7 +110,7 @@ can be connected to vitual LAN with defaults settings; and then use:
 
     % /etc/qemu/qemu-if(up|down) tap$i
 
-Or else, this script can be setuid and called as qemu-if{up,down} and called
+Or else, this script can be setuid and called as *qemu-if{up,down}* and called
 with a tap interface name with the default switch (bridge) set to vnet2.
 
 **WARNING:** `-netdev tap,...,script=/etc/qemu/qemu-ifup,downscript=/etc/qemu/qemu-ifdown`
@@ -127,21 +127,21 @@ Or else, use VDE switches instead which can be used by unprivileged users!
 Just do not forget to append `--vde` argument to attach VDE switches to tap
 network devices. And this has the advantage to multiply the possible network
 port to x32 (unless **VDE_SWITCH_ARGS** is configured otherwise in the configuration
-`/etc/qemu/vnet3/vnet3.conf` file, for this example with `vde_switch_args=-n64`).
+`/etc/qemu/vnet3/vnet3.conf` file, for this example with `VDE_SWITCH_ARGS=-n64`).
 However `qemu-vlan --br=vnet3 --dhcp=dnsmasq --vde -n4` would provide 32x4=128
 dynamicaly allocated IP address by DHCP server, up to 128+94, 30 are rserved
 for static address. Either, set up **DNSMASQ_ARGS** in the configuration with
 `--dhcp-host=ARG`, or use `--dhcp-hostfile=/etc/qemu/vnet3/dhcp.host` instead.
 
 **WARING:** Another issue will rise when using DHCP client localy to configure internal
-interface which can grap an interface opened by qemu.
+interface which can grab an interface opened by qemu.
 
-**SOLUTION:** issue `ifconfig vnet3_$j 0.0.0.0 up` in the hostto allow the guest
+**SOLUTION:** issue `ifconfig vnet3_$j 0.0.0.0 up` in the host to allow the guest
 to configure the interface with `dhclient|dhcpcd IFACE` in the guest.
 Or else, if using [dhcpcd][3], add `--denyinterfaces vnet[0-9]_[0-9]` to [dhcpcd][3].
 
 And finaly, use `--stop` argument instead of the `--start` to shutdown a virtual LAN.
-Need hardware address for persistent network? `qemu-vlan --br=vnet4 -n8 [--vde] --addr`
+Need hardware address for persistent network? `qemu-vlan --br=vnet4 -n8 [--vde] --macaddr`
 would generate hardware address (`--vde` multiply  by 32, default factor is 8.)
  
 Requirements

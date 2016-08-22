@@ -40,7 +40,6 @@ FILES
 
 * bhp: is a simple script amintianing Browser-Home-Profile and cache directory to
        tmpfs (or zram backed FileSystem by specifying -t|--tmpdir [DIR]);
-* hdu: is a simple script which ease updating '$Header:...$' or '$Id:...$' update;
 * ips: is a script which can be used to retrieve IP block lists to be added to iptables rules;
 * ipr: is script to generate statefull ip[6]tables net rules;
 * lbd: is a script to add/remove loop back devices;

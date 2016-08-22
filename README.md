@@ -43,7 +43,6 @@ FILES
 * hdu: is a simple script which ease updating '$Header:...$' or '$Id:...$' update;
 * ips: is a script which can be used to retrieve IP block lists to be added to iptables rules;
 * ipr: is script to generate statefull ip[6]tables net rules;
-* kvm: is a script to ease kvm loadind with a few default option;
 * lbd: is a script to add/remove loop back devices;
 * a2jloop: a script to map loopback device to jack client (support zita/alsa);
 * mktmp: a simple and cheap mktemp variant to set up tmp-{dir,file}s; 

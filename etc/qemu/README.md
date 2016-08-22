@@ -23,25 +23,31 @@ routing is necessary like real LAN network similar to VMware network
   + add 172.16.x.1 to /etc/resolv.conf to not have to restart [dnsmasq][5];
  *x* is usually *1i* *i* the virtual network number e.g. 10 for vnet0.
 
-Use [dnsmasq][5] as a DHCP server for virtual network which have access to
+  Use [dnsmasq][5] as a DHCP server for virtual network which have access to
 outside world; or ISC [dhcpd][4] for private network by supplying
 `--dhcp=dnsmask|dhcpd` command line argument; and then
 add _172.16.10.1_ if _vnet0_ is configured to run a DNS and DHCP server.
 
 
 - And then setting up iptables rules for internal interfaces and NAT
-is required as well. See, ~/bin/ipr for a complete statefull firewll
+is required as well. See, [~/bin/ipr](bin/ipr) for a complete statefull firewall
 setup, e.g. `~/bin/ipr -e eth0 -d -i vnet1,vnet2,vnet3` for exmaple.
 
-- And finaly use `ether=/etc/qemu/vnet$i/ether.conf` hwaddr to provide
-`mac=$ether_$j` to qemu for persistent network and unique hwaddr.
-Of course, that configuration file--`/etc/qemu/$br/$br.conf`--can be used to
+- And finaly use `ether=/etc/qemu/vnet$i/ether.conf` hardware MAC address to provide
+`mac=$ether_$j` to qemu for persistent network and unique hardware address.
+Need hardware address for persistent network? `qemu-vlan --br=vnet$i -n4 [--vde] --macaddr`
+would generate hardware address (`--vde` multiply  by 32, default factor is 8)
+to generate that configuration file.
+Of course, the main configuration file--`/etc/qemu/$br/$br.conf`--can be used to
 configure the virtual LAN; or extra DHCP server options can be added to
-`${ether%/*}/dhcp(d).conf` for [dnsmasq][5] or [dhcpcd][3].
+`${ether%/*}/dhcp.conf` for [dnsmasq][5] or `${ether%/*}/dhcpd.conf` for [dhcpcd][3].
+See [vnet1/vnet1.conf](vnet1/vnet1.conf) and [vnet1/ether.conf](vnet1/ether.conf)
+for a pratical example.
 
-- Redirect ports for (non bridged) virtual network can be done using
+- Ports redirection for (non bridged) virtual network can be done using
 iptables's **DNAT** and **SNAT** targets. **PREROUTING** and **POSTROUTING** chains are supported
-for VMs are providing web services. The format is as the following:
+for VMs providing web services. Just set up **{PRE,POST}ROUTING_RULES** in the
+configuration file. The format is the following:
 
 **PREROUTING_RULSES**="interface,proto,port,address:port[/4|6] interface,proto,..."
 **POSTROUTING_RULSES**="interface,proto,port,address:port[/4|6] interface,proto,..."
@@ -86,6 +92,8 @@ construct instead.
 **NOTE:** No privileged users cannot safely use the first variant without an issue
 because qemu would fail to open `/dev/net/tun`; the second form is problematic
 because the tap device is not connected to the right NIC.
+So, make sure to use `-device ....,netde=vnet2_1 -netdev ...,id=vnet2_1,...` or
+similar settings when necessary.
 
 **SOLUTION: RUN VMs as SUPERUSER!!**
 
@@ -93,7 +101,8 @@ because the tap device is not connected to the right NIC.
 
     % /etc/qemu/qemu-vlan --br=vnet2 -n8 --if=eth0 --start
 
-For a bridged virtual LAN (no need for DHCP server for a bridged setup)
+For a bridged virtual LAN (no need for DHCP server for a bridged setup... however
+a DHCP client can be used to configure the bridge)
 and then use: `-netdev bridge,br=vnet2,id=vnet2_4`.
 See `/etc/sysctl.d/10-disable-firewall-on-bridge.conf` if each guest provide
 a firewall.
@@ -147,8 +156,6 @@ to configure the interface with `dhclient|dhcpcd IFACE` in the guest.
 Or else, if using [dhcpcd][3], add `--denyinterfaces vnet[0-9]_[0-9]` to [dhcpcd][3].
 
 And finaly, use `--stop` argument instead of the `--start` to shutdown a virtual LAN.
-Need hardware address for persistent network? `qemu-vlan --br=vnet4 -n8 [--vde] --macaddr`
-would generate hardware address (`--vde` multiply  by 32, default factor is 8.)
  
 Requirements
 ------------

@@ -146,7 +146,7 @@ port to x32 (unless **VDE_SWITCH_ARGS** is configured otherwise in the configura
 However `qemu-vlan --br=vnet3 --dhcp=dnsmasq --vde -n4` would provide 32x4=128
 dynamicaly allocated IP address by DHCP server, up to 128+94, 30 are rserved
 for static address. Either, set up **DNSMASQ_ARGS** in the configuration with
-`--dhcp-host=ARG`, or use `--dhcp-hostfile=/etc/qemu/vnet3/dhcp.host` instead.
+`--dhcp-host=ARG`, or use `/etc/qemu/vnet3/dhcp.host` host file instead.
 
 **WARING:** Another issue will rise when using DHCP client localy to configure internal
 interface which can grab an interface opened by qemu.

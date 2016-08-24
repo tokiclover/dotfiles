@@ -125,7 +125,7 @@
 # However `qemu-vlan --br=vnet3 --dhcp=dnsmasq --vde -n4' would provide 32x4=128
 # dynamicaly allocated IP address by DHCP server, up to 128+94, 30 are rserved
 # for static address. Either, set up DNSMASQ_ARGS in the configuration with
-# --dhcp-host=ARG, or use --dhcp-hostfile=/etc/qemu/vnet3/dhcp.host instead.
+# --dhcp-host=ARG, or use /etc/qemu/vnet3/dhcp.host host file instead.
 #
 # XXX: Another issue will rise when using DHCP client localy to configure internal
 # interface which can grap an interface opened by qemu.
@@ -356,29 +356,16 @@ make_dhcpd_server()
 	lf=${cf%/*}/dhcpd.lease
 	fc=${cf%/*}/dhcpd.conf
 
-	if [ ! -e $fc ]; then
-		mkdir -p ${lf%/*}
-		make_dhcpd_conf
-	fi
+	make_dhcpd_conf
+	[ -e $lf ] || printf '' >$lf
 
-	if [ -z "$DHCPD_OPTS" ]; then
-		[ -e $lf ] || printf '' >$lf
-		DHCPD_OPTS="-cf $fc -lf $lf -pf /var/run/$br.dhcpd.pid -user dhcp -group dhcp"
-		cat <<EOF >>$cf
-
-##### DHCP Daemon Options #####
-# dhcpd command line options (modify with care)
-DHCPD_OPTS="$DHCPD_OPTS"
-# extra command arguments to pass to dhcpd
-#DHCPD_ARGS=""
-##### DHCP Daemon Options #####
-
-EOF
-	fi
+	DHCPD_OPTS="-cf $fc -lf $lf -pf /var/run/$br.dhcpd.pid -user dhcp -group dhcp"
 	eval dhcpd "$DHCP_OPTS" "$DHCPD_ARGS" "$br"
 }
 make_dhcpd_conf()
 {
+	[ -e $fc ] && return
+	mkdir -p ${lf%/*}
 	cat <<EOF >$fc
 ###### VNET DHCP Configuration #####
 
@@ -408,43 +395,52 @@ EOF
 }
 make_dnsmasq_server()
 {
-	local fc lf
+	local df fc lf hf
 	lf=${cf%/*}/dhcp.lease
 	fc=${cf%/*}/dhcp.conf
+	hf=${cf%/*}/dhcp.host
+	df=${fc%/*}/dnsmasq.conf
+	make_dnsmasq_conf
 
-	if [ ! -e $fc ]; then
-		mkdir -p ${cf%/*}
-		make_dnsmasq_conf
-	fi
-	if [ -z "$DNSMASQ_OPTS" ]; then
-		DNSMASQ_OPTS="--interface=$br --pid-file=/var/run/$br.dnsmasq.pid \
---dhcp-leasefile=$lf --bind-dynamic --domain-needed \
---dhcp-range=$p.32,$p.254,$netmask,$broadcast,48h --dhcp-boot --user=dhcp \
---group=dhcp --listen-address=$gateway --dhcp-optsfile=$fc --dhcp-authoritative"
-		cat <<EOF >>$cf
-
-##### DHCP/DNS Daemon Options #####
-# dnsmasq command line options (modify with care)
-DNSMASQ_OPTS="$DNSMASQ_OPTS"
-# extra command arguments to pass to dnsmasq
-#DNSMASQ_ARGS=""
-##### DHCP/DNS Daemon Options #####
-
-EOF
-	fi
-
+	DNSMASQ_OPTS="--conf-file=$df --pid-file=/var/run/$br.dnsmasq.pid"
 	eval $dnsmasq "$DNSMASQ_OPTS" "$DNSMASQ_ARGS"
 }
 make_dnsmasq_conf()
 {
+	[ -e $df ] && return
+	mkdir -p ${cf%/*}
+
+	[ -e $fc ] ||
 	cat <<EOF >$fc
 ###### VNET DHCP Configuration #####
+# DHCP options for dnsmasq, modify with care
 
 option:router 0.0.0.0
 option:domain-name localdomain
 
 ###### VNET DHCP Configuration #####
 EOF
+
+	cat <<EOF >$df
+###### VNET dnsmasq Configuration #####
+# DHCP options for dnsmasq, modify with care; see dnsmasq(8)
+
+dhcp-authoritative
+dhcp-leasefile=$lf
+dhcp-optsfile=$fc
+dhcp-hostsfile=$hf
+dhcp-range=$p.32,$p.254,$netmask,$broadcast,48h
+dhcp-optsfile=$fc
+domain-needed
+interface=$br
+listen-address=$gateway
+user=dhcp
+group=dhcp
+
+###### VNET dnsmasq Configuration #####
+EOF
+
+	[ -e $hf ] || printf '' >$hf
 }
 
 #

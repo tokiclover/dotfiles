@@ -254,7 +254,7 @@ dorules()
 		#$ipt -A POSTROUTING -t nat -s $address -j SNAT --to-source      $inet
 		#$ipt -A OUTPUT      -t nat -s $address -j DNAT --to-destination $inet
 		# Allow NAT/MASQERADE for internal interfaces
-		$ipt -t nat -A POSTROUTING -s $address/$CIDR -j MASQUERADE
+		$ipt -t nat -A POSTROUTING -s $address/$CIDR  ! -d $address/$CIDR -j MASQUERADE
 	done
 	if [ -n "$ipv4" -a -n "$BROADCAST" ]; then
 		# Blocking Broadcasts

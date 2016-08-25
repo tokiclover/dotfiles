@@ -132,7 +132,6 @@
 #
 # SOLUTION: issue `ifconfig vnet3_$j 0.0.0.0 up' in the hostto allow the guest
 # to configure the interface with `dhclient|dhcpcd IFACE' in the guest.
-# Or else, if using dhcpcd, add `--denyinterfaces vnet[0-9]_[0-9]' to dhcpcd.
 #
 # And finaly, use `--stop' argument instead of the `--start' to shutdown a VLAN.
 # Need hardware address for persistent network? `qemu-vlan --br=vnet4 -n8 [--vde] --addr'

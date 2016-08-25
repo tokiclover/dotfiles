@@ -153,7 +153,6 @@ interface which can grab an interface opened by qemu.
 
 **SOLUTION:** issue `ifconfig vnet3_$j 0.0.0.0 up` in the host to allow the guest
 to configure the interface with `dhclient|dhcpcd IFACE` in the guest.
-Or else, if using [dhcpcd][3], add `--denyinterfaces vnet[0-9]_[0-9]` to [dhcpcd][3].
 
 And finaly, use `--stop` argument instead of the `--start` to shutdown a virtual LAN.
  

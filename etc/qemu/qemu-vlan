@@ -425,6 +425,7 @@ EOF
 ###### VNET dnsmasq Configuration #####
 # DHCP options for dnsmasq, modify with care; see dnsmasq(8)
 
+bind-dynamic
 dhcp-authoritative
 dhcp-leasefile=$lf
 dhcp-optsfile=$fc

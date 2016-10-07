@@ -414,8 +414,8 @@ make_dnsmasq_conf()
 ###### VNET DHCP Configuration #####
 # DHCP options for dnsmasq, modify with care
 
-option:router 0.0.0.0
-option:domain-name localdomain
+option:router,0.0.0.0
+option:domain-name,localdomain
 
 ###### VNET DHCP Configuration #####
 EOF
@@ -425,13 +425,16 @@ EOF
 # DHCP options for dnsmasq, modify with care; see dnsmasq(8)
 
 bind-dynamic
+strict-order
+except-interface=lo
+dhcp-no-override
 dhcp-authoritative
 dhcp-leasefile=$lf
 dhcp-optsfile=$fc
 dhcp-hostsfile=$hf
 dhcp-range=$p.32,$p.254,$netmask,$broadcast,48h
 dhcp-optsfile=$fc
-domain-needed
+#domain-needed
 interface=$br
 listen-address=$gateway
 user=dhcp

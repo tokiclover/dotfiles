@@ -77,7 +77,7 @@ case "$group" in
 					/sbin/shutdown -H now
 				fi
 				;;
-			(sleep) /usr/bin/slock; /usr/sbin/hibernate-ram;;
+			(sleep) /usr/sbin/hibernate-ram;;
 			(mute) 
 				$alsa && $amixer toggle;;
 			(volumeup) 

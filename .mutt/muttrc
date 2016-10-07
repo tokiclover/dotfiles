@@ -7,10 +7,20 @@
 # is used because paths are expanded when parsed
 #
 set folder=~/mail   # where to keep mailboxes
-set header_cache=~/.cache/mutt
+set header_cache=~/.cache/mutt/messages
 
 #set abort_unmodified=yes  # automatically abort replies for unchanged message
-set alias_file=~/.mutt/mail_alias  # where to keep aliases
+#set alias_file=~/.mutt/mail_alias  # where to keep aliases
+
+# use abook instead of alias
+set query_command= "abook --mutt-query '%s'"
+macro index,pager  a "<pipe-message>abook --add-email-quiet<return>" "Add this sender to Abook"
+bind editor        <Tab> complete-query
+# or goobook instead (to search contact from mutt and Google contacts)
+#set query_command="goobook query '%s'"
+#macro index,pager a "<pipe-message>goobook add<return>" "add sender to google contacts"
+#bind editor <Tab> complete-query
+
 #set allow_8bit     # never do Q-P encoding on legal 8-bit chars
 set arrow_cursor    # use -> instead of hiliting the whole line
 set ascii_chars     # use ASCII instead of ACS chars for threads
@@ -165,6 +175,9 @@ macro pager S "<save-message>+spam<Enter>"
 
 bind editor $ eol  # make $ jump to the end of the line
 
+# open a graphical browser to read html email (not working in a text based web-browser)
+macro attach 'V' "<pipe-entry>cat >$TMPDIR/mail.html && $BROWSER $TMPDIR/mail.html && rm $TMPDIR/mail.html<enter>"
+
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 #
 # User Defined Headers
@@ -269,6 +282,9 @@ auto_view application/x-gunzip
 auto_view application/x-gzip
 auto_view application/pdf
 
+auto_view text/html
+alternative_order text/plain text/html
+
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 #
 # Scoring
@@ -299,11 +315,14 @@ unset ssl_starttls
 # particular account settings; or else, use a single account with the following
 # fetchmail/sendmail macro definition (NO MULTI ACCOUNT SUPPORT FOR NOW).
 #
-source "gpg -qd ~/.mutt/key.gpg |"
-#source ~/.mutt/gcrc
-#folder-hook $folder "source ~/.mutt/gcrc"
-source ~/.mutt/gtrc
-folder-hook $folder "source ~/.mutt/gtrc"
+#source "gpg -qd ~/.mutt/key.gpg |"
+source ~/.mutt/key
+source ~/.mutt/gcrc
+folder-hook $folder "source ~/.mutt/gcrc"
+#source ~/.mutt/gtrc
+#folder-hook $folder "source ~/.mutt/gtrc"
+#source ~/.mutt/etrc
+#folder-hook $folder "source ~/.mutt/etrc"
 #
 # Fetch mail with an MTA (by pressing I)
 #
@@ -311,7 +330,7 @@ folder-hook $folder "source ~/.mutt/gtrc"
 #set mbox_type=mbox
 #set move=no
 #set spoolfile="${folder}/${imap_user}"
-#macro index,pager I "<shell-escape>fetchmail --all --verbose --logfile \
+#macro index,pager I "<shell-escape>fetchmail --all --keep --verbose --logfile \
 #  ~/.log/fetchmail.log --port 993 --proto IMAP --ssl --sslproto SSL3 --sslcertck \
 #  --smtpname smtps://smtp.${hostname} --user ${imap_user} \
 #  --mda '/usr/bin/procmail -m ~/.procmailrc ${imap_user} -d %s' \

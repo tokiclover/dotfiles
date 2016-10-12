@@ -242,6 +242,9 @@ dorules()
 		done
 		eval address="\$${interface}inet"
 		# Accepet traffic from/to internal interfaces
+		$ipt -A INPUT   -d $address/$CIDR -j ACCEPT
+		$ipt -A OUTPUT  -d $address/$CIDR -j ACCEPT
+		$ipt -A FORWARD -d $address/$CIDR -j ACCEPT
 		$ipt -A INPUT   -s $address/$CIDR -j ACCEPT
 		$ipt -A OUTPUT  -s $address/$CIDR -j ACCEPT
 		$ipt -A FORWARD -s $address/$CIDR -j ACCEPT

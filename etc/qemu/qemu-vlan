@@ -330,8 +330,8 @@ iptables_table()
 }
 iptables_rules()
 {
-	iptables_table "dnat" $PREROUTING_RULES
-	iptables_table "snat" $POSTROUTING_RULES
+	[ -n "$PREROUTING_RULES"  ] && iptables_table "dnat" $PREROUTING_RULES
+	[ -n "$POSTROUTING_RULES" ] && iptables_table "snat" $POSTROUTING_RULES
 }
 
 get_address()
@@ -394,10 +394,11 @@ EOF
 }
 make_dnsmasq_server()
 {
-	local df fc lf hf
+	local df fc lf hf hs
 	lf=${cf%/*}/dhcp.lease
 	fc=${cf%/*}/dhcp.conf
 	hf=${cf%/*}/dhcp.host
+	hs=${fc%/*}/hosts
 	df=${fc%/*}/dnsmasq.conf
 	make_dnsmasq_conf
 
@@ -427,6 +428,7 @@ EOF
 bind-dynamic
 strict-order
 except-interface=lo
+addn-hosts=$hs
 dhcp-no-override
 dhcp-authoritative
 dhcp-leasefile=$lf
@@ -444,6 +446,7 @@ group=dhcp
 EOF
 
 	[ -e $hf ] || printf '' >$hf
+	[ -e $hs ] || printf '' >$hs
 }
 
 #

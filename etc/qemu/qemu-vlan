@@ -568,7 +568,7 @@ start()
 		$ip tuntap add dev "$tap" mode tap user "$user" group "$group" ||
 			die "Failed to create $tap device"
 
-		$ip link set dev "$tap" $tap_opts master "$br" ||
+		$ip link set dev "$tap" $tap_opts master "$br" up ||
 			die "Failed to bridge $tap to $br"
 
 		#

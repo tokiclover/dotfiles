@@ -1,9 +1,12 @@
-media-gfx/ephoto **
-=media-libs/mesa-11.1.9999 **
+=sys-fs/zfs-kmod-0.6.5.7 **
+=sys-fs/zfs-0.6.5.7 **
+=sys-kernel/spl-0.6.5.7 **
+dev-libs/libglvnd **
+=media-libs/mesa-13.0.9999 **
 media-sound/a2jmidid **
 =media-sound/ardour-4.9999 **
 =media-sound/jack-audio-connection-kit-2.9999 **
-=media-video/ffmpeg-3.0.9999 **
+=media-video/ffmpeg-3.1.9999 **
 sys-apps/less **
 sys-fs/aufs-standalone **
 sys-fs/aufs-util **
@@ -15,3 +18,7 @@ www-misc/dactyl **
 =media-plugins/vapoursynth-plugins-rawsource-9999 **
 =media-plugins/vapoursynth-plugins-filters-9999 **
 www-misc/dactyl **
+media-plugins/vapoursynth-plugins-tnlmeans **
+media-plugins/vapoursynth-plugins-yadif **
+media-plugins/vapoursynth-plugins-lsmashsource **
+media-plugins/vapoursynth-plugins-fft3dfilter **

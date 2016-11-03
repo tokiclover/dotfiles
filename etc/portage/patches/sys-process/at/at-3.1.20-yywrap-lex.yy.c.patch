@@ -1,0 +1,13 @@
+--- a/parsetime.h	2016-11-02 10:08:53.065941081 +0100
++++ b/parsetime.h	2016-11-02 10:09:37.626940283 +0100
+@@ -17,6 +17,10 @@
+  *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+  */
+ 
++#ifdef HAVE_CONFIG_H
++#include "config.h"
++#endif
++
+ time_t parsetime(time_t currtime, int argc, char **argv);
+ 
+ extern char *last_token;

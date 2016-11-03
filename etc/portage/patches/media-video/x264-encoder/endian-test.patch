@@ -1,0 +1,25 @@
+--- configure	2015-10-11 22:45:04.000000000 +0200
++++ configure	2016-05-19 15:00:42.786947398 +0200
+@@ -901,14 +901,16 @@
+ # skip endianness check for Intel Compiler and MSVS, as all supported platforms are little. each have flags that will cause the check to fail as well
+ CPU_ENDIAN="little-endian"
+ if [ $compiler = GNU ]; then
+-    echo "int i[2] = {0x42494745,0}; double f[2] = {0x1.0656e6469616ep+102,0};" > conftest.c
+-    $CC $CFLAGS conftest.c -c -o conftest.o 2>/dev/null || die "endian test failed"
+-    if (${cross_prefix}strings -a conftest.o | grep -q BIGE) && (${cross_prefix}strings -a conftest.o | grep -q FPendian) ; then
++	cat <<-EOF > conftest.c
++#include <stdint.h>
++#define IS_BIG_ENDIAN (*(uint16_t *)"\0\xff" < 0x100)
++int main(void) { return IS_BIG_ENDIAN; }
++EOF
++    $CC $CFLAGS -o conftest conftest.c || die "endian test failed"
++	./conftest || {
+         define WORDS_BIGENDIAN
+         CPU_ENDIAN="big-endian"
+-    elif !(${cross_prefix}strings -a conftest.o | grep -q EGIB && ${cross_prefix}strings -a conftest.o | grep -q naidnePF) ; then
+-        die "endian test failed"
+-    fi
++	}
+ fi
+ 
+ if [ "$cli_libx264" = "system" -a "$shared" != "yes" ] ; then

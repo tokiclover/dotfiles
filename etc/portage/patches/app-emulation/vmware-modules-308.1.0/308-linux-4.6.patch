@@ -1,0 +1,145 @@
+diff -uprNbd b/vmblock-only/linux/inode.c a/vmblock-only/linux/inode.c
+--- b/vmblock-only/linux/inode.c	2016-05-15 20:22:07.044161015 +0300
++++ a/vmblock-only/linux/inode.c	2016-05-15 20:59:22.272965026 +0300
+@@ -44,7 +44,9 @@ static struct dentry *InodeOpLookup(stru
+ static int InodeOpReadlink(struct dentry *, char __user *, int);
+ #endif
+ 
+-#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 4, 99)
++#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 5, 99)
++static const char *InodeOpFollowlink(struct dentry *dentry, struct inode *inode, struct delayed_call *done);
++#elif LINUX_VERSION_CODE >= KERNEL_VERSION(4, 4, 99)
+ static const char *InodeOpFollowlink(struct dentry *dentry, struct inode *inode, void **cookie);
+ #elif LINUX_VERSION_CODE >= KERNEL_VERSION(4, 1, 99)
+ static const char *InodeOpFollowlink(struct dentry *dentry, void **cookie);
+@@ -240,7 +242,9 @@ InodeOpFollowlink(struct dentry *dentry,
+ #if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 4, 99)
+                   struct inode *inode,
+ #endif
+-#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 1, 99)
++#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 5, 99)
++                  struct delayed_call *done)
++#elif LINUX_VERSION_CODE >= KERNEL_VERSION(4, 1, 99)
+                   void **cookie)          // OUT: stores opaque pointer
+ #else
+                   struct nameidata *nd)   // OUT: stores result
+@@ -269,7 +273,9 @@ InodeOpFollowlink(struct dentry *dentry,
+       goto out;
+    }
+ 
+-#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 1, 99)
++#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 5, 99)
++   return iinfo->name;
++#elif LINUX_VERSION_CODE >= KERNEL_VERSION(4, 1, 99)
+    return *cookie = iinfo->name;
+ #else
+    nd_set_link(nd, iinfo->name);
+diff -uprNbd b/vmci-only/linux/driver.c a/vmci-only/linux/driver.c
+--- b/vmci-only/linux/driver.c	2016-05-15 20:22:07.047161099 +0300
++++ a/vmci-only/linux/driver.c	2016-05-15 21:05:11.268800901 +0300
+@@ -1468,8 +1468,12 @@ VMCIUserVALockPage(VA addr) // IN:
+    int retval;
+ 
+    down_read(&current->mm->mmap_sem);
++#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 5, 99)
++   retval = get_user_pages(addr, 1, 1, 0, &page, NULL);
++#else
+    retval = get_user_pages(current, current->mm, addr,
+                            1, 1, 0, &page, NULL);
++#endif
+    up_read(&current->mm->mmap_sem);
+ 
+    if (retval != 1) {
+diff -uprNbd b/vmci-only/linux/vmciKernelIf.c a/vmci-only/linux/vmciKernelIf.c
+--- b/vmci-only/linux/vmciKernelIf.c	2016-05-15 20:22:07.047161099 +0300
++++ a/vmci-only/linux/vmciKernelIf.c	2016-05-15 21:04:33.013723102 +0300
+@@ -1835,7 +1835,11 @@ VMCIReleasePages(struct page **pages,  /
+       if (dirty) {
+          set_page_dirty(pages[i]);
+       }
++#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 5, 99)
++      put_page(pages[i]);
++#else
+       page_cache_release(pages[i]);
++#endif
+       pages[i] = NULL;
+    }
+ }
+@@ -2049,6 +2053,13 @@ VMCIHost_GetUserMemory(VA64 produceUVA,
+    int err = VMCI_SUCCESS;
+ 
+    down_write(&current->mm->mmap_sem);
++#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 5, 99)
++   retval = get_user_pages((VA)produceUVA,
++                           produceQ->kernelIf->numPages,
++                           1, 0,
++                           produceQ->kernelIf->u.h.headerPage,
++                           NULL);
++#else
+    retval = get_user_pages(current,
+                            current->mm,
+                            (VA)produceUVA,
+@@ -2056,6 +2067,7 @@ VMCIHost_GetUserMemory(VA64 produceUVA,
+                            1, 0,
+                            produceQ->kernelIf->u.h.headerPage,
+                            NULL);
++#endif
+    if (retval < produceQ->kernelIf->numPages) {
+       Log("get_user_pages(produce) failed (retval=%d)\n", retval);
+       VMCIReleasePages(produceQ->kernelIf->u.h.headerPage, retval, FALSE);
+@@ -2063,6 +2075,13 @@ VMCIHost_GetUserMemory(VA64 produceUVA,
+       goto out;
+    }
+ 
++#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 5, 99)
++   retval = get_user_pages((VA)consumeUVA,
++                           consumeQ->kernelIf->numPages,
++                           1, 0,
++                           consumeQ->kernelIf->u.h.headerPage,
++                           NULL);
++#else
+    retval = get_user_pages(current,
+                            current->mm,
+                            (VA)consumeUVA,
+@@ -2070,6 +2089,7 @@ VMCIHost_GetUserMemory(VA64 produceUVA,
+                            1, 0,
+                            consumeQ->kernelIf->u.h.headerPage,
+                            NULL);
++#endif
+    if (retval < consumeQ->kernelIf->numPages) {
+       Log("get_user_pages(consume) failed (retval=%d)\n", retval);
+       VMCIReleasePages(consumeQ->kernelIf->u.h.headerPage, retval, FALSE);
+diff -uprNbd b/vmmon-only/linux/hostif.c a/vmmon-only/linux/hostif.c
+--- b/vmmon-only/linux/hostif.c	2016-05-15 20:22:07.050161182 +0300
++++ a/vmmon-only/linux/hostif.c	2016-05-15 21:06:12.184516967 +0300
+@@ -1163,8 +1163,13 @@ HostIFGetUserPages(void *uvAddr,
+    int retval;
+ 
+    down_read(&current->mm->mmap_sem);
++#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 5, 99)
++   retval = get_user_pages((unsigned long)uvAddr, numPages, 0, 0, ppages,
++                           NULL);
++#else
+    retval = get_user_pages(current, current->mm, (unsigned long)uvAddr,
+                            numPages, 0, 0, ppages, NULL);
++#endif
+    up_read(&current->mm->mmap_sem);
+ 
+    return retval != numPages;
+diff -uprNbd b/vmnet-only/userif.c a/vmnet-only/userif.c
+--- b/vmnet-only/userif.c	2016-05-15 20:22:07.050161182 +0300
++++ a/vmnet-only/userif.c	2016-05-15 21:07:18.652389200 +0300
+@@ -113,8 +113,12 @@ UserifLockPage(VA addr) // IN
+    int retval;
+ 
+    down_read(&current->mm->mmap_sem);
++#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 5, 99)
++   retval = get_user_pages(addr, 1, 1, 0, &page, NULL);
++#else
+    retval = get_user_pages(current, current->mm, addr,
+ 			   1, 1, 0, &page, NULL);
++#endif
+    up_read(&current->mm->mmap_sem);
+ 
+    if (retval != 1) {
+

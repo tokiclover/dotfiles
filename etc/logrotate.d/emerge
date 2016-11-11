@@ -1,0 +1,9 @@
+/var/log/emerge-fetch.log /var/log/emerge.log {
+	weekly
+	rotate 5
+	minsize 1M
+	compress
+    missingok
+    create 0660 portage portage
+}
+

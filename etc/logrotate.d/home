@@ -1,0 +1,11 @@
+/home/*/.log/*.log /home/*/.log/*/*.log {
+	daily
+	rotate 5
+	minsize 1M
+	compress
+	sharedscripts
+	postrotate
+	for file in /home/*/.log/mpd.log; do [ -f "${file%.log*}/.mpd/mpd.pid" ] && /bin/kill -HUP $(/bin/cat "${file%.log*}/.mpd/mpd.pid"); done
+	endscript
+}
+

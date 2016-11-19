@@ -103,7 +103,7 @@ fi
 [ -n "$ipv4" ] && CIDR=24 || CIDR=64
 
 block="$block 0:1 13 98 111 137:139 161:162 445 517:518 520 1214 1999 3049 4329"
-block="$block 6346 3128 8000 12345 65535 98 512:515 6112 1427"
+block="$block 6346 3128 12345 65535 98 512:515 6112 1427"
 services="$services git domain ssh http http-alt https ftp ftp-data ftps ipp imap2 imap3 imaps mail"
 services="$services time rsync ircd ircs hkp telnets ftp ftp-data ntp"
 

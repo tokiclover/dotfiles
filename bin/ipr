@@ -167,9 +167,8 @@ dorules()
 	for port in $block; do
 		echo -n "$port,"
 		for type in tcp udp; do
-			$ipt -A INPUT   -p "$type" --dport "$port"  -j drop
-			$ipt -A OUTPUT  -p "$type" --dport "$port"  -j drop
-			$ipt -A FORWARD -p "$type" --dport "$port"  -j drop
+			$ipt -A INPUT  -i "$ext" -p "$type" --dport "$port"  -j drop
+			$ipt -A OUTPUT -o "$ext" -p "$type" --dport "$port"  -j drop
 		done
 	done
 	echo ""
@@ -180,22 +179,39 @@ dorules()
 		elif [ "$ipv6" ]; then
 			port="--sport 546:547 --dport 546:547"
 		fi
-		$ipt -A INPUT  -p udp $port ${dhcp_server:+-s $dhcp_server} -j ACCEPT
-		$ipt -A OUTPUT -p udp $port ${dhcp_server:+-s $dhcp_server} -j ACCEPT
-		$ipt -A INPUT   -i $ext -s $inet/$CIDR -j ACCEPT
-		$ipt -A OUTPUT  -o $ext -s $inet/$CIDR -j ACCEPT
-		$ipt -A FORWARD -o $ext -s $inet/$CIDR -j ACCEPT
+		$ipt -A INPUT   -i $ext -s $inet/$CIDR -p udp $port ${dhcp_server:+-s $dhcp_server} -j ACCEPT
+		$ipt -A OUTPUT  -o $ext -s $inet/$CIDR -p udp $port ${dhcp_server:+-s $dhcp_server} -j ACCEPT
 	fi
 	
 	info "Allowing inside systems to use service: "
 	for port in $services; do
 		echo -n "$port,"
-		$ipt -A  INPUT  -p tcp --dport $port --syn -m conntrack --ctstate NEW -j ACCEPT
-		$ipt -A OUTPUT  -p tcp --dport $port --syn -m conntrack --ctstate NEW -j ACCEPT
-		$ipt -A OUTPUT  -p udp --dport $port       -m conntrack --ctstate NEW -j ACCEPT
+		$ipt -A  INPUT -i "$ext" -p tcp --dport $port --syn -m conntrack --ctstate NEW -j ACCEPT
+		$ipt -A OUTPUT -o "$ext" -p tcp --dport $port --syn -m conntrack --ctstate NEW -j ACCEPT
 	done
 	echo ""
 	
+	# Accept trafic from/out loop back device
+	$ipt -A INPUT  -i $lbdiface -s $lbdinet/$CIDR -j ACCEPT
+	$ipt -A OUTPUT -o $lbdiface -s $lbdinet/$CIDR -j ACCEPT
+	$ipt -A INPUT  -i $lbdiface -s $inet/$CIDR -j ACCEPT
+	$ipt -A OUTPUT -o $lbdiface -s $inet/$CIDR -j ACCEPT
+
+	$ipt -A INPUT   -p tcp --dport auth --syn -m conntrack --ctstate NEW -j ACCEPT
+	$ipt -A OUTPUT  -p tcp --dport auth --syn -m conntrack --ctstate NEW -j ACCEPT
+	$ipt -A INPUT   -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
+	$ipt -A OUTPUT  -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
+	$ipt -A FORWARD -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
+
+	# Block outbound ICMP (except for PING)
+	$ipt -A OUTPUT  -o $ext -p $icmp ! --$icmp-type 8 -j drop
+	$ipt -A FORWARD -o $ext -p $icmp ! --$icmp-type 8 -j drop
+	# Allow to ping
+	$ipt -A  OUTPUT  -o $ext  -p $icmp  --$icmp-type 8 -m conntrack --ctstate NEW -j ACCEPT
+	$ipt -A   INPUT  -i $ext  -p $icmp  --$icmp-type 8 -m conntrack --ctstate NEW -j ACCEPT
+	$ipt -A FORWARD  -o $ext  -p $icmp  --$icmp-type 8 -m conntrack --ctstate NEW -j ACCEPT
+	$ipt -A FORWARD  -o $ext -s $inet/$CIDR -j ACCEPT
+
 	if [ -n "$mpd" ]; then
 		info "Opening TCP Output over $lbdinet:$mpd for MPD"
 		$ipt -A INPUT  -p tcp --dport $mpd -s $lbdinet --syn -m conntrack --ctstate NEW -j ACCEPT
@@ -214,26 +230,6 @@ dorules()
 		$ipt -A OUTPUT -p tcp -o $ext -j ACCEPT
 		$ipt -A OUTPUT -p udp -o $ext -j ACCEPT
 	fi
-
-	$ipt -A INPUT   -p tcp --dport auth --syn -m conntrack --ctstate NEW -j ACCEPT
-	$ipt -A OUTPUT  -p tcp --dport auth --syn -m conntrack --ctstate NEW -j ACCEPT
-	$ipt -A INPUT   -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
-	$ipt -A OUTPUT  -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
-	$ipt -A FORWARD -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
-
-	# Accept trafic from/out loop back device
-	$ipt -A INPUT  -i $lbdiface -s $lbdinet -j ACCEPT
-	$ipt -A OUTPUT -o $lbdiface -s $lbdinet -j ACCEPT
-	$ipt -A INPUT  -i $lbdiface -s $inet -j ACCEPT
-	$ipt -A OUTPUT -o $lbdiface -s $inet -j ACCEPT
-	# Block outbound ICMP (except for PING)
-	$ipt -A OUTPUT  -o $ext -p $icmp ! --$icmp-type 8 -j drop
-	$ipt -A FORWARD -o $ext -p $icmp ! --$icmp-type 8 -j drop
-	# Allow to ping
-	$ipt -A  OUTPUT  -o $ext  -p $icmp  --$icmp-type 8 -m conntrack --ctstate NEW -j ACCEPT
-	$ipt -A   INPUT  -i $ext  -p $icmp  --$icmp-type 8 -m conntrack --ctstate NEW -j ACCEPT
-	$ipt -A FORWARD  -o $ext  -p $icmp  --$icmp-type 8 -m conntrack --ctstate NEW -j ACCEPT
-	$ipt -A FORWARD  -o $ext -s $inet/$CIDR -j ACCEPT
 
 	for interface in ${int//,/ }; do
 		eval set -- $($ifc ${interface%:*} | $sed -nre '/inet /p')

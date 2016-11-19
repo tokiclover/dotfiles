@@ -190,8 +190,9 @@ dorules()
 	info "Allowing inside systems to use service: "
 	for port in $services; do
 		echo -n "$port,"
-		$ipt -A OUTPUT  -o $ext  -p tcp --dport $port --syn -m conntrack --ctstate NEW -j ACCEPT
-		$ipt -A OUTPUT  -o $ext  -p udp --dport $port       -m conntrack --ctstate NEW -j ACCEPT
+		$ipt -A  INPUT  -p tcp --dport $port --syn -m conntrack --ctstate NEW -j ACCEPT
+		$ipt -A OUTPUT  -p tcp --dport $port --syn -m conntrack --ctstate NEW -j ACCEPT
+		$ipt -A OUTPUT  -p udp --dport $port       -m conntrack --ctstate NEW -j ACCEPT
 	done
 	echo ""
 	

@@ -34,6 +34,22 @@ everything in one shot cloning:
 * [pentadactyl][4] users may merge *www-misc/dactyl* packages from [bar][3]
 overlay to get current version without fetching the whole binary each time.
 
+GIT-SUBMODULES
+--------------
+
+### jedi-vim
+
+Do not forget to run the following commands to get *submodules* working:
+
+    git submodule update --init --recursive .vim/jedi-vim
+    pushd .vim
+    for f in jedi-vim/{autoload,plugin}/*; do ln -s ../$f ${f#*/}; done
+    popd
+
+### zprezto
+
+    git submodule update --init --recursive .zprezto
+
 FILES
 -----
 ### /bin

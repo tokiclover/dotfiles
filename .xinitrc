@@ -12,11 +12,7 @@ if [ -r "${TMPDIR}"/env ]; then
 else
 	eval export $(gpg-agent --daemon --sh)
 	eval export $(ssh-agent -s)
-	{
-		echo GPG_AGENT_INFO="${GPG_AGENT_INFO}"
-		echo SSH_AUTH_SOCK="${SSH_AUTH_SOCK}"
-		echo SSH_AGENT_PID="${SSH_AGENT_PID}"
-	} > "${TMPDIR}"/env
+	printf "GPG_AGENT_INFO=$GPG_AGENT_INFO\nSSH_AUTH_SOCK=$SSH_AUTH_SOCK\nSSH_AGENT_PID=$SSH_AGENT_PID\n" >$TMPDIR/env
 fi
 
 #

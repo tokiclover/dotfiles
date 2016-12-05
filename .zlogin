@@ -9,15 +9,17 @@ if [[ -z $DISPLAY ]] && [[ $EUID != 0 ]] {
 }
 
 # Start ssh-agent
-if [[ -r $TMPDIR/env ]] {
+envfile=$TMPDIR/ssh-agent-env
+if [[ -r $envfile ]] {
 	while read line; do
 		export $line
-	done <$TMPDIR/env
+	done <$envfile
 } else {
 	eval export $(gpg-agent --daemon --sh)
 	eval export $(ssh-agent -s)
-	printf "GPG_AGENT_INFO=$GPG_AGENT_INFO\nSSH_AUTH_SOCK=$SSH_AUTH_SOCK\nSSH_AGENT_PID=$SSH_AGENT_PID\n" >$TMPDIR/env
+	printf "GPG_AGENT_INFO=$GPG_AGENT_INFO\nSSH_AUTH_SOCK=$SSH_AUTH_SOCK\nSSH_AGENT_PID=$SSH_AGENT_PID\n" >$envfile
 }
+unset envfile
 
 #
 # vim:fenc=utf-8:ci:pi:sts=2:sw=2:ts=2:

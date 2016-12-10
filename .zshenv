@@ -4,8 +4,8 @@
 
 export ZDOTDIR="${HOME}"
 export ZLS_COLORS="${LS_COLORS}"
-HISTFILE="${HOME}/.zhistory"
-HISTSIZE=5000
+export HISTFILE="${HOME}/.zhistory"
+export HISTSIZE=5000
 
 if [[ -f ~/.Xprofile ]] { source ~/.Xprofile }
 

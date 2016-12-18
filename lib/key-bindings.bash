@@ -71,14 +71,17 @@ fi
 # Define a few functions equivalent to ACPI key events
 #
 for cmd in volume{down,mute,up}; do
-	eval "function acpi-${cmd} { /etc/acpi/default.sh button/${cmd}; }"
+	eval "function ACPI-${cmd} { /etc/acpi/default.sh button/${cmd}; }"
+done
+for cmd in next pause play prev stop; do
+	eval "function ACPI-CD-${cmd} { /etc/acpi/default.sh cd/${cmd}; }"
 done
 
 bind -x "\"${keyinfo[F8]}\"":print-screen
 bind -x "\"${keyinfo[F9]}\"":run-term
-bind -x "\"${keyinfo[F10]}\"":acpi-volumemute
-bind -x "\"${keyinfo[F11]}\"":acpi-volumedown
-bind -x "\"${keyinfo[F12]}\"":acpi-volumeup
+bind -x "\"${keyinfo[F10]}\"":ACPI-volumemute
+bind -x "\"${keyinfo[F11]}\"":ACPI-volumedown
+bind -x "\"${keyinfo[F12]}\"":ACPI-volumeup
 
 case "${TERM}" in
 	(rxvt*|screen*)
@@ -102,6 +105,14 @@ for key in emacs-standard vi-insert; do
 	bind -m "${key}" '"\eOb":redo'
 	bind -m "${key}" '"\eOc":forward-word'
 	bind -m "${key}" '"\eOd":backward-word'
+
+	#
+	# key bindings with CTRL key--C-F<n> for mpd/mpc
+	#
+	bind -x "\"${keyinfo[F9]/\~/^}\"":ACPI-CD-pause
+	bind -x "\"${keyinfo[F10]/\~/^}\"":ACPI-CD-play
+	bind -x "\"${keyinfo[F11]/\~/^}\"":ACPI-CD-next
+	bind -x "\"${keyinfo[F12]/\~/^}\"":ACPI-CD-prev
 done
 set enable-bracketed-paste On
 	;;
@@ -109,6 +120,14 @@ set enable-bracketed-paste On
 for key in emacs-standard vi-insert; do
 	bind -m "${key}" '"\E[H":beginning-of-line'
 	bind -m "${key}" '"\E[F":end-of-line'
+
+	#
+	# key bindings with CTRL key--C-F<n> for mpd/mpc
+	#
+	bind -x "\"${keyinfo[F9]/\~/;5~}\"":ACPI-CD-pause
+	bind -x "\"${keyinfo[F10]/\~/;5~}\"":ACPI-CD-play
+	bind -x "\"${keyinfo[F11]/\~/;5~}\"":ACPI-CD-next
+	bind -x "\"${keyinfo[F12]/\~/;5~}\"":ACPI-CD-prev
 done
 set enable-bracketed-paste On
 	;;

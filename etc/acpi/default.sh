@@ -78,7 +78,7 @@ case "$group" in
 				fi
 				;;
 			(sleep) /usr/sbin/hibernate-ram;;
-			(mute) 
+			(*mute) 
 				$alsa && $amixer toggle;;
 			(volumeup) 
 				$alsa && $amixer 3dB+ ||

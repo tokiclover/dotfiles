@@ -7,6 +7,3 @@
 [submodule ".pentadactyl/modules/solarized"]
 	path = .pentadactyl/modules/solarized
 	url = git://github.com/claytron/pentadactyl-solarized.git
-[submodule ".vim/jedi-vim"]
-	path = .vim/jedi-vim
-	url = git://github.com/davidhalter/jedi-vim.git

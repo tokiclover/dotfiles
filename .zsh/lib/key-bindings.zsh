@@ -24,9 +24,8 @@ fi
 #
 # Define a few functions equivalent to ACPI key events
 #
-function acpi-default { /etc/acpi/default.sh "${@}" }
 for cmd (volume{down,mute,up}) {
-	eval function acpi-${cmd} \{ acpi-default button/${cmd} \}
+	eval function acpi-${cmd} \{ /etc/acpi/default.sh button/${cmd} \}
 	zle -N acpi-${cmd}
 }
 
@@ -93,8 +92,11 @@ for key in emacs viins; do
 	bindkey -M ${key} "\C-[C" forward-word
 	bindkey -M ${key} "\C-[D" backward-word
 
-	bindkey -M ${key} "${terminfo[kf12]}" run-term
-	bindkey -M ${key} "${terminfo[kf11]}" print-screen
+	bindkey -M ${key} "${terminfo[kf12]}" acpi-volumeup
+	bindkey -M ${key} "${terminfo[kf11]}" acpi-volumedown
+	bindkey -M ${key} "${terminfo[kf10]}" acpi-volumemute
+	bindkey -M ${key} "${terminfo[kf8]}"  run-term
+	bindkey -M ${key} "${terminfo[kf9]}"  print-screen
 done
 unset cmd key
 

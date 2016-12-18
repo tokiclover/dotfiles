@@ -25,8 +25,12 @@ fi
 # Define a few functions equivalent to ACPI key events
 #
 for cmd (volume{down,mute,up}) {
-	eval function acpi-${cmd} \{ /etc/acpi/default.sh button/${cmd} \}
-	zle -N acpi-${cmd}
+	eval function ACPI-${cmd} \{ /etc/acpi/default.sh button/${cmd} \}
+	zle -N ACPI-${cmd}
+}
+for cmd (next pause play prev stop) {
+	eval function ACPI-CD-${cmd} \{ /etc/acpi/default.sh cd/${cmd} \}
+	zle -N ACPI-CD-${cmd}
 }
 
 zle -N run-term
@@ -41,7 +45,7 @@ bindkey -s '\EOb' '\C-[B'
 bindkey -s '\EOc' '\C-[C'
 bindkey -s '\EOd' '\C-[D'
 
-for key in emacs viins; do
+for key (emacs viins) {
 	bindkey -M ${key} "\EOw" beginning-of-line
 	bindkey -M ${key} "\EOq" end-of-line
 	bindkey -M ${key} "\EOt" backward-char
@@ -57,26 +61,34 @@ for key in emacs viins; do
 	bindkey -M ${key} "\EOu" delete-char
 	bindkey -M ${key} "\EOM" accept-line
 
-	bindkey -M ${key} "${terminfo[kf10]/\~/^}" acpi-volumemute
-	bindkey -M ${key} "${terminfo[kf11]/\~/^}" acpi-volumedown
-	bindkey -M ${key} "${terminfo[kf12]/\~/^}" acpi-volumeup
-done
+	#
+	# key bindings with CTRL key--C-F<n> for mpd/mpc
+	#
+	bindkey -M ${key} "${terminfo[kf12]/\~/^}" ACPI-CD-prev
+	bindkey -M ${key} "${terminfo[kf11]/\~/^}" ACPI-CD-next
+	bindkey -M ${key} "${terminfo[kf10]/\~/^}" ACPI-CD-play
+	bindkey -M ${key} "${terminfo[kf9]/\~/^}"  ACPI-CD-pause
+}
 	;;
 	(xterm*)
-for key in emacs viins; do
+for key (emacs viins) {
 	bindkey -M ${key} "\E[H"  beginning-of-line
 	bindkey -M ${key} "\E[F"  end-of-line
 
-	bindkey -M ${key} "${terminfo[kf10]/\~/;5\~}" acpi-volumemute
-	bindkey -M ${key} "${terminfo[kf11]/\~/;5\~}" acpi-volumedown
-	bindkey -M ${key} "${terminfo[kf12]/\~/;5\~}" acpi-volumeup
-done
+	#
+	# key bindings with CTRL key--C-F<n> mpd/mpc
+	#
+	bindkey -M ${key} "${terminfo[kf12]/\~/;5~}" ACPI-CD-prev
+	bindkey -M ${key} "${terminfo[kf11]/\~/;5~}" ACPI-CD-next
+	bindkey -M ${key} "${terminfo[kf10]/\~/;5~}" ACPI-CD-play
+	bindkey -M ${key} "${terminfo[kf9]/\~/;5~}"  ACPI-CD-pause
+}
 	;;
 esac
 #
 # Set the same bindings with standard keys
 #
-for key in emacs viins; do
+for key (emacs viins) {
 	bindkey -M ${key} "\E[a" copy-earlier-word
 	bindkey -M ${key} "\E[b" backward-kill-line
 	bindkey -M ${key} "\E[c" backward-kill-word
@@ -92,12 +104,12 @@ for key in emacs viins; do
 	bindkey -M ${key} "\C-[C" forward-word
 	bindkey -M ${key} "\C-[D" backward-word
 
-	bindkey -M ${key} "${terminfo[kf12]}" acpi-volumeup
-	bindkey -M ${key} "${terminfo[kf11]}" acpi-volumedown
-	bindkey -M ${key} "${terminfo[kf10]}" acpi-volumemute
+	bindkey -M ${key} "${terminfo[kf12]}" ACPI-volumeup
+	bindkey -M ${key} "${terminfo[kf11]}" ACPI-volumedown
+	bindkey -M ${key} "${terminfo[kf10]}" ACPI-volumemute
 	bindkey -M ${key} "${terminfo[kf8]}"  run-term
 	bindkey -M ${key} "${terminfo[kf9]}"  print-screen
-done
+}
 unset cmd key
 
 #

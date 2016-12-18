@@ -70,10 +70,15 @@ fi
 #
 # Define a few functions equivalent to ACPI key events
 #
-function acpi-default { /etc/acpi/default.sh "${@}"; }
 for cmd in volume{down,mute,up}; do
-	eval "function acpi-${cmd} { acpi-default 'button/${cmd}'; }"
+	eval "function acpi-${cmd} { /etc/acpi/default.sh button/${cmd}; }"
 done
+
+bind -x "\"${keyinfo[F8]}\"":print-screen
+bind -x "\"${keyinfo[F9]}\"":run-term
+bind -x "\"${keyinfo[F10]}\"":acpi-volumemute
+bind -x "\"${keyinfo[F11]}\"":acpi-volumedown
+bind -x "\"${keyinfo[F12]}\"":acpi-volumeup
 
 case "${TERM}" in
 	(rxvt*|screen*)
@@ -97,10 +102,6 @@ for key in emacs-standard vi-insert; do
 	bind -m "${key}" '"\eOb":redo'
 	bind -m "${key}" '"\eOc":forward-word'
 	bind -m "${key}" '"\eOd":backward-word'
-
-	bind -m "${key}" "\"${keyinfo[F10]/\~/^}\"":acpi-volumemute
-	bind -m "${key}" "\"${keyinfo[F11]/\~/^}\"":acpi-volumedown
-	bind -m "${key}" "\"${keyinfo[F12]/\~/^}\"":acpi-volumeup
 done
 set enable-bracketed-paste On
 	;;
@@ -108,10 +109,6 @@ set enable-bracketed-paste On
 for key in emacs-standard vi-insert; do
 	bind -m "${key}" '"\E[H":beginning-of-line'
 	bind -m "${key}" '"\E[F":end-of-line'
-
-	bind -m "${key}" "\"${keyinfo[F10]/\~/;5\~}\"":acpi-volumemute
-	bind -m "${key}" "\"${keyinfo[F11]/\~/;5\~}\"":acpi-volumedown
-	bind -m "${key}" "\"${keyinfo[F12]/\~/;5\~}\"":acpi-volumeup
 done
 set enable-bracketed-paste On
 	;;
@@ -131,8 +128,6 @@ for key in emacs-standard vi-insert; do
 	bind -m "${key}" '"\C-[D":backward-word'
 
 	bind -m "${key}" "\"\C-L\"":clear-screen
-	bind -m "${key}" "\"${keyinfo[F11]}\"":run-term
-	bind -m "${key}" "\"${keyinfo[F12]}\"":print-screen
 done
 unset cmd key
 

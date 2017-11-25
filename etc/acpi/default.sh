@@ -91,7 +91,8 @@ case "$group" in
 		;;
 	(cd)
 		case "$action" in
-			(pause|play|stop|next|prev) /usr/bin/mpc "$action";;
+			(pause|play)     /usr/bin/mpc "toggle" ;;
+			(stop|next|prev) /usr/bin/mpc "$action";;
 			(*) unhandled_event "$@";;
 		esac
 		;;

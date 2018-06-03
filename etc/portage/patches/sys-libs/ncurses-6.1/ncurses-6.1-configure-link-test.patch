@@ -1,0 +1,147 @@
+--- ncurses-6.1/configure
++++ ncurses-6.1/configure
+@@ -5466,7 +5466,7 @@
+ #if defined (__stub_dlsym) || defined (__stub___dlsym)
+ choke me
+ #else
+-f = dlsym; /* workaround for ICC 12.0.3 */ if (f == 0) return 1;
++f = dlsym; /* avoid optimizing out f */ return (int)f;
+ #endif
+ 
+   ;
+@@ -7744,7 +7744,7 @@
+ #if defined (__stub_$ac_func) || defined (__stub___$ac_func)
+ choke me
+ #else
+-f = $ac_func; /* workaround for ICC 12.0.3 */ if (f == 0) return 1;
++f = $ac_func; /* avoid optimizing out f */ return (int)f;
+ #endif
+ 
+   ;
+@@ -7817,7 +7817,7 @@
+ #if defined (__stub_$ac_func) || defined (__stub___$ac_func)
+ choke me
+ #else
+-f = $ac_func; /* workaround for ICC 12.0.3 */ if (f == 0) return 1;
++f = $ac_func; /* avoid optimizing out f */ return (int)f;
+ #endif
+ 
+   ;
+@@ -9981,7 +9981,7 @@
+ #if defined (__stub_$ac_func) || defined (__stub___$ac_func)
+ choke me
+ #else
+-f = $ac_func; /* workaround for ICC 12.0.3 */ if (f == 0) return 1;
++f = $ac_func; /* avoid optimizing out f */ return (int)f;
+ #endif
+ 
+   ;
+@@ -13114,7 +13114,7 @@
+ #if defined (__stub_pthread_kill) || defined (__stub___pthread_kill)
+ choke me
+ #else
+-f = pthread_kill; /* workaround for ICC 12.0.3 */ if (f == 0) return 1;
++f = pthread_kill; /* avoid optimizing out f */ return (int)f;
+ #endif
+ 
+   ;
+@@ -14367,7 +14367,7 @@
+ #if defined (__stub_strlcat) || defined (__stub___strlcat)
+ choke me
+ #else
+-f = strlcat; /* workaround for ICC 12.0.3 */ if (f == 0) return 1;
++f = strlcat; /* avoid optimizing out f */ return (int)f;
+ #endif
+ 
+   ;
+@@ -14559,7 +14559,7 @@
+ #if defined (__stub_$ac_func) || defined (__stub___$ac_func)
+ choke me
+ #else
+-f = $ac_func; /* workaround for ICC 12.0.3 */ if (f == 0) return 1;
++f = $ac_func; /* avoid optimizing out f */ return (int)f;
+ #endif
+ 
+   ;
+@@ -15461,7 +15461,7 @@
+ #if defined (__stub_gettimeofday) || defined (__stub___gettimeofday)
+ choke me
+ #else
+-f = gettimeofday; /* workaround for ICC 12.0.3 */ if (f == 0) return 1;
++f = gettimeofday; /* avoid optimizing out f */ return (int)f;
+ #endif
+ 
+   ;
+@@ -16017,7 +16017,7 @@
+ #if defined (__stub_regcomp) || defined (__stub___regcomp)
+ choke me
+ #else
+-f = regcomp; /* workaround for ICC 12.0.3 */ if (f == 0) return 1;
++f = regcomp; /* avoid optimizing out f */ return (int)f;
+ #endif
+ 
+   ;
+@@ -16158,7 +16158,7 @@
+ #if defined (__stub_compile) || defined (__stub___compile)
+ choke me
+ #else
+-f = compile; /* workaround for ICC 12.0.3 */ if (f == 0) return 1;
++f = compile; /* avoid optimizing out f */ return (int)f;
+ #endif
+ 
+   ;
+@@ -17527,7 +17527,7 @@
+ #if defined (__stub_$ac_func) || defined (__stub___$ac_func)
+ choke me
+ #else
+-f = $ac_func; /* workaround for ICC 12.0.3 */ if (f == 0) return 1;
++f = $ac_func; /* avoid optimizing out f */ return (int)f;
+ #endif
+ 
+   ;
+@@ -18432,7 +18432,7 @@
+ #if defined (__stub_mkstemp) || defined (__stub___mkstemp)
+ choke me
+ #else
+-f = mkstemp; /* workaround for ICC 12.0.3 */ if (f == 0) return 1;
++f = mkstemp; /* avoid optimizing out f */ return (int)f;
+ #endif
+ 
+   ;
+@@ -18828,7 +18828,7 @@
+ #if defined (__stub_memmove) || defined (__stub___memmove)
+ choke me
+ #else
+-f = memmove; /* workaround for ICC 12.0.3 */ if (f == 0) return 1;
++f = memmove; /* avoid optimizing out f */ return (int)f;
+ #endif
+ 
+   ;
+@@ -18890,7 +18890,7 @@
+ #if defined (__stub_bcopy) || defined (__stub___bcopy)
+ choke me
+ #else
+-f = bcopy; /* workaround for ICC 12.0.3 */ if (f == 0) return 1;
++f = bcopy; /* avoid optimizing out f */ return (int)f;
+ #endif
+ 
+   ;
+@@ -19022,7 +19022,7 @@
+ #if defined (__stub_$ac_func) || defined (__stub___$ac_func)
+ choke me
+ #else
+-f = $ac_func; /* workaround for ICC 12.0.3 */ if (f == 0) return 1;
++f = $ac_func; /* avoid optimizing out f */ return (int)f;
+ #endif
+ 
+   ;
+@@ -19382,7 +19382,7 @@
+ #if defined (__stub_$ac_func) || defined (__stub___$ac_func)
+ choke me
+ #else
+-f = $ac_func; /* workaround for ICC 12.0.3 */ if (f == 0) return 1;
++f = $ac_func; /* avoid optimizing out f */ return (int)f;
+ #endif
+ 
+   ;
+

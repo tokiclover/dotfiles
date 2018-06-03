@@ -93,11 +93,13 @@ EOH
 		BROWSERS[mozilla]='aurora firefox icecat seamonkey'
 		BROWSERS[config]='conkeror chrome chromium epiphany midory opera otter netsurf qupzilla vivaldi'
 
+	if [[ "${1}" ]]; then
 		if [[ "${BROWSERS[mozilla]}" == *${1}* ]]; then
 				BROWSER="${1}" PROFILE="mozilla/${1}"; return;
 		elif [[ "${BROWSERS[config]}" == *${1}* ]]; then
 				BROWSER="${1}" PROFILE="config/${1}" ; return;
-			fi
+		fi
+	fi
 
 		for key in "${!BROWSERS[@]}"; do
 			for browser in ${BROWSERS[${key}]}; do

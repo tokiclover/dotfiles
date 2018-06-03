@@ -1,8 +1,9 @@
 #
-# $Header: ${HOME}/.zshrc                               Exp $
+# $Id: ~/.zshrc                               Exp $
 #
 
-setopt extended_glob
+setopt EXTENDED_GLOB
+setopt INC_APPEND_HISTORY
 
 if [[ -f ~/.dir_colors ]] {
 	eval $(dircolors -b ~/.dir_colors) 
@@ -31,6 +32,7 @@ if [[ -f ~/.zprezto/init.zsh ]] {
 for file (~/.zsh/lib/^(editor.zsh)*(.N)
 	~/.zsh/functions/prompt_clover_setup ~/lib/{aliasrc,helpers})
 	source $file
+file=
 
 #
 # vim:fenc=utf-8:ft=zsh:ci:pi:sts=0:sw=2:ts=2:

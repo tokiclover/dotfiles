@@ -1,10 +1,10 @@
 #
-# $Header: ${HOME}/.zshenv                              Exp $
+# $Id: ~/.zshenv                              Exp $
 #
 
 export ZDOTDIR="${HOME}"
 export ZLS_COLORS="${LS_COLORS}"
-export HISTFILE="${HOME}/.zhistory" HISTSIZE=5000 SAVEHIST=1
+export HISTFILE="${HOME}/.zhistory" HISTSIZE=5000 SAVEHIST=5000
 
 if [[ -f ~/.Xprofile ]] { source ~/.Xprofile }
 

@@ -64,7 +64,7 @@ opt=(
 )
 opt=($(getopt "${opt[@]}" -- "$@" || usage))
 eval set -- "${opt[@]}"
-opt=()
+exclude=()
 
 for (( ; $# > 0; )); do
 	case $1 in
@@ -132,6 +132,7 @@ for (( ; $# > 0; )); do
 		(-?|-h|--help|*) usage;;
 	esac
 done
+opt=("${@}")
 
 :	${opts[prefix]:=$(uname -s)-$(uname -m)-$(uname -r | cut -d- -f1)}
 :	${opts[root]:=/}
@@ -149,6 +150,7 @@ case "${opts[compressor]}" in
 	(lzma)	opts[tarball]+=.tar.lzma;;
 	(lzip)	opts[tarball]+=.tar.lz;;
 	(lzop)	opts[tarball]+=.tar.lzo;;
+	(lz4)	opts[tarball]+=.tar.lz4;;
 esac
 
 function mkstage {
@@ -156,7 +158,7 @@ function mkstage {
 echo -ne "\e[1;32m>>> building ${opts[tarball]} stage4 tarball...\e[0m$@\n"
 pushd "${opts[root]}" || die "invalid root directory"
 
-exclue+=(
+exclude+=(
 	"${opts[tarball]}"
 	boot/iso/*.i{mg,so}
 	mnt media home
@@ -164,7 +166,7 @@ exclue+=(
 	var/{run,lock,pkg,src,tmp}
 )
 
-for file in "${exclue[@]}"; do
+for file in "${exclude[@]}"; do
 	opt+=("--exclude=${file}")
 done
 
@@ -181,7 +183,7 @@ if [[ "${sdr}" ]]; then
 	done
 fi
 
-opt+=(--create --absolute-names --"${opts[compressor]}" --verbose --totals)
+opt+=(--create -I "${opts[compressor]}" --verbose --totals)
 
 if [[ "${gpg[@]}" ]]; then
 	opts[tarball]+=.gpg

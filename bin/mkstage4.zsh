@@ -55,7 +55,7 @@ opt=(
 
 opt=($(getopt ${opt} -- ${argv} || usage))
 eval set -- ${opt}
-opt=()
+exclude=()
 
 for (( ; $# > 0; ))
 	case $1 {
@@ -120,6 +120,7 @@ for (( ; $# > 0; ))
 		(-?|-h|--help|*) usage;;
 	}
 
+opt=(${@})
 :	${opts[-compressor]:=gzip}
 : ${opts[-prefix]:=$(uname -s)-$(uname -m)-$(uname -r | cut -d- -f1)}
 :	${opts[-root]:=/}
@@ -135,6 +136,7 @@ case ${opts[-compressor]} in
 	lzma)	opts[-tarball]+=.tar.lzma;;
 	lzip)	opts[-tarball]+=.tar.lz;;
 	lzop)	opts[-tarball]+=.tar.lzo;;
+	lz4)	opts[tarball]+=.tar.lz4;;
 esac
 
 setopt NULL_GLOB
@@ -168,7 +170,7 @@ if (( ${+sdr} )) {
 	}
 }
 
-opt+=(--create --absolute-names --${opts[-compressor]} --verbose --totals)
+opt+=(--create -I ${opts[-compressor]} --verbose --totals)
 
 if (( ${+opts[gpg]} )) { 
 	for o (cipher encrypt recipient sign symmetric) {
@@ -180,7 +182,7 @@ if (( ${+opts[gpg]} )) {
 	opt+=(--file ${opts[-tarball]} ${opts[-root]})
 }
 
-eval tar ${opt} || die "failed to backup"
+eval tar "${opt[@]}" || die "failed to backup"
 
 if (( ${+opts[-split]} )) {
 	split --bytes=${opts[-split]} ${opts[-tarball]}, ${opts[-tarball]}.

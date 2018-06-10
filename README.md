@@ -73,7 +73,7 @@ like QEMU, UML,...;
 MIRRORS
 -------
 
-* https://gitlab.com/tokiclover/dotfiles
+* https://github.com/tokiclover/dotfiles
 
 [1]: https://gitlab.com/tokiclover/prezto
 [2]: https://github.com/sorin-ionescu/prezto

@@ -17,11 +17,11 @@ USAGE
 * clone the repository or repositories with `--recurse-submodules` to get
 everything in one shot cloning: 
 ```
-    % git clone git://github.com/tokiclover/dotfiles.git dotfiles
+    % git clone git://gitlab.com/tokiclover/dotfiles.git dotfiles
 ```
 * zsh users may clone my [fork][1] of [prezto][2]: 
 ```
-    % git clone --recurse-submodules git://github.com/tokiclover/prezto.git .zprezto
+    % git clone --recurse-submodules git://gitlab.com/tokiclover/prezto.git .zprezto
 ```
 * and then exec your shell with `% exec $SHELL`
 
@@ -75,9 +75,9 @@ MIRRORS
 
 * https://gitlab.com/tokiclover/dotfiles
 
-[1]: https://github.com/tokiclover/prezto
+[1]: https://gitlab.com/tokiclover/prezto
 [2]: https://github.com/sorin-ionescu/prezto
-[3]: https://github.com/tokiclover/bar-overlay
+[3]: https://gitlab.com/tokiclover/bar-overlay
 [4]: http://5digits.org/pentadactyl
 
 ---

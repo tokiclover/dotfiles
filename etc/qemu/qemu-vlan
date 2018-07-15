@@ -244,6 +244,7 @@ EOF_CONFIG
 yesno "${QEMU_VLAN_VDE}" && QEMU_VLAN_VDE=true || QEMU_VLAN_VDE=false
 yesno "${QEMU_VLAN_VIF}" && QEMU_VLAN_VIF=true || QEMU_VLAN_VIF=false
 dhcp="${QEMU_VLAN_DHCP}"
+cf="${QEMU_VLAN_CF}"
 if="${QEMU_VLAN_IF}"
 num="${QEMU_VLAN_NUM}"
 vde="${QEMU_VLAN_VDE}"

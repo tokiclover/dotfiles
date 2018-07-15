@@ -9,14 +9,14 @@ media-sound/ladish::bar
 media-sound/laditools::bar
 media-sound/patchage::bar
 #media-sound/rosegarden::bar
-media-sound/seq24::bar
-media-sound/yoshimi
+#media-sound/seq24::bar
+#media-sound/yoshimi
 media-sound/zita-ajbridge::bar
-media-sound/zynaddsubfx::bar
+#media-sound/zynaddsubfx::bar
 media-plugins/calf::bar
-media-plugins/ll-plugins::bar
-media-plugins/swh-plugins
-media-plugins/tap-plugins::bar
+#media-plugins/ll-plugins::bar
+#media-plugins/swh-plugins
+#media-plugins/tap-plugins::bar
 
 media-sound/jalv
 media-sound/a2jmidid

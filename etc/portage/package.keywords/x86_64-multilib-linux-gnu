@@ -1,18 +1,22 @@
-=sys-fs/zfs-kmod-0.6.5.7 **
-=sys-fs/zfs-0.6.5.7 **
-=sys-kernel/spl-0.6.5.7 **
+=sys-fs/zfs-kmod-0.7.9999 **
+=sys-fs/zfs-0.7.9999 **
+=sys-kernel/spl-0.7.9999 **
+
 dev-libs/libglvnd **
-=media-libs/mesa-13.0.9999 **
+=media-libs/mesa-18.0.9999 **
 media-sound/a2jmidid **
 =media-sound/ardour-4.9999 **
-=media-sound/jack-audio-connection-kit-2.9999 **
-=media-video/ffmpeg-3.1.9999 **
+=media-video/ffmpeg-3.4.9999 **
+=dev-util/boost-build-1.66.0 **
+=dev-libs/boost-1.66.0 **
+
 sys-apps/less **
 sys-fs/aufs-standalone **
 sys-fs/aufs-util **
 www-misc/dactyl **
 =app-shells/bash-4.4* **
 =sys-libs/readline-7.0* **
+
 =dev-python/vapoursynth-plugins-adjust-9999 **
 =dev-python/vapoursynth-plugins-mvsfunc-9999 **
 =media-plugins/vapoursynth-plugins-rawsource-9999 **
@@ -22,3 +26,4 @@ media-plugins/vapoursynth-plugins-tnlmeans **
 media-plugins/vapoursynth-plugins-yadif **
 media-plugins/vapoursynth-plugins-lsmashsource **
 media-plugins/vapoursynth-plugins-fft3dfilter **
+net-analyzer/nagios-plugins-flameeyes **

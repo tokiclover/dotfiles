@@ -1,3 +1,4 @@
+=media-libs/mesa-18.1.0_rc*
 sys-fs/udev
 sys-apps/systemd
 sys-auth/polkit
@@ -5,9 +6,11 @@ sys-auth/consolekit
 media-sound/pulseaudio
 media-video/libav
 >=sys-fs/udev-init-scripts-28
->=sys-apps/openrc-0.17.0
 sys-kernel/git-sources::gentoo
 dev-lang/php:7.0
+dev-lang/php:7.1
+dev-lang/php:7.2
+dev-lang/php:7.3
 
 >=media-video/rage-0.2.0
 >=dev-util/edi-0.3.0
@@ -17,12 +20,18 @@ dev-lang/php:7.0
 >=dev-python/python-efl-1.17.0
 >=media-plugins/evas_generic_loaders-1.17.0
 >=media-plugins/emotion_generic_players-1.17.0
+>=x11-terms/terminology-1.0.0
 
->=www-client/firefox-46.0
+>=www-client/firefox-59.0
 dev-java/oracle-jdk-bin
 dev-java/oracle-jre-bin
 =virtual/jdk-1.8.0
 =virtual/jre-1.8.0
->net-wireless/bluez-5.0
->=sys-apps/lm_sensors-3.4.0_p20160725
->=dev-libs/libevent-2.1.0
+
+>=net-analyzer/nagios-4.0
+>=net-analyzer/nagios-core-4.0
+
+app-vim/youcompleteme
+>=dev-libs/libcdio-1.0.0
+>=x11-libs/libva-2.0.0
+>=x11-libs/libva-intel-driver-2.0.0

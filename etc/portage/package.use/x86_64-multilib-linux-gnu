@@ -1,12 +1,16 @@
+app-admin/collectd contrib -perl xfs
 app-crypt/pinentry gnome-keyring
 app-doc/doxygen dot
-app-emulation/libvirt lvm pcap virt-network xen
-app-emulation/qemu smartcard tls vhost-net vde vte xen xfs
+app-editors/vim python_single_target_python2_7 -python_single_target_python3_5
+app-emulation/docker apparmor btrfs overlay
+app-emulation/libvirt lvm pcap virt-network
+app-emulation/qemu smartcard ssh tls vhost-net vde virtfs vte xfs
+app-emulation/runc apparmor
 app-emulation/vmware-modules -vsock -vmci
 app-emulation/vmware-workstation cups ovftool
 app-emulation/vmware-tools vmware_guest_freebsd vmware_guest_linux
 app-emulation/xen efi
-app-emulation/xen-tools custom-cflags hvm pygrub -qemu-traditional screen system-qemu system-seabios
+app-emulation/xen-tools custom-cflags hvm pygrub -qemu -qemu-traditional screen system-qemu system-seabios
 app-eselect/eselect-php fpm apache2
 app-office/libreoffice jemalloc
 app-portage/layman sync-plugin-portage -python_targets_python2_7 squashfs subversion
@@ -14,33 +18,30 @@ app-shell/zsh doc
 app-text/asciidoc python_single_target_python2_7
 app-text/docbook-sgml-utils jadetex
 app-text/evince xps
-app-text/zathura-meta cb djvu postscript
 dev-db/mariadb embedded extraengine innodb-lz4 innodb-lzo jamalloc odbc sphinx
 dev-db/mysql embedded extraengine jemalloc
-dev-db/phpmyadmin vhosts
-dev-db/postgresql ldap uuid
+dev-db/postgresql uuid
 dev-db/sqlite secure-delete
 dev-lang/perl doc
-dev-lang/php apache2 embed cgi flatfile fpm gmp inifile intl mhash mysql mysqli odbc pcntl pdo sysvipc vpx wddx xmlreader xmlrpc xmlwriter xslt
+dev-lang/php apache2 bcmath cgi flatfile fpm gmp inifile intl mhash mysql mysqli odbc pcntl pdo sysvipc vpx wddx xmlreader xmlrpc xmlwriter xslt
 dev-lang/python doc
+dev-lang/ruby -jemalloc
 dev-libs/DirectFB -egl -gles2
-dev-libs/apr-util ldap mysql
+dev-libs/apr-util mysql
 dev-libs/efl -drm -egl fribidi jp2k physics sound xim -gles system-lz4 -wayland
+dev-libs/fcgi html
+dev-libs/fribidi abi_x86_32
 dev-libs/gmime smime
+media-libs/libbluray aacs utils
+dev-libs/libpcre2 jit
+dev-libs/libunistring abi_x86_32
 dev-libs/nss utils
-#dev-python/cython python_targets_python3_4
-#dev-python/certifi python_targets_python3_4
-dev-python/cryptography -python_targets_python2_7
-dev-python/ndg-httpsclient -python_targets_python2_7
-dev-python/pyopenssl -python_targets_python2_7
-#dev-python/setuptools python_targets_python3_4
-dev-python/ssl-fetch -python_targets_python2_7
-dev-qt/qtgui gtkstyle
+dev-libs/xmlsec nss
 dev-util/cmake doc
 dev-util/lv2-c++-tools doc
 dev-vcs/git subversion
 dev-vcs/subversion -dso
-mail-client/mutt gpg imap pop nntp sidebar smime smtp
+mail-client/mutt gpg imap pop nntp notmuch sidebar smime smtp
 media-fonts/unifont utils
 media-gfx/imagemagick corefonts hdri
 media-gfx/ufraw contrast gimp
@@ -53,14 +54,13 @@ media-libs/libcanberra -sound
 media-libs/libmypaint gegl
 media-libs/libpng apng
 media-libs/lv2 plugins
-media-libs/mesa gbm openmax xa
+media-libs/mesa gbm openmax vulkan xa
 media-libs/libvpx postproc
 media-libs/t1lib doc
-media-libs/xine-lib aalib bluray dts dxr3 mmap
 media-plugins/calf lv2
 media-plugins/tap-plugins doc
 media-sound/ardour lv2
-media-sound/jack-audio-connection-kit zalsa
+media-sound/jack-audio-connection-kit classic debug ieee1394 readline libsamplerate sndfile alsa zalsa
 media-sound/mpd faad wildmidi
 media-sound/ncmpcpp taglib visualizer
 media-sound/patchage jack-session
@@ -68,53 +68,61 @@ media-sound/shntool mac
 media-video/ffmpeg bluray cdio faac frei0r schroedinger vaapi vpx x265
 media-video/mpv bluray bs2b dvdnav encode vaapi
 media-video/x264-encoder avs custom-cflags
-net-analyzer/nagios-core apache2
-net-analyzer/nagios-plugins ldap mysql nagios-dns nagios-ping ssh
+net-analyzer/check_mk apache_status livestatus logwatch smart wato
+net-analyzer/fping suid
+net-analyzer/monitoring-plugins mysql postgres
+net-analyzer/nagios-core apache2 lighttpd
+net-analyzer/nagios-plugins mysql nagios-dns nagios-ping ssh
+net-analyzer/nagvis apache2 automap
 net-analyzer/net-snmp mysql netlink pci
+net-analyzer/pnp4nagios apache2
+net-analyzer/rrdtool graph rrdcgi
 net-dialup/ppp eap-tls
 net-dns/dnsmasq auth-dns conntrack dhcp-tools dnssec script tftp
 net-firewall/ipset -modules
-net-libs/gnutls pkcs11
+net-libs/gnutls pkcs11 openssl
 net-libs/neon gnutls libproxy pkcs11
 net-mail/mailutils bidi mysql servers
 net-mail/notmuch mutt
-net-misc/connman bluetooth tools
-net-misc/openssh X509 sctp
+net-misc/curl curl_ssl_libressl -curl_ssl_openssl http2 ssh
+net-misc/openssh sctp
 net-misc/openvswitch -modules
+net-misc/tigervnc dr3 server
 net-misc/tor nat-pmp tor-hardening transparent-proxy
 net-nntp/nzbget parcheck
 net-nntp/slrn uudeview
 net-nntp/tin gpg mime spell
 net-p2p/rtorrent daemon
-net-print/cnijfilter backends -drivers gtk
+=net-print/cnijfilter-3.70-r2 cups gtk net usb servicetools canon_printers_ip100
 net-print/cups ppds
 net-print/gutenprint foomaticdb gimp ppds
 net-wireless/hostapd madwifi
 net-wireless/wpa_supplicant eap-sim gnutls
-sys-apps/busybox mdev
+sys-apps/busybox mdev -pam
+sys-apps/ipmitool openipmi
 sys-apps/lm_sensors sensord
 sys-apps/openrc -netifrc
-sys-auth/pambase mktemp pam_krb5 pam_ssh
-sys-devel/gcc abi_x86_32 -awt fortran gcj objc objc++ objc-gc
+sys-auth/pambase mktemp pam_ssh
+sys-cluster/gearmand sqlite
+sys-devel/gcc:5.4.0 abi_x86_32 -awt fortran gcj objc objc++ objc-gc
+sys-devel/gcc:7.3.0 abi_x86_32 -awt fortran objc objc++
 sys-devel/llvm gold
 sys-fs/aufs-standalone -pax_kernel
 sys-fs/aufs-util fhsm kernel-builtin
-sys-fs/cryptsetup -gcrypt
+sys-fs/cryptsetup -gcrypt openssl
 sys-fs/eudev gudev
-sys-kernel/git-sources:3.18.36  aufs fbcondecor -hardened -reiser4
-sys-kernel/git-sources:4.4.27   aufs fbcondecor -hardened -reiser4
-sys-kernel/git-sources:4.8.4    aufs fbcondecor -hardened  -reiser4
-sys-kernel/mkinitramfs-ll aufs bash btrfs dm-crypt dmraid jfs mdadm reiserfs squashfs xfs zram zsh
+sys-kernel/mkinitramfs-ll bash btrfs dm-crypt dmraid jfs mdadm reiserfs squashfs xfs zram zsh
 sys-devel/binutils multitarget
 sys-libs/zlib minizip
 virtual/mysql embedded
 virtual/linux-sources firmware
 virtual/udev gudev
+www-apache/mod_python python_single_target_python2_7
 www-client/firefox custom-cflags custom-optimization -gmp-autoupdate jit system-cairo system-harfbuzz system-icu system-jpeg system-libevent system-libvpx system-sqlite -wifi
-www-client/netsurf fbcon fbcon_frontend_x pdf-write
 web-servers/apache apache2_modules_cache_disk apache2_modules_dir apache2_modules_http2 apache2_modules_macro apache2_modules_ratelimit apache2_modules_remoteip apache2_modules_reqtimeout apache2_modules_unixd apache2_mpms_worker
-www-servers/lighttpd mysql php rrdtool webdav
+www-servers/lighttpd doc -kerberos memcached mysql php rrdtool webdav
 www-servers/nginx http http-cache http2
+x11-libs/cairo xcb
 x11-libs/libdrm libkms
 x11-libs/libfm -automount
 x11-libs/libxcb xkb
@@ -122,11 +130,10 @@ x11-misc/spacefm -gtk2 gtk3 -video-thumbnails
 x11-misc/tint2 battery tint2conf
 x11-terms/rxvt-unicode 256-color blink
 x11-themes/ardoise-xcursor-theme minimal
-x11-themes/e-gtk-theme -gnome minimal openbox
+x11-themes/e-gtk-theme minimal openbox
 x11-themes/efenniht minimal
-x11-wm/enlightenment -wayland
+x11-wm/enlightenment -wayland -enlightenment_modules_connman
 x11-wm/icewm bidi
-media-plugins/emotion_generic_players -vlc
 #
 #-*-multilib-dependencies-*-
 #
@@ -153,6 +160,7 @@ dev-libs/libgpg-error abi_x86_32
 dev-libs/libgudev abi_x86_32
 dev-libs/libpcre abi_x86_32
 dev-libs/libpthread-stubs abi_x86_32
+dev-libs/libressl abi_x86_32
 dev-libs/libtasn1 abi_x86_32
 dev-libs/libverto abi_x86_32
 dev-libs/libxml2 abi_x86_32
@@ -181,6 +189,7 @@ media-libs/libepoxy abi_x86_32
 media-libs/mesa abi_x86_32
 media-libs/tiff abi_x86_32
 net-dns/libidn abi_x86_32
+net-dns/libidn2 abi_x86_32
 net-libs/gnutls abi_x86_32
 net-nds/openldap abi_x86_32
 net-print/cups abi_x86_32
@@ -265,7 +274,7 @@ x11-proto/recordproto abi_x86_32
 x11-proto/renderproto abi_x86_32
 x11-proto/scrnsaverproto abi_x86_32
 x11-proto/videoproto abi_x86_32
-x11-proto/xcb-proto abi_x86_32
+x11-base/xcb-proto abi_x86_32
 x11-proto/xextproto abi_x86_32
 x11-proto/xf86bigfontproto abi_x86_32
 x11-proto/xf86driproto abi_x86_32

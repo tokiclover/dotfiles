@@ -1,0 +1,13 @@
+# This hook is neccesary for automatic updating of the cfg-update index, please do not modify it!
+pre_pkg_setup() {
+	[[ $ROOT = / ]] && : cfg-update --index
+
+	if [[ "bfd" == "$(readlink -f $(which ld) | sed -nre 's,.*.(bfd$),\1,p')" ]]; then
+		einfo "Using ld.bfd linker"
+		LDFLAGS="${LDFLAGS} -Wl,-fuse-ld=bfd"
+	elif [[ "gold" == "$(readlink -f $(which ld) | sed -nre 's,.*.(bfd$),\1,p')" ]]; then
+		einfo "Using ld.gold linker"
+		LDFLAGS="${LDFLAGS} -Wl,-fuse-ld=gold"
+	fi
+}
+

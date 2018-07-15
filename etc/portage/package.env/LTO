@@ -1,10 +1,11 @@
 #
 # Ref: https://marxin.github.io/posts/gentoo-linux-packages-with-gcc-4-dot-9-lto/
 #
-dev-libs/libglvnd        no-lto.conf
 app-admin/sudo           no-lto.conf
 app-admin/syslog-ng      no-lto.conf
+app-arch/cabextract      no-lto.conf
 app-arch/cpio            no-lto.conf
+app-arch/gzip            no-lto.conf
 app-arch/libarchive      no-lto.conf
 app-arch/lzlib           no-lto.conf
 app-arch/sharutils       no-lto.conf
@@ -28,10 +29,12 @@ app-text/texlive-core    no-lto.conf
 app-shells/bash          no-lto.conf
 dev-db/lmdb              no-lto.conf
 dev-db/mysql             no-lto.conf
+dev-db/mysql-connector-c no-lto.conf
 dev-db/unixODBC          no-lto.conf
 dev-lang/orc             no-lto.conf
 dev-lang/lua             no-lto.conf
 dev-lang/perl            no-lto.conf
+dev-lang/php:7.2         no-lto.conf
 dev-lang/ruby            no-lto.conf
 dev-lang/mujs            no-lto.conf
 dev-lang/spidermonkey    no-lto.conf
@@ -40,6 +43,7 @@ dev-libs/efl             no-lto.conf
 dev-libs/elfutils        no-lto.conf
 dev-libs/fribidi         no-lto.conf
 dev-libs/gobject-introspection no-lto.conf
+dev-libs/libaio          no-lto.conf
 dev-libs/libgcrypt       no-lto.conf
 dev-libs/libtasn1        no-lto.conf
 dev-libs/libpipeline     no-lto.conf
@@ -89,6 +93,8 @@ media-video/libav        no-lto.conf
 media-video/mkvtoolnix   no-lto.conf
 media-video/mpv          no-lto.conf
 media-video/vapoursynth  no-lto.conf
+net-analyzer/check_mk    base.conf
+net-analyzer/mk-livestatus base.conf
 net-analyzer/rrdtool     no-lto.conf
 net-dns/libidn           no-lto.conf
 net-irc/irssi            no-lto.conf
@@ -131,6 +137,7 @@ sys-block/parted         no-lto.conf
 sys-boot/gnu-efi         no-lto.conf
 sys-boot/grub            no-lto.conf
 sys-boot/syslinux        no-lto.conf
+sys-cluster/gearmand     no-lto.conf
 sys-fs/btrfs-progs       no-lto.conf
 sys-fs/eudev             no-lto.conf
 sys-fs/lvm2              no-lto.conf
@@ -143,6 +150,7 @@ sys-libs/efivar          no-lto.conf
 sci-libs/fftw            no-lto.conf
 sys-libs/glibc           no-lto.conf
 sys-libs/libseccomp      no-lto.conf
+sys-libs/libapparmor     no-lto.conf
 sys-libs/zlib            no-lto.conf
 sys-fs/xfsprogs          no-lto.conf
 sys-power/powertop       no-lto.conf

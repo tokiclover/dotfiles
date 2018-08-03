@@ -2,7 +2,7 @@
 # $Id: @(#) /etc/qemu/qemu-vlan                      Exp $
 # $A$: (c) 2016 tokiclover <tokiclover@gmail.com>    Exp $
 # $L$: MIT (or 2-clause/new/simplified BSD)          Exp $
-# $V$: 0.2.0 2016/08/08 21:09:26                     Exp $
+# $V$: 0.4.0 2018/08/02 21:09:26                     Exp $
 #
 # Reference:
 #    http://www.linux-kvm.org/page/Networking
@@ -43,8 +43,8 @@
 #     iptables's DNAT and SNAT targets. PREROUTING and POSTROUTING chains are supported
 #     for VMs are providing web services. The format is as the following:
 #
-# PREROUTING_RULSES="interface,proto,port,address:port[/4|6] interface,proto,..."
-# POSTROUTING_RULSES="interface,proto,port,address:port[/4|6] interface,proto,..."
+#QEMU_VLAN_PREROUTING_RULSES="interface,proto,port,address:port[/4|6] interface,proto,..."
+#QEMU_VLAN_POSTROUTING_RULSES="interface,proto,port,address:port[/4|6] interface,proto,..."
 #
 # interface   : external network interface to use for external traffic
 # proto       : network protocol to use for redirect (tcp, udp,...)
@@ -57,7 +57,10 @@
 # ${iptables} -A PREROUTING  -t nat -d 192.168.x.y --dport 8080  -j DNAT --to-destination 172.16.u.v:80
 # ${iptables} -A POSTROUTING -t nat -s 172.16.u.v  --sport 80    -j SNAT --to-source   192.168.x.y:8080
 #
-# Examples:
+#    `u' is the virtual LAN (`0' for `vnet0', `4' for `vnet4');
+#    `v' is the lower address byte of the machine.
+#
+## Examples:
 #
 # XXX: NAT virtual network
 #
@@ -185,8 +188,8 @@ EOH
 }
 if_usage()
 {
-	if [ ${#} != 1 ]; then
-		printf "usage: ${name} [--br=br0] [--if=eth0] tap<i>\n" >&2
+	if ! [ ${#} -ge 1 ]; then
+		printf "usage: ${name} [--br=br0] [--if=eth0] tap<i> tap<j> ...\n" >&2
 		exit 1
 	fi
 }
@@ -284,12 +287,12 @@ done
 #
 if   [ "${name}" = "qemu-ifup"   ]; then
 	if_usage "${@}"
-	action=start num=1 vif=true
+	action=ifup num=1 vif=true
 :	${tap:=$1}
 :	${br:=vnet3}
 elif [ "${name}" = "qemu-ifdown" ]; then
 	if_usage "${@}"
-	action=stop num=1 vif=true
+	action=ifdown num=1 vif=true
 :	${tap:=$1}
 :	${br:=vnet3}
 elif [ -z "${br}" -o -z "${action}" -o -z "${num}" ]; then
@@ -299,12 +302,35 @@ fi
 :	${cf:=/etc/qemu/${br}/${br}.conf}
 if [ -s ${cf} ]; then
 	write_config=false
-	source ${cf}
+	. ${cf}
 else
 	make_config
 	write_config=true
 fi
 
+qemu_vlan_make_config()
+{
+	mkdir -p ${cf%/*} || return
+	cat <<EOF_CONFIG >${cf}
+###### Virtual LAN Configuration #####
+#
+# Set extra options for dnsmasq when used as DHCP and DNS server
+#DNMASQ_ARGS="--dhcp-hostfile=/etc/qemu/${br}/dhcp.host"
+#
+# Set extra options for ISC dhcpd when used as DHCP server
+#DHCPD_ARGS="-q"
+#
+# Set extra options for vde_switch when using VDE switches
+#VDE_SWITCH_ARGS="--numports=64"
+#
+###### Virtual LAN Configuration #####
+#
+# The following settings are automatically generated, so modify with care.
+# Unless a static address is used for a bridged virtual network, nothing
+# should be changed but duplicate hardware address!
+#
+EOF_CONFIG
+}
 iptables_dnat()
 {
 	[ -n "${2}" ] || return
@@ -330,7 +356,7 @@ iptables_table()
 		fi
 	done
 
-	for rule in "${@}"; do
+	for rule; do
 		set ${rule/\// }
 		rule="${1}" v="${2}"
 		case "${v}" in
@@ -339,12 +365,12 @@ iptables_table()
 		esac
 		set ${rule//,/ }
 		if [ ${#} != 4 ]; then
-			error "insufficient arguments -- ${@} (4 required)"
+			error "insufficient arguments -- ${rule} (4 required)"
 			continue
 		fi
 		local iface="${1}" proto="${2}" port="$3" address="$4"
 
-		get_address "${if}ace" "${v}"
+		get_ip_address "${iface}" "${v}"
 		if [ -n "${v}" ]; then
 			iptables_${table} ${ip6tables} "${ipnet6}"
 		else
@@ -354,11 +380,19 @@ iptables_table()
 }
 iptables_rules()
 {
-	[ -n "$PREROUTING_RULES"  ] && iptables_table "dnat" $PREROUTING_RULES
-	[ -n "$POSTROUTING_RULES" ] && iptables_table "snat" $POSTROUTING_RULES
+	local ret=0
+	if [ -n "${QEMU_VLAN_PREROUTING_RULES}"  ]; then
+		iptables_table "dnat" ${QEMU_VLAN_PREROUTING_RULES}
+		ret="${?}"
+	fi
+	if [ -n "${QEMU_VLAN_POSTROUTING_RULES}" ]; then
+		iptables_table "snat" ${QEMU_VLAN_POSTROUTING_RULES}
+		ret=$((${ret}+${?}))
+	fi
+	return ${ret}
 }
 
-get_address()
+get_ip_address()
 {
 	if [ -n "$(${ip} link show "${if}" | ${sed} -n '/RUNNING/p')" ]; then
 		eval set -- $(${ifconfig} ${if} | ${sed} -n "/inet${2} /p")
@@ -368,12 +402,16 @@ get_address()
 		done
 	fi
 }
-save_config()
+qemu_vlan_save_config()
 {
-	${write_config} && printf  "$*\n" >>${cf}
+	if ${write_config}; then
+		printf  "$*\n" >>${cf}
+	else
+		return 0
+	fi
 }
 
-make_dhcpd_server()
+qemu_vlan_make_dhcpd_server()
 {
 	local lf fc
 	lf=${cf%/*}/dhcpd.lease
@@ -381,11 +419,12 @@ make_dhcpd_server()
 
 	make_dhcpd_conf
 	[ -e ${lf} ] || printf '' >$lf
+	[ "${action}" = "config" ] && return
 
 	DHCPD_OPTS="-cf ${fc} -lf ${lf} -pf /var/run/${br}.dhcpd.pid -user dhcp -group dhcp"
 	eval dhcpd "${dhcp}_OPTS" "$DHCPD_ARGS" "${br}"
 }
-make_dhcpd_conf()
+qemu_vlan_make_dhcpd_config()
 {
 	[ -e ${fc} ] && return
 	mkdir -p ${lf%/*}
@@ -416,20 +455,21 @@ host ${br} {
 ####### VNET DHCP Configuration #######
 EOF
 }
-make_dnsmasq_server()
+qemu_vlan_make_dnsmasq_server()
 {
 	local df fc lf hf hs
 	lf=${cf%/*}/dhcp.lease
 	fc=${cf%/*}/dhcp.conf
 	hf=${cf%/*}/dhcp.host
-	hs=${fc%/*}/hosts
-	df=${fc%/*}/dnsmasq.conf
-	make_dnsmasq_conf
+	hs=${cf%/*}/hosts
+	df=${cf%/*}/dnsmasq.conf
+	qemu_vlan_make_dnsmasq_config
+	[ "${action}" != "config" ] && return
 
 	DNSMASQ_OPTS="--conf-file=${df} --pid-file=/var/run/${br}.dnsmasq.pid"
 	eval ${dnsmasq} "$DNSMASQ_OPTS" "$DNSMASQ_ARGS"
 }
-make_dnsmasq_conf()
+qemu_vlan_make_dnsmasq_config()
 {
 	[ -e ${df} ] && return
 	mkdir -p ${cf%/*}
@@ -476,7 +516,7 @@ EOF
 #
 # create mac (hardware) adress using QEMU's registered OUI (52:54:00)
 #
-make_hwaddr()
+qemu_vlan_make_hwaddr()
 {
 	local a b c i
 	if [ -z "${hwaddr}" ]; then
@@ -502,7 +542,7 @@ hwaddr()
 #
 $(eval '
 	while [ ${i} -lt ${num} ]; do
-		echo ether_${i}=$(make_hwaddr ${br}_${i}_ether_$$);
+		echo ether_${i}=$(qemu_vlan_make_hwaddr ${br}_${i}_ether_$$);
 		i=$((${i}+1));
 	done
 ')
@@ -510,21 +550,21 @@ $(eval '
 ##### Hardwre MAC Address #####
 EOF
 }
-make_bridge()
+qemu_vlan_make_bridge()
 {
 	${ip} link add name ${br} type bridge forward_delay 0 ||
 		die "Failed to add \`${br}' bridge device"
 	#
 	# setup mac address for persistent networking
 	#
-:	${ether:=$(make_hwaddr ${br})}
+:	${ether:=$(qemu_vlan_make_hwaddr ${br})}
 	${ip} link set dev ${br} address ${ether}
 	# 
 	# bring up the bridge inet
 	#
 :	${netmask:=255.255.255.0}
 	if [ -n "${if}" ]; then
-		get_address "${if}"
+		get_ip_address "${if}"
 		n="10$n" p=192.168
 	:	${address:=${inet:-${p}.$n.2}}
  	:	${gateway:=${p}.0.1}
@@ -533,7 +573,7 @@ make_bridge()
 			(*dhc*)
 			${dhcp} ${br}
 			sleep 2
-			get_address "${br}"
+			get_ip_address "${br}"
 			;;
 			(*)
 			${ifconfig} ${br} broadcast ${broadcast} ${address}/24 up
@@ -561,14 +601,40 @@ make_bridge()
 
 		case "${dhcp}" in
 			(*dhcpd)
-			make_dhcpd_server
+			qemu_vlan_make_dhcpd_server
 			;;
 			(*dnsmasq)
-			make_dnsmasq_server
+			qemu_vlan_make_dnsmasq_server
 			;;	
 		esac
 	fi
-	save_config "netmask=${netmask}\ngateway=${gateway}\nbroadcast=${broadcast}\nether=${ether}\n"
+	qemu_vlan_save_config "netmask=${netmask}\ngateway=${gateway}\nbroadcast=${broadcast}\nether=${ether}\n"
+}
+
+config()
+{
+	write_config=true
+	qemu_vlan_make_config
+	qemu_vlan_make_dhcpd_server
+	qemu_vlan_make_dnsmasq_server
+}
+ifup()
+{
+	local tap
+	QEMU_VLAN_VIF=true
+	start_pre
+	for tap; do
+		start
+	done
+}
+ifdown()
+{
+	local tap
+	QEMU_VLAN_VIF=true
+	start_pre
+	for tap; do
+		stop
+	done
 }
 
 stop_pre()
@@ -576,23 +642,26 @@ stop_pre()
 	${vde} && vde_switch=vde_switch || vde_switch=
 	for cmd in ifconfig ip md5sum sed ${dhcp} ${vde_switch}; do
 		eval "${cmd}=$(command -v ${cmd} 2>/dev/null)"
-		[ "${?}" = 0 ] || die "${cmd} required command not found"
+		if [ "${?}" != 0 ]; then
+			error "${cmd} required command not found"
+			return 3
+		fi
 	done
 }
 start_pre()
 {
 	if [ -z "${br}" -o -z "${num}" ]; then
-		error "QEMUE_VLAN_NUM=4 [QEMUE_VLAN_DHCP=dnsmasq] and [QEMUE_VLAN_VDE=true]"
-		error "should be defined in \`${SV_CONFDIR}/${SVC_NAME}'"
+		error "*** QEMUE_VLAN_NUM=4 ***"
+		error "*** [QEMUE_VLAN_DHCP=dnsmasq] ***"
+		error "*** and [QEMUE_VLAN_VDE=true] ***"
+		error "should be defined in \`${SV_CONFDIR}/${SVC_NAME}' or in \`${SV_CONFLOCAL}/${SVC_NAME}'!!!"
 		return 1
 	fi
 	if ${write_config}; then
-		if ! make_config; then
+		if ! qemu_vlan_make_config; then
 			error "Failed to make \`${cf}' configuration file"
 			return 2
 		fi
-	else
-		SOURCE -d ${SVC_CONFIGFILE}
 	fi
 
 	if ! grep -qsw tun /proc/modules; then
@@ -600,25 +669,31 @@ start_pre()
 		/bin/chgrp kvm /dev/net/tun
 	fi
 
-	stop_pre
+	stop_pre || return
 	#
 	# support br<N>, vmnet<N> vnet<N>... names
 	#
 	n="$(printf "${br}" | ${sed} -nre 's/.*([0-9].?)/\1/p')"
 	if [ -z "${n}" ]; then
-		error "invalid virtual interface name -- \`${br}'"
+		error "*** invalid virtual interface name -- \`${br}' ***"
+		error "*** bridge interface should be defined with {br,vnet,vmnet,...} prefix ***"
 		return 3
 	fi
 }
 
 start()
 {
-	start_pre
+	start_pre || return
 	${vif} && [ -d /sys/devices/virtual/net/${tap} ] && return 0
 	#
 	# create the bridge between ${if} and the tap device
 	#
-	${ip} link set "${br}" up >/dev/null 2>&1 || make_bridge
+	if ! ${ip} link set "${br}" up >/dev/null 2>&1; then
+		if ! qemu_vlan_make_bridge; then
+			error "Failed to make \`${br}' bridge!"
+			return 1
+		fi
+	fi
 
 	local address i=0 tap_opts 
 	if [ -n "${if}" -o -n "$(${ip} link show dev ${br} | ${sed} -n '/PROMISC/p')" ]; then
@@ -631,34 +706,36 @@ start()
 		# bring up the tap interface
 		#
 		${ip} tuntap add dev "${tap}" mode tap user "${user}" group "${group}" ||
-			die "Failed to create ${tap} device"
+			{ error "Failed to create ${tap} device"; return 1; }
 
 		${ip} link set dev "${tap}" ${tap_opts} master "${br}" up ||
-			die "Failed to bridge ${tap} to ${br}"
+			{ error "Failed to bridge ${tap} to ${br}"; return 1; }
 
 		#
 		# use a vde switch if enabled
 		#
 		if ${vde}; then
+			${vif} && warn "QEMU_VLAN_VDE is active for this bridge!"
 			eval ether="\$vde_switch_ether_${i}"
 			if [ -z "${ether}" ]; then
 		:	${write_config:=true}
-		:	${ether:=$(make_hwaddr ${tap})}
-			save_config "vde_switch_ether_${i}=${ether}"
+		:	${ether:=$(qemu_vlan_make_hwaddr ${tap})}
+			qemu_vlan_save_config "vde_switch_ether_${i}=${ether}"
 			fi
 			${vde_switch} ${VDE_SWITCH_ARGS} --mode 660 --tap "${tap}" \
 				--sock /var/run/${tap}.vde_switch -g "${group}" --daemon \
 				--pidfile /var/run/${tap}.vde_switch.pid --macaddr "${ether}" ||
-				die "Failed to connect ${tap} interface to VDE switch"
+				{ error "Failed to connect \`${tap}' interface to VDE switch"; return 1; }
 		fi
 
+		${vif} && return 0
 		i=$((${i}+1))
 		write_config=
 	done
 }
 stop()
 {
-	stop_pre
+	stop_pre || return
 	local i=0 ppidfile
 	while [ ${i} -lt ${num} ]; do
 		${vif} || tap="${br}_${i}"
@@ -667,14 +744,17 @@ stop()
 		#
 		pidfile=/var/run/${tap}.vde_switch.pid
 		if ${vde} && [ -e ${pidfile} ]; then
-			pkill -TERM -x "vde_switch" -F ${pidfile}
+			${vif} && warn "QEMU_VLAN_VDE is active for this bridge!"
+			if pkill -TERM -x "vde_switch" -F ${pidfile}; then
+				rm -f ${pidfile}
+			fi
 		fi
 
 		${ip} link set dev "${tap}" down
 		${ip} link del dev "${tap}"
+		${vif} && return 0
 		i=$((${i}+1))
 	done
-	${vif} && return 0
 
 	# 
 	# Delete the bridge
@@ -691,4 +771,4 @@ stop()
 	fi
 }
 
-eval "${action}"
+eval "${action}" "${@}"
